@@ -1,9 +1,9 @@
 Download the [latest release](https://github.com/SchlossLab/new_project/releases/latest) to the directory and decompress
 
 
-## TITLE OF YOUR PAPER GOES HERE
+## Natural variation in gut microbiota in controlled mouse populations modulates C. diff infection severity
 
-YOUR PAPER'S ABSTRACT GOES HERE
+ABSTRAAAAAAAAAAAAACT
 
 
 
@@ -49,17 +49,16 @@ YOUR PAPER'S ABSTRACT GOES HERE
 
 #### Dependencies and locations
 * Gnu Make should be located in the user's PATH
-* mothur (v1.XX.0) should be located in the user's PATH
-* R (v. 3.X.X) should be located in the user's PATH
+* mothur (v1.43.0) should be located in the user's PATH
+* R (v. 3.5.2) should be located in the user's PATH
 * R packages:
   * `knitr`
   * `rmarkdown`
-* etc
 
 
 #### Running analysis
 
 ```
-git clone https://github.com/SchlossLab/LastName_BriefDescription_Journal_Year.git
+git clone https://github.com/JMAStough/vendor_difs.git
 make write.paper
 ```
