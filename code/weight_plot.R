@@ -1,12 +1,10 @@
 source("code/functions.R")
 
-metadata <- read_csv("data/process/vendor_metadata.csv")
-
 weight_plot <- metadata %>% select(vendor, day, weight) %>%
   group_by(vendor, day) %>%
   summarize(mean_weight = mean(weight, na.rm = TRUE), 
             sd_weight = sd(weight, na.rm = TRUE)) %>%
-  mutate(se_weight = sd_weight/sqrt(n()),
+  mutate(se_weight = calc_se(sd_weight, n()),
          lower_ci = lower_ci(mean_weight, se_weight, n()),
          upper_ci = upper_ci(mean_weight, se_weight, n())) %>%
   ggplot(aes(x = day, y = mean_weight, group = vendor, color = vendor)) +

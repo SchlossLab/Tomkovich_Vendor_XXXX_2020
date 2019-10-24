@@ -1,7 +1,6 @@
 source("code/functions.R")
 
 pcoa_data <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.axes")
-metadata <- read_csv("data/process/vendor_metadata.csv")
 
 pcoa_plot <- right_join(metadata, pcoa_data, by=c("id" = "group")) %>%
   ggplot(aes(x=axis1, y=axis2, color=vendor)) +

@@ -1,7 +1,5 @@
 source("code/functions.R")
 
-metadata <- read_csv("data/process/vendor_metadata.csv")
-
 cfu_plot <- metadata %>% select(vendor, day, count1, dilution1, count2, dilution2) %>%
   mutate(cfu1 = count1 / (20 ^ dilution1), cfu2 = count2 / (20 ^ dilution2)) #%>%
   select(-starts_with("dilution"), -starts_with("count")) %>%
