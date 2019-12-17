@@ -1,20 +1,97 @@
 source("code/functions.R")
 
-weight_plot <- metadata %>% select(vendor, day, weight) %>%
+#Combined experiments----
+weight_data <- metadata %>% select(experiment, vendor, day, weight)
+
+mean_weight_summary <- weight_data %>% 
   group_by(vendor, day) %>%
-  summarize(mean_weight = mean(weight, na.rm = TRUE), 
-            sd_weight = sd(weight, na.rm = TRUE)) %>%
-  mutate(se_weight = calc_se(sd_weight, n()),
-         lower_ci = lower_ci(mean_weight, se_weight, n()),
-         upper_ci = upper_ci(mean_weight, se_weight, n())) %>%
-  ggplot(aes(x = day, y = mean_weight, group = vendor, color = vendor)) +
-  geom_line() +
-  geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci, width = 0.5)) +
-  geom_point() +
-  labs(x = "Day", y = "Mean Weight (g)") +
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+weight_plot <- ggplot(NULL) +
+  geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+  geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
+  labs(x = "Day", y = "Weight (g)") +
   scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                      limits = c(-1.5, 10.5)) +
   coord_fixed() +
-  theme_light()
+  theme_classic()
 
-weight_plot
+#Experiment 1 ----
+weight_data <- metadata %>% select(experiment, vendor, day, weight) %>% 
+  filter(experiment == 1)
+
+mean_weight_summary <- weight_data %>% 
+  group_by(vendor, day) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+weight_plot_exp_1 <- ggplot(NULL) +
+  geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+  geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
+  labs(x = "Day", y = "Weight (g)") +
+  scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                     limits = c(-1.5, 10.5)) +
+  coord_fixed() +
+  theme_classic()
+
+#Experiment 2 ----
+weight_data <- metadata %>% select(experiment, vendor, day, weight) %>% 
+  filter(experiment == 2)
+
+mean_weight_summary <- weight_data %>% 
+  group_by(vendor, day) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+weight_plot_exp_2 <- ggplot(NULL) +
+  geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+  geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
+  labs(x = "Day", y = "Weight (g)") +
+  scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                     limits = c(-1.5, 10.5)) +
+  coord_fixed() +
+  theme_classic()
+
+#Graph weight data as percent baseline weight (see Theriot et al. 2011).----
+#Percent baseline weight for each mouse will be calculated for each mouse
+#based on the weight recorded on D-1 of the experiment
+
+#Create data frame that has just the baseline_weight data for D-1 of each mouse
+baseline_weight <- metadata %>% select(mouse_id, weight, day) %>% 
+  filter(day == -1) %>% 
+  mutate(baseline_weight = weight) %>% 
+  select(mouse_id, baseline_weight)
+
+#Join baseline data frame to main metadata
+baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
+  select(experiment, mouse_id, vendor, day, weight, baseline_weight)
+
+#Calculate percent baseline weight data for each mouse based on the D-1 weight.
+percent_baseline_weight_data <- baseline_weight_data %>%  
+  group_by(mouse_id, day) %>% 
+  mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100)
+
+#Function to summarize data (calculate the mean for each group) and plot the data
+summarize_plot <- function(df){
+  mean_summary <- df %>% 
+    group_by(vendor, day) %>% 
+    summarize(mean_percent_weight = mean(percent_baseline_weight, na.rm = TRUE))
+  ggplot(NULL) +
+    geom_point(df, mapping = aes(x = day, y = percent_baseline_weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+    geom_line(mean_summary, mapping = aes(x = day, y = mean_percent_weight, color = vendor), size = 1) +
+    labs(x = "Days Post-Infection", y = "% Baseline Weight") +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                       limits = c(-1.5, 10.5)) +
+    theme_classic()
+}
+
+#Combined percent baseline weight plot for the 2 experiments----
+combined_exp_weight <- summarize_plot(percent_baseline_weight_data)
+
+#Combined percent baseline weight plot for the 1st experiment----
+exp1_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment == 1))
+#Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
+
+#Combined percent baseline weight plot for the 2nd experiment----
+exp2_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment == 2))
+
+
+
