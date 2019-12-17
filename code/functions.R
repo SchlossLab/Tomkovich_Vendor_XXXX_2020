@@ -2,9 +2,9 @@ library(tidyverse)
 library(cowplot)
 library(magick)
 
-### Load in metadata & create new column to give unique mouse_id based on exp. #, cage #, and mouse #.
+### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
-  unite(col = mouse_id, c(experiment, cage, mouse), remove = FALSE)
+  unite(col = mouse_id, c(experiment, vendor, cage, mouse), remove = FALSE)
   
 
 ### Caluclate Standard Error
