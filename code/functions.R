@@ -2,8 +2,10 @@ library(tidyverse)
 library(cowplot)
 library(magick)
 
-### Load in metadata
-metadata <- read_csv("data/process/vendor_metadata.csv")
+### Load in metadata & create new column to give unique mouse_id based on exp. #, cage #, and mouse #.
+metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
+  unite(col = mouse_id, c(experiment, cage, mouse), remove = FALSE)
+  
 
 ### Caluclate Standard Error
 calc_se <- function(stdev, n){
@@ -30,6 +32,3 @@ fancy_scientific <- function(l) {
   # return this as an expression
   parse(text=l)
 }
-
-
-
