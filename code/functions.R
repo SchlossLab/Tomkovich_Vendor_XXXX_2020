@@ -1,4 +1,6 @@
 library(tidyverse)
+library(cowplot)
+library(magick)
 
 ### Load in metadata
 metadata <- read_csv("data/process/vendor_metadata.csv")
@@ -16,4 +18,18 @@ lower_ci <- function(mean, se, n, conf_level = 0.95){
 upper_ci <- function(mean, se, n, conf_level = 0.95){
   upper_ci <- mean + qt(1 - ((1 - conf_level) / 2), n - 1) * se
 }
+
+#Function to have y-axis in scientific notation
+fancy_scientific <- function(l) {
+  # turn in to character string in scientific notation
+  l <- format(l, scientific = TRUE)
+  # quote the part before the exponent to keep all the digits
+  l <- gsub("^(.*)e", "'\\1'e", l)
+  # turn the 'e+' into plotmath format
+  l <- gsub("e", "%*%10^", l)
+  # return this as an expression
+  parse(text=l)
+}
+
+
 
