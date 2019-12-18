@@ -86,11 +86,11 @@ summarize_plot <- function(df){
 #Combined percent baseline weight plot for the 2 experiments----
 combined_exp_weight <- summarize_plot(percent_baseline_weight_data)
 
-#Combined percent baseline weight plot for the 1st experiment----
+#Percent baseline weight plot for the 1st experiment----
 exp1_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment == 1))
 #Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
 
-#Combined percent baseline weight plot for the 2nd experiment----
+#Percent baseline weight plot for the 2nd experiment----
 exp2_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment == 2))
 
 plot_grid(combined_exp_weight, exp1_weight, exp2_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
