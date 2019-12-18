@@ -93,5 +93,7 @@ exp1_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment
 #Combined percent baseline weight plot for the 2nd experiment----
 exp2_weight <- summarize_plot(percent_baseline_weight_data %>% filter(experiment == 2))
 
+plot_grid(combined_exp_weight, exp1_weight, exp2_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/weight_changes.pdf", width = 8.5, height = 11)
 
 
