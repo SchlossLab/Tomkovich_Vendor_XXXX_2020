@@ -1,4 +1,5 @@
 library(tidyverse)
+library(broom)
 library(cowplot)
 library(magick)
 
