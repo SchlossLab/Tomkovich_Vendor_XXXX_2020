@@ -9,6 +9,10 @@ mean_weight_summary <- weight_data %>%
 
 weight_plot <- ggplot(NULL) +
   geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
   geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
   labs(x = "Day", y = "Weight (g)") +
   scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
@@ -27,6 +31,10 @@ mean_weight_summary <- weight_data %>%
 weight_plot_exp_1 <- ggplot(NULL) +
   geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
   geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
   labs(x = "Day", y = "Weight (g)") +
   scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                      limits = c(-1.5, 10.5)) +
@@ -44,6 +52,10 @@ mean_weight_summary <- weight_data %>%
 weight_plot_exp_2 <- ggplot(NULL) +
   geom_point(weight_data, mapping = aes(x = day, y = weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
   geom_line(mean_weight_summary, mapping = aes(x = day, y = mean_weight, color = vendor), size = 1) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
   labs(x = "Day", y = "Weight (g)") +
   scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                      limits = c(-1.5, 10.5)) +
@@ -77,6 +89,10 @@ summarize_plot <- function(df){
   ggplot(NULL) +
     geom_point(df, mapping = aes(x = day, y = percent_baseline_weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
     geom_line(mean_summary, mapping = aes(x = day, y = mean_percent_weight, color = vendor), size = 1) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
     labs(x = "Days Post-Infection", y = "% Baseline Weight") +
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                        limits = c(-1.5, 10.5)) +

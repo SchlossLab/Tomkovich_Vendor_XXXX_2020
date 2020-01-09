@@ -1,25 +1,18 @@
 source("code/functions.R")
-library(RColorBrewer)
-
-mypalette <- colorRampPalette(c("black", "light blue"))
 
 pcoa_data <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.axes") %>%
   select(group, axis1, axis2) %>% #Limit to 2 PCoA axes
   rename(id = group) %>% #group is the same as id in the metadata data frame
   right_join(metadata, by= "id") #merge metadata and PCoA data frames
   
-
-
 #Function to plot pcoa data for all vendors----
 plot_pcoa <- function(df){
   ggplot(df, aes(x=axis1, y=axis2, color = vendor, alpha = day)) +
 	geom_point(size=2) +
-#	scale_color_manual(name=NULL,
-#		values=c("blue", "red", "black", "green", "purple", "orange"),
-#		breaks=c("Jackson", "Charles River", "Taconic", 
-#		         "Schloss", "Young", "Envigo"),
-#		labels=c("Jackson Laboratories", "Charles River Labs", "Taconic Biosciences",
-#		         "Schloss Colony", "Young Colony", "Envigo")) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
   scale_alpha_continuous(range = c(.3, 1),
                          breaks= c(2, 4, 6, 8, 10),
                          labels=c(2, 4, 6, 8, 10))+
@@ -46,6 +39,10 @@ plot_grid(pcoa_plot_combined, pcoa_exp1, pcoa_exp2, labels = c("Combined Experim
 #Plot pcoa data by experiment on Day -1 (start of the experiment before clindamycin treatment) ----
 plot_initial_communities <- pcoa_data %>% filter(day == -1) %>% 
   ggplot(aes(x=axis1, y=axis2, color = vendor, shape = experiment)) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
     geom_point(size=2) +
     coord_fixed() + 
     labs(x="PCoA 1",

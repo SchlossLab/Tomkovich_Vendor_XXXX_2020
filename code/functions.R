@@ -8,8 +8,10 @@ metadata <- read_csv("data/process/vendor_metadata.v2.csv") %>%
   unite(col = mouse_id, c(experiment, vendor, cage, mouse), remove = FALSE) %>% 
   mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure experiment is treated as a factor
          vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) 
-  
-  
+
+#Define color scheme:
+color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
+color_vendors <- levels(metadata$vendor)
 
 ### Caluclate Standard Error
 calc_se <- function(stdev, n){

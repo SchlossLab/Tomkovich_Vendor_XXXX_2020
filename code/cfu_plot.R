@@ -51,6 +51,10 @@ summarize_plot <- function(df){
   ggplot(NULL) +
     geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
     geom_line(mean_summary, mapping = aes(x = day, y = mean_cfu, color = vendor), size = 1) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
     labs(x = "Days Post-Infection", y = "CFU/g Feces") +
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                        limits = c(-1.5, 10.5)) +
