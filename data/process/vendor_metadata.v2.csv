@@ -2,7 +2,7 @@ id,vendor,cage,mouse,day,experiment,count1,dilution1,count2,dilution2,weight
 S11Dn1E2,Schloss,1,1,-1,2,NA,NA,NA,NA,19.2
 S12Dn1E2,Schloss,1,2,-1,2,NA,NA,NA,NA,16.5
 S21Dn1E2,Schloss,2,1,-1,2,NA,NA,NA,NA,18.1
-S22Dn2E2,Schloss,2,2,-1,2,NA,NA,NA,NA,17.7
+S22Dn1E2,Schloss,2,2,-1,2,NA,NA,NA,NA,17.7
 Y11Dn1E2,Young,1,1,-1,2,NA,NA,NA,NA,19.4
 Y12Dn1E2,Young,1,2,-1,2,NA,NA,NA,NA,18.9
 Y21Dn1E2,Young,2,1,-1,2,NA,NA,NA,NA,19.2
@@ -59,7 +59,7 @@ J11D1E2,Jackson,1,1,1,2,NA,-5,17,-6,18.4
 J12D1E2,Jackson,1,2,1,2,26,-5,10,-6,17.7
 J21D1E2,Jackson,2,1,1,2,NA,-5,NA,-6,16.6
 J22D1E2,Jackson,2,2,1,2,44,-5,14,-6,16.8
-C11D0E2,Charles River,1,1,1,2,0,-5,0,-6,18.8
+C11D1E2,Charles River,1,1,1,2,0,-5,0,-6,18.8
 C12D1E2,Charles River,1,2,1,2,20,-5,2,-6,16.2
 C21D1E2,Charles River,2,1,1,2,15,-5,4,-6,16.9
 C22D1E2,Charles River,2,2,1,2,13,-5,0,-6,17.9
