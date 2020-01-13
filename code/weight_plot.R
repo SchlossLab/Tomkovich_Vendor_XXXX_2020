@@ -12,7 +12,7 @@ baseline_weight <- metadata %>% select(mouse_id, weight, day) %>%
 
 #Join baseline data frame to main metadata
 baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
-  select(experiment, mouse_id, vendor, day, weight, baseline_weight)
+  select(experiment, id, mouse_id, vendor, day, weight, baseline_weight)
 
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
 percent_baseline_weight_data <- baseline_weight_data %>%  
