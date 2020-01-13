@@ -24,5 +24,3 @@ ggplot(metadata_rarefy, aes(x=numsampled, y=sobs, group=id, color=vendor))+
 
 rarefy_5437 <- metadata_rarefy %>% filter(numsampled == 5437)
 #416 samples present
-
-rarefy_5437 <- rarefy %>% filter(numsampled == 5437)

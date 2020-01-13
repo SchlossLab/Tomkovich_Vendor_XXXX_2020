@@ -111,6 +111,35 @@ plot_grid(Schloss_initial, Young_initial, Charles_River_initial, Envigo_initial,
           ncol = 2, label_x = .086, label_y = 1)+
   ggsave("exploratory/notebook/pcoa_by_vendor_initial.pdf", width = 8.5, height = 11)
 
+#Check duplicate samples on PCoA----
+pcoa_data_duplicates <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.axes") %>%
+  select(group, axis1, axis2) %>% #Limit to 2 PCoA axes
+  rename(id = group) %>% #group is the same as id in the metadata data frame
+  left_join(metadata, by= "id") #merge metadata and PCoA data frames
 
+plot_pcoa_duplicates <- function(limited_dataframe){
+    limited_dataframe %>% 
+    ggplot(aes(x=axis1, y=axis2), alpha = 0.4) +
+    geom_point(size=2) +
+    coord_fixed() + 
+    xlim(-0.4, 0.6)+
+    ylim(-0.6, 0.4)+
+    labs(title = NULL,
+         x="PCoA 1",
+         y="PCoA 2") +
+    theme_classic()
+}
 
+#Check list of duplicates identified in functions.R
+C21D0E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'C21D0E2'| id == 'C21D0E2no2'))
+E212Dn1E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E212Dn1E2'| id == 'E21Dn1E2'))
+E21D1E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E21D1E2No1'| id == 'E21D1E2No2'))
+E21Dn1E1no2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E21Dn1E1no2'| id == 'E21Dn1E1'))
+S22D1E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'S22D1E2No1'| id == 'S22D1E2No2'))
+T12D8E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'T12D8E1No1'| id == 'T12D8E1No2'))
+Y13D8E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y13D8E2'| id == 'Y13D9E1'))
+
+plot_grid(C21D0E2, E212Dn1E2, E21D1E2, E21Dn1E1no2, S22D1E2, T12D8E1, Y13D8E2, labels = c("C21D0E2", "E212Dn1E2", "E21D1E2", "E21Dn1E1no2", "S22D1E2", "T12D8E1", "Y13D8E2"),
+          ncol = 2, label_x = .4, label_y = 1)+
+  ggsave("exploratory/notebook/pcoa_duplicates.pdf", width = 8.5, height = 11)
 
