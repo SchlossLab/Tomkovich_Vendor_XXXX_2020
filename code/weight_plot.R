@@ -17,7 +17,10 @@ baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
 percent_baseline_weight_data <- baseline_weight_data %>%  
   group_by(mouse_id, day) %>% 
-  mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100)
+  mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100) %>% 
+  ungroup() %>% 
+  group_by(mouse_id) %>% #Group by just mouse_id to figure out the lowest percent baseline weight for each mouse
+  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight)) #Create a column to display the lowest percent baseline weight for each mouse
 
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
