@@ -50,8 +50,8 @@ missing <- anti_join(shared_sample_names, metadata, by = c('Group' = "id"))
 #Check for any duplicate values in final metadata data frame:
 duplicated <- metadata %>% 
   filter(duplicated(id))
-# One sample is listed twice: Y21D0E2. 2nd instance should actually be  Y21D1E2. 
-# Corrected 2nd instance of Y21D0E2 to Y21D1E2 in the metadata.csv
+# One sample was listed twice: Y21D0E2. 2nd instance should actually be  Y21D1E2. 
+# Corrected 2nd instance of Y21D0E2 to Y21D1E2 in the metadata.v2.csv
 
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
