@@ -47,6 +47,12 @@ missing <- anti_join(shared_sample_names, metadata, by = c('Group' = "id"))
 #Looking back at the plate layout maps Y13D9E1 (Y13_D9_E1) was listed twice, so maybe this sample was really a duplicate of that one.
 # 13 sets of duplicate samples on plate layout sheet. Only 2 likely apply to some of the missing samples (C21D0E2 & E212Dn1E2)
 
+#Check for any duplicate values in final metadata data frame:
+duplicated <- metadata %>% 
+  filter(duplicated(id))
+# One sample is listed twice: Y21D0E2. 2nd instance should actually be  Y21D1E2. 
+# Corrected 2nd instance of Y21D0E2 to Y21D1E2 in the metadata.csv
+
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
 color_vendors <- levels(metadata$vendor)
