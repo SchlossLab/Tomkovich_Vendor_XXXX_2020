@@ -82,7 +82,7 @@ kruskal_wallis_groups <- function(dataframe, timepoint, taxonomic_level){
 #Kruskal_wallis test for family differences across treatment groups with Benjamini-Hochburg correction----
 #Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
 #Creates a family_tests_day_ data frame for each date of interest.
-#Also creates a sig_family_dayX list of all the significant familes for each date of intersest. Significance based on adjusted p value < 0.05.
+#Also creates a sig_family_dayX list of all the significant familes for each date of interest. Significance based on adjusted p value < 0.05.
 dates_of_interest <- c(-1, 0, 1, 2, 5, 8, 9)
 for(d in dates_of_interest){
   name <- paste("family_tests_day", d, sep = "") #Way to name the data frames based on the date of interest
@@ -93,12 +93,19 @@ for(d in dates_of_interest){
 #Kruskal_wallis test for genus differences across treatment groups with Benjamini-Hochburg correction---- 
 #Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
 #Creates a genus_tests_day_ data frame for each date of interest.
-#Also creates a sig_genus_dayX list of all the significant genera for each date of intersest. Significance based on adjusted p value < 0.05.
+#Also creates a sig_genus_dayX list of all the significant genera for each date of interest. Significance based on adjusted p value < 0.05.
 for(d in dates_of_interest){
   name <- paste("genus_tests_day", d, sep = "") #Way to name the data frames based on the date of interest
   sig_name <- paste("sig_genus_day", d, sep ="") 
   assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_groups(agg_genus_data, d, genus)), genus))
 }
+
+#Only 9 significant genera at D2. Check to see if we have a lower amount of samples on D2
+D2_samples <- metadata %>% filter(day == 2) 
+#49 samples
+D2_sequence_data <- agg_genus_data %>% filter(day == 2,
+                                              genus == "Clostridium sensu_stricto")
+#Only 18 samples with sequence data for D2.
 
 #For significant genera at each relevant timepoint, do pairwise.wilcox.test to determine which sources of mice are significantly different from each other.
 pairwise.wilcox_groups <- function(timepoint, genera){
@@ -108,19 +115,122 @@ pairwise.wilcox_groups <- function(timepoint, genera){
   tidy(pairwise.wilcox.test(g = taxa_data$vendor, x = taxa_data$agg_rel_abund, p.adjust.method = "BH"))
 }
 
-# Do pairwise.wilcox tests with BH correction for D-1 timepoint
+# Do pairwise.wilcox tests with BH correction for D-1 timepoint----
 for(g in `sig_genus_day-1`){
   name <- paste("pairwise_wilcox_day-1_", g, sep = "") #Way to name the data frames based on the date of interest
   assign(name, pairwise.wilcox_groups(-1, g))
 }
+# To do: pairwise.wilcox tests for rest of timepoints. How to output these to a table
 
+#Function to find which significant genera/families are shared across days
+intersect_all <- function(a,b,...){
+  Reduce(intersect, list(a,b,...))
+}
 
-#Only 9 significant genera at D2. Check to see if we have a lower amount of samples on D2
-D2_samples <- metadata %>% filter(day == 2) 
-#49 samples
-D2_sequence_data <- agg_genus_data %>% filter(day == 2,
-                                              genus == "Clostridium sensu_stricto")
-#Only 18 samples with sequence data for D2
+#Shared significant genera across days----
+shared_sig_genera <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day2, sig_genus_day5, sig_genus_day8, sig_genus_day9)
+#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Mucispirillum
+
+#Shared significant genera across days, but excluding day 2----
+shared_sig_genera_wo_D2 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day5, sig_genus_day8, sig_genus_day9)
+#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Bacteroides, Mucispirillum, Turicibacter, Clostridium XVIII, Proteus
+
+#Shared significant genera across D-1 to D1----
+shared_sig_genera_Dn1toD1 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1)
+#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Bacteroides, Mucispirillum, Turicibacter, Clostridium XVIII, Enterococcus, Proteus
+
+#Shared significant familes across days, but excluding day 2----
+shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day2, sig_family_day5, sig_family_day8, sig_family_day9)
+# Betaproteobacteria Unclassified, Sutterellaceae, Deferribacteraceae
+
+#Shared significant familes across days, but excluding day 2----
+shared_sig_families_wo_D2 <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day5, sig_family_day8, sig_family_day9)
+# Betaproteobacteria Unclassified, Bacteroidaceae, Sutterellaceae, Deferribacteraceae
+
+#Kruskal_wallis test for differences within a single source of mice across time at different taxonomic levels with Benjamini-Hochburg correction
+#Arguments:
+# dataframe=dataframe to analyze (agg_genus_data or agg_taxa_data filtered by day (only include key days in the experiment -1, 0, 1, 3, 4, 5, 8, 9). Also, need to make sure day is treated as a factor in the input data frame
+# mouse_source (aka vendor) = the group of mice being analyzed (Schloss, Young, Charles River, Jackson, Taconic or Envigo)
+#taxonomic_level = taxon (family, genus, etc)
+kruskal_wallis_time <- function(dataframe, mouse_source, taxonomic_level){
+  taxonomic_level <- enquo(taxonomic_level)
+  dataframe %>% 
+    filter(vendor == mouse_source) %>% 
+    group_by(!!taxonomic_level) %>% 
+    do(tidy(kruskal.test(agg_rel_abund~factor(day), data=.))) %>% ungroup() %>% 
+    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
+    arrange(p.value.adj) 
+}
+
+#Customize agg_taxa_data dataframes to only select the dates of interest and turn day into a factor
+agg_genus_data_limited_days <- agg_genus_data %>% 
+  filter(day %in% c(-1, 0, 1, 3, 4, 5, 8, 9)) %>% 
+  mutate(day=factor(day, levels=c("-1", "0", "1", "3", "4", "5", "8", "9")))
+
+agg_family_data_limited_days <- agg_family_data %>% 
+  filter(day %in% c(-1, 0, 1, 3, 4, 5, 8, 9)) %>% 
+  mutate(day=factor(day, levels=c("-1", "0", "1", "3", "4", "5", "8", "9")))
+
+#Kruskal_wallis test for genus differences across time within a single colony source of mice with Benjamini-Hochburg correction---- 
+#Analyze the following days of the experiment: -1, 0, 1, 3, 4, 5, 8, 9 
+#Creates a genus_tests_source data frame for each date of interest.
+#Also creates a sig_genus_source list of all the significant genera for each date of interest. Significance based on adjusted p value < 0.05.
+mouse_sources <- levels(metadata$vendor)
+for(s in mouse_sources){
+  name <- paste("genus_tests_", s, sep = "") #Way to name the data frames based on the date of interest
+  sig_name <- paste("sig_genus_", s, sep ="") 
+  assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_time(agg_genus_data_limited_days, s, genus)), genus))
+}
+
+# Number of significant genera for each source of mice:
+summary(`sig_genus_Schloss`) # 26 significant genera
+summary(`sig_genus_Young`) # 29 significant genera
+summary(`sig_genus_Jackson`) # 32 significant genera
+summary(`sig_genus_Charles River`) # 20 significant genera
+summary(`sig_genus_Taconic`) # 7 significant genera
+summary(`sig_genus_Envigo`) # 17 significant genera
+
+#Shared significant genera (identified by comparing across timepoints within a specific source of mice) across groups of mice----
+#Shared genera across all sources of mice:
+shared_all_sources <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
+summary(shared_all_sources) # 1 genera that significantly change over time our shared between Schloss & Young mice
+#Peptostreptococcaceae Unclassified is the 1 genus that is significantly changing over time and shared across all sources of mice. This OTU is probably C. difficile so this makes sense
+
+#Shared genera across Schloss and Young lab mice:
+shared_Schloss_Young <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`)
+summary(shared_Schloss_Young) #24 genera that significantly change over time are shared between Schloss & Young mice
+
+#Shared genera across Schloss, Young and Charles River mice:
+shared_Schloss_Young_CR <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Charles River`)
+summary(shared_Schloss_Young_CR) #12 genera that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+#Includes Enterobacteriaceae Unclassified, Clostridiales Unclassified, Acetatifactor, Lachnospiraceae Unclassified, Oscillibacter, Akkermansia, Ruminococcaceae Unclassified, Firmicutes Unclassified, Clostridium XlVb, Pseudoflavonifractor, Unclassified  
+
+#Shared genera across Jackson, Taconic and Envigo mice:
+shared_JAX_Tac_Env <- intersect_all(`sig_genus_Jackson`, `sig_genus_Taconic`, `sig_genus_Envigo`)
+summary(shared_JAX_Tac_Env) #3 genera that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+#Includes Peptostreptococcaceae Unclassified, Enterococcus, Coriobacteriaceae Unclassified
+
+#Shared genera across mice purchased from 4 vendors:
+shared_4_vendors <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
+summary(shared_4_vendors) #2 genera Peptostreptococcus and Enterococcus
+
+#Shared genera across Jackson and Charles River mice:
+shared_JAX_CR <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`)
+summary(shared_JAX_CR) #16 genera
+
+#Shared genera across Taconic and Envigo mice:
+shared_Tac_Env <- intersect_all(`sig_genus_Taconic`, `sig_genus_Envigo`)
+summary(shared_Tac_Env) #4 genera Peptostreptococcaceae Unclassified, Enterococcus, Coriobacteriaceae Unclassified, Parabacteroides
+
+#Kruskal_wallis test for family differences across time within a single colony source of mice with Benjamini-Hochburg correction---- 
+#Analyze the following days of the experiment: -1, 0, 1, 3, 4, 5, 8, 9 
+#Creates a family_tests_source data frame for each date of interest.
+#Also creates a sig_family_source list of all the significant families for each date of interest. Significance based on adjusted p value < 0.05.
+for(s in mouse_sources){
+  name <- paste("family_tests_", s, sep = "") #Way to name the data frames based on the date of interest
+  sig_name <- paste("sig_family_", s, sep ="") 
+  assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_time(agg_family_data_limited_days, s, family)), family))
+}
 
 # Plots----
 
@@ -222,7 +332,7 @@ sig_genus_day2 <- str_replace(sig_genus_day2, "Escherichia/Shigella", "Escherich
 for(g in `sig_genus_day2`){
   plot_genus_timepoint(g, 2)  
 }
-#Generates an empty graph for Escherichia/Shigella, so repeat plot_genus_timepoint but make specific to Escherichia/Shigella
+#To Do: This generates an empty graph for Escherichia/Shigella, so repeat plot_genus_timepoint but make specific to Escherichia/Shigella
 
 #Plot all significant genera at Day5 timepoint separately
 for(g in `sig_genus_day5`){
@@ -282,31 +392,6 @@ plot_families_timepoint(sig_family_day5, 5)
 plot_families_timepoint(sig_family_day8, 8)
 #Plot of significant families at day 9----
 plot_families_timepoint(sig_family_day9, 9)
-
-#Function to find what significant genera families are shared across days
-intersect_all <- function(a,b,...){
-  Reduce(intersect, list(a,b,...))
-}
-
-#Shared significant genera across days----
-shared_sig_genera <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day2, sig_genus_day5, sig_genus_day8, sig_genus_day9)
-#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Mucispirillum
-
-#Shared significant genera across days, but excluding day 2----
-shared_sig_genera_wo_D2 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day5, sig_genus_day8, sig_genus_day9)
-#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Bacteroides, Mucispirillum, Turicibacter, Clostridium XVIII, Proteus
-
-#Shared significant genera across D-1 to D1----
-shared_sig_genera_Dn1toD1 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1)
-#Betaproteobacteria Unclassified, Sutterellaceae Unclassified, Parasutterella, Bacteroides, Mucispirillum, Turicibacter, Clostridium XVIII, Enterococcus, Proteus
-
-#Shared significant familes across days, but excluding day 2----
-shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day2, sig_family_day5, sig_family_day8, sig_family_day9)
-# Betaproteobacteria Unclassified, Sutterellaceae, Deferribacteraceae
-
-#Shared significant familes across days, but excluding day 2----
-shared_sig_families_wo_D2 <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day5, sig_family_day8, sig_family_day9)
-# Betaproteobacteria Unclassified, Bacteroidaceae, Sutterellaceae, Deferribacteraceae
 
 #Function to plot specific genera over time
 genera_over_time <- function(genus_plot){
@@ -388,15 +473,20 @@ family_over_time <- function(family_plot){
     theme(text = element_text(size = 16))  # Change font size for entire plot
   save_plot(filename = paste0("results/figures/", family_plot,"_time.png"), family_time, base_aspect_ratio = 2)
 }
-#Plot Clostridiaceae_1 family over time. Could include SFB?----
+#Plot Clostridiaceae_1 family over time. Could include SFB, but unlikely because it is primarily only in Jackson mice while SFB has been associated primarily with Taconic mice----
 family_over_time("Clostridiaceae_1")
 
+# Exploratory correlation analyses----
 #Are there genera that significantly correlate with the amount of weight lost at specific timepoints?----
 for (g in sig_genus_day0){
   agg_genus_data %>% filter(day == 0) %>% filter(genus == g)
   name <- paste("Spearman_day0_cor_", g, sep ="")
   assign(name, cor.test(agg_genus_data$agg_rel_abund, agg_genus_data$percent_baseline_weight, method ="spearman"))
 }
+#These significant genera vary across mouse sources, may not be related to C. difficile infection dynamics.
+#Next step find genera that are consistently varying over key timepoints of the 9 day C. difficile infection.
+#See which genera significantly vary over time and are shared across the colony sources. See if these correlate with C. difficile relative abundance at a particular timepoint.
+
 
 for (g in sig_genus_day1){
   agg_genus_data %>% filter(day == 1) %>% filter(genus == g)
@@ -433,9 +523,12 @@ cfu_weight_corr_day5_lowest_weight <- ggplot(metadata_day5)+
 #  theme(text = element_text(size = 16))  # Change font size for entire plot
 save_plot("results/figures/cfu_weight_corr_day5_lowest_weight.png", cfu_weight_corr_day5_lowest_weight, base_aspect_ratio = 2)
 
-#Does C. difficile cfu correlate with max. amount of weight lost----
+#Does C. difficile cfu correlate with amount of weight lost on day 5----
 C.diff_weight_corr_5 <- cor.test(metadata_day5$cfu, metadata_day5$percent_baseline_weight, method = "spearman")
 #rho = 0.405, p-value = 0.006932
 
-#Are there genera with relative abundance levels that correlate with C. difficile relative abundance levels over time. Since data includes longitudinal data, can't just test with Spearman correlation
+#Are there genera with relative abundance levels that correlate with C. difficile relative abundance levels over time. Since data includes longitudinal data, can't just test with Spearman correlation.
+
+#Alternative: pick timepoints and taxa of interest based on above tests on all family/genus identified from Kruskal-Wallis test with Benjamini-Hochburg correction above
+#See if the relative abundances of significant taxa correlate with C. difficile relative abundance or amount of weight lost at a specific timepoint
 
