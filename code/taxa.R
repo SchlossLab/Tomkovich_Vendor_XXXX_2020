@@ -232,6 +232,40 @@ for(s in mouse_sources){
   assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_time(agg_family_data_limited_days, s, family)), family))
 }
 
+#Shared significant families (identified by comparing across timepoints within a specific source of mice) across groups of mice----
+#Shared families across all sources of mice:
+shared_all_sources_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
+summary(shared_all_sources_families) # 1 family that significantly changed over time our shared between Schloss & Young mice
+#Enterobacteriaceae is the family that is significantly changing over time and shared across all sources of mice. This OTU is probably C. difficile so this makes sense
+
+#Shared families across Schloss and Young lab mice:
+shared_Schloss_Young_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`)
+summary(shared_Schloss_Young_families) #15 families that significantly change over time are shared between Schloss & Young mice
+
+#Shared families across Schloss, Young and Charles River mice:
+shared_Schloss_Young_CR_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Charles River`)
+summary(shared_Schloss_Young_CR_families) #8 families that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+#Includes Enterobacteriaceae, Clostridiales Unclassified, Lachnospiraceae, Coriobacteriaceae, Verrucomicrobiaceae, Ruminococcaceae, Firmicutes Unclassified, Unclassified
+
+
+#Shared families across Jackson, Taconic and Envigo mice:
+shared_JAX_Tac_Env_families <- intersect_all(`sig_family_Jackson`, `sig_family_Taconic`, `sig_family_Envigo`)
+summary(shared_JAX_Tac_Env_families) #3 families that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+#Includes Peptostreptococcaceae, Enterococcaceae, Enterobacteriaceae
+
+#Shared families across mice purchased from 4 vendors:
+shared_4_vendors_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
+summary(shared_4_vendors_families) #2 families 
+
+#Shared families across Jackson and Charles River mice:
+shared_JAX_CR_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`)
+summary(shared_JAX_CR_families) #11 families
+
+#Shared families across Taconic and Envigo mice:
+shared_Tac_Env_families <- intersect_all(`sig_family_Taconic`, `sig_family_Envigo`)
+summary(shared_Tac_Env_families) #4 families 
+
+
 # Plots----
 
 #Function to plot all significant genus relative abundances across vendors at a specific timepoint----
