@@ -36,6 +36,33 @@ pcoa_exp2 <- plot_pcoa(pcoa_data %>% filter(experiment == 2))
 plot_grid(pcoa_plot_combined, pcoa_exp1, pcoa_exp2, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol =1, label_x = .086, label_y = 1)+
   ggsave("exploratory/notebook/pcoa_by_exp.pdf", width = 5, height = 11)
 
+#Function to plot pcoa data for all vendors----
+plot_pcoa_timepoint <- function(df, desired_day){
+  pcoa_timeppoint <- ggplot(df, aes(x=axis1, y=axis2, color = vendor)) +
+    geom_point(size=2, alpha = 0.4) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    coord_fixed() + 
+    xlim(-0.4, 0.6)+
+    ylim(-0.6, 0.4)+
+    labs(x="PCoA 1",
+         y="PCoA 2",
+         color= "Vendor",
+         alpha= "Day") +
+    theme_classic()
+  save_plot(filename = paste0("results/figures/pcoa_day", desired_day,".png"), pcoa_timeppoint)
+}
+#PCoA plot for D0, 1, 2, 4, 5, 8, 9 timepoints----
+pcoa_day0 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 0), 0)
+pcoa_day1 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 1), 1)
+pcoa_day2 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 2), 2)
+pcoa_day4 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 4), 4)
+pcoa_day5 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 5), 5)  
+pcoa_day8 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 8), 8)
+pcoa_day9 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 9), 9)
+
 #Plot pcoa data by experiment on Day -1 (start of the experiment before clindamycin treatment) ----
 plot_initial_communities <- pcoa_data %>% filter(day == -1) %>% 
   ggplot(aes(x=axis1, y=axis2, color = vendor, shape = experiment)) +
@@ -49,7 +76,8 @@ plot_initial_communities <- pcoa_data %>% filter(day == -1) %>%
          y="PCoA 2",
          color= "Vendor",
          shape= "Experiment") +
-    theme_classic()
+    theme_classic()+
+  ggsave("exploratory/notebook/pcoa_initial_all.pdf")
 
 #Plot each vendor separately for the 2 experiments (all timepoints)----
 
