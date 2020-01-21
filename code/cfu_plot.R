@@ -43,6 +43,40 @@ cfu1_0s <- cfu_data_final %>% filter(cfu1 == 0) #Now only 184 instances, which i
 cfu2_0s <- cfu_data_final %>% filter(cfu2 == 0) #0 instances of 0.
 cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instances for cfu2
 
+#Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction----
+#Arguments:
+# dataframe=dataframe to analyze
+# timepoint = timepoint being analyzed
+kruskal_wallis_cfu <- cfu_data_final %>% 
+  filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9)) %>%  #only test days that we have CFU data for
+  group_by(day) %>% 
+  do(tidy(kruskal.test(cfu~factor(vendor), data=.))) %>% ungroup() %>% 
+  mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
+  arrange(p.value.adj) 
+#Timepoints where C. diff CFU is significantly different across the sources of mice
+sig_C.diff_CFU_timepoints <- kruskal_wallis_cfu %>% 
+    filter(p.value.adj <= 0.05) %>% 
+    pull(day) 
+#Days 5, 6, 7, 4, and 3 are when there are significant differences in C. difficile CFUs across the different sources of mice (listed in order of increasing adjusted P values)
+
+#For significant timepoints, do pairwise.wilcox.test to determine which sources of mice are significantly different from each other regarding the amount of C. difficile CFUs.
+pairwise.wilcox_groups <- function(timepoint){
+  cfu_by_day <- cfu_data_final %>% 
+    filter(day == timepoint)
+  tidy(pairwise.wilcox.test(g = cfu_by_day$vendor, x = cfu_by_day$cfu, p.adjust.method = "BH"))
+}
+
+# Do pairwise.wilcox tests with BH correction for all significant timepoints----
+for(d in sig_C.diff_CFU_timepoints){
+  name <- paste("pairwise_wilcox_day", d, sep = "") #Way to name the data frames based on the date of interest
+  assign(name, pairwise.wilcox_groups(d))
+}
+ pairwise_wilcox_day5
+ pairwise_wilcox_day6
+ pairwise_wilcox_day7
+ pairwise_wilcox_day4
+ pairwise_wilcox_day3
+
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 
@@ -77,3 +111,34 @@ exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))
 plot_grid(combined_exp_cfu, exp1_cfu, exp2_cfu, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = .2, label_y = 1)+
   ggsave("exploratory/notebook/cfu_over_time.pdf", width = 8.5, height = 11)
 
+# Boxplots of C. diff CFU data at timepoints where there are significant differences in CFU levels across the different sources of mice:
+#Function to plot all significant genus relative abundances across vendors at a specific timepoint----
+#Arguments:
+# list_of_genera = list of genera to plot. Example: sig_genus_day2
+# timepoint = timepoint to be analyzed
+plot_C.diff_timepoint <- function(timepoint){
+  plot_CFU_DX <- cfu_data_final %>% 
+    filter(day == timepoint) %>% 
+    ggplot(aes(x= day, y=cfu, color=vendor))+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept = 100, linetype=2) +
+    geom_text(x = 11, y = 104, color = "black", label = "LOD")+
+    geom_boxplot(outlier.shape = NA, size = 1.2)+
+    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+    labs(title=NULL, 
+         x=NULL,
+         y="Relative abundance (%)")+
+    scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5))+
+    theme(legend.position = c(0.85, 0.2)) + #Get rid of legend title & move legend position
+    theme(text = element_text(size = 16))  # Change font size for entire plot
+  save_plot(filename = paste0("results/figures/C.diff_CFU_D", timepoint,".png"), plot_CFU_DX, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
+}
+#Plot all the timepoints where C. diff CFUs were significantly different across sources of mice
+for(d in sig_C.diff_CFU_timepoints){
+  plot_C.diff_timepoint(d)
+}
