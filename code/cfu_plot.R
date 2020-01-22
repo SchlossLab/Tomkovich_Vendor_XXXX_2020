@@ -130,7 +130,7 @@ plot_C.diff_timepoint <- function(timepoint){
     geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
     labs(title=NULL, 
          x=NULL,
-         y="Relative abundance (%)")+
+         y="CFU/g Feces")+
     scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5))+
@@ -142,3 +142,67 @@ plot_C.diff_timepoint <- function(timepoint){
 for(d in sig_C.diff_CFU_timepoints){
   plot_C.diff_timepoint(d)
 }
+
+##Test of ggpubr----
+library(ggpubr)
+pairwise_wilcox_day5_plot <- pairwise_wilcox_day5 %>% 
+  filter(p.value <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(y.position = c(1320000, 1360000, 1400000, 1440000, 1480000, 1520000))
+plot_CFU_D5 <- cfu_data_final %>% 
+  filter(day == 5) %>% 
+  ggplot(aes(x= vendor, y=cfu, color=vendor))+
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_hline(yintercept = 100, linetype=2) +
+  geom_text(x = 11, y = 104, color = "black", label = "LOD")+
+  geom_boxplot(outlier.shape = NA, size = 1.2)+
+  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+  labs(title=NULL, 
+       x=NULL,
+       y="CFU/g Feces")+
+#  stat_pvalue_manual(pairwise_wilcox_day5_plot, label = "p.value") +
+  scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
+  theme_classic()+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(legend.position = NULL) + #Get rid of legend title & move legend position
+  theme(text = element_text(size = 16))  # Change font size for entire plot
+save_plot(filename = paste0("results/figures/C.diff_CFU_D5_stats.png"), plot_CFU_D5, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
+ ##Y-axis is off
+
+#Add columns noting the C. diff CFU at significant timepoints for each mouse
+cfu_data_final <-  cfu_data_final %>% ungroup()
+
+cfu_d3 <- cfu_data_final %>% 
+  filter(day == 3) %>% 
+  mutate(cfu_d3 = cfu) %>% 
+  select(mouse_id, cfu_d3)
+
+cfu_d4 <- cfu_data_final %>% 
+  filter(day == 4) %>% 
+  mutate(cfu_d4 = cfu) %>% 
+  select(mouse_id, cfu_d4)
+
+cfu_d5 <- cfu_data_final %>% 
+  filter(day == 5) %>% 
+  mutate(cfu_d5 = cfu) %>% 
+  select(mouse_id, cfu_d5)
+
+cfu_d6 <- cfu_data_final %>% 
+  filter(day == 6) %>% 
+  mutate(cfu_d6 = cfu) %>% 
+  select(mouse_id, cfu_d6)
+
+cfu_d7 <- cfu_data_final %>% 
+  filter(day == 7) %>% 
+  mutate(cfu_d7 = cfu) %>% 
+  select(mouse_id, cfu_d7)
+
+#Merge all individual cfu_dx data frames onto cfu_data_final
+cfu_data_final <- inner_join(cfu_data_final, cfu_d3, by = "mouse_id") 
+cfu_data_final <- inner_join(cfu_data_final, cfu_d4, by = "mouse_id")
+cfu_data_final <- inner_join(cfu_data_final, cfu_d5, by = "mouse_id")
+cfu_data_final <- inner_join(cfu_data_final, cfu_d6, by = "mouse_id")
+cfu_data_final <- inner_join(cfu_data_final, cfu_d7, by = "mouse_id")
+ 
