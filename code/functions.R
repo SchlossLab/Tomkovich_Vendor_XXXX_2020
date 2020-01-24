@@ -35,16 +35,17 @@ missing <- anti_join(shared_sample_names, metadata, by = c('Group' = "id"))
 # Update S22Dn2E2 to S22Dn1E2 (none of the samples were sequenced at Dn2, likely a typo)
 
 #Some samples were sequenced twice. Checked with Lucas and the sample should be the same, just seqeunced across 2 wells.
-# C21D0E2no2 (duplicate of C21D0E2?, which is present in shared_sample_names)
-# E212Dn1E2 (duplicate of E21Dn1E2?, which is present in shared_sample_names. E22Dn1E2 is also present in shared_sample names).
-# E21D1E2No1 and E21D1E2No2. Sample sequenced twice? Which one to pick...
-# E21Dn1E1no2 (duplicate of E21Dn1E1?, which is present in shared_sample_names)
-# S22D1E2No1 and S22D1E2No2. Sample sequenced twice? Which one to pick...
-# T12D8E1No1 and T12D8E1No2. Sample sequenced twice? Which one to pick...
+# C21D0E2no2 (duplicate of C21D0E2?, which is present in shared_sample_names (both part of run_1, plate_3) or C21D0E1 which isn't present)
+# E212Dn1E2 (duplicate of E21Dn1E2?, which is present in shared_sample_names or E12Dn1E2, which is absent in shared_sample_names? E22Dn1E2, E12Dn1E1, E11Dn1E2 is also present in shared_sample names).
+# E21D1E2No1 and E21D1E2No2. Sample sequenced twice? Both were part of the same plate on run_1, plate_2.
+# E21Dn1E1no2 (duplicate of E21Dn1E1?, which is present in shared_sample_names). Both a part of run_1, plate_3 and E21Dn1E2 is also present on run_1, plate_3
+# S22D1E2No1 and S22D1E2No2. Sample sequenced twice? Which one to pick...Both a part of run_2, plate_1 and S22D1E2 was also sequenced on run_2, plate_3
+# T12D8E1No1 and T12D8E1No2. Sample sequenced twice? Which one to pick...Both  a part of run_2, plate_3, T12D8E2 is in shared_sample_names but not run_plate_info? 
 
 #Okay to lose T12D13E1. The 1st experiment, we collected 1 last stool sample at D13 from this mouse since it was the only mouse still colonized.
 # Y13D8E2. Okay to lose this sample? There was only a Y13 mouse in the 1st experiment and Y13D8E1 is already listed in shared_sample_names. 
 #Looking back at the plate layout maps Y13D9E1 (Y13_D9_E1) was listed twice, so maybe this sample was really a duplicate of that one.
+#Y13D9E1 shows up in run_plate_info duplicates, while Y13D8E2 is not present in run_plate_info
 # 13 sets of duplicate samples on plate layout sheet. Only 2 likely apply to some of the missing samples (C21D0E2 & E212Dn1E2)
 
 #Check for any duplicate values in final metadata data frame:
@@ -52,6 +53,41 @@ duplicated <- metadata %>%
   filter(duplicated(id))
 # One sample was listed twice: Y21D0E2. 2nd instance should actually be  Y21D1E2. 
 # Corrected 2nd instance of Y21D0E2 to Y21D1E2 in the metadata.v2.csv
+
+#Load in ids, MiSeq run info, plate #, and plate locations for the sequenced samples----
+run_plate_info <- read_csv("data/process/vendor_16S_run_plate_info.csv") %>% 
+  mutate(id = gsub("_", "", original_id)) %>%  # remove underscores from plate_map id labels to match sample ids used for mothur pipeline
+  filter(!str_detect(id, "Mock|Water|NoSample")) # remove rows with Mock, Water, or NoSample ids
+#455 samples based on the plate map files for the 2 MiSeq runs that sequenced vendor project samples
+
+#Check for duplicated ids based on labels from the plate map
+duplicated <- run_plate_info %>% 
+  filter(duplicated(id)) %>% 
+  pull(id)
+# 23 duplicates
+#List of duplicates:  [1] "J12D9E1" "S11D9E1" "C12D9E1" "J22D9E1" "S21D9E1" "J11D9E1"
+#[7] "C21D9E1" "T11D9E1" "S22D9E1" "E22D9E1" "E21D9E1" "Y13D9E1"
+#[13] "T21D9E1" "S12D9E1" "J21D9E1" "C11D9E1" "Y12D9E1" "T12D9E1"
+#[19] "Y21D9E1" "E12D9E1" "C22D9E1" "E11D9E1" "Y22D9E1"
+
+#Pull out duplicated samples in run_plate_info
+run_plate_info_duplicates <-  run_plate_info %>% 
+  filter(id %in% c(duplicated)) 
+#Returns 46 samples
+run1_duplicates <- run_plate_info_duplicates %>% filter(run == "run_1")  #23 samples
+run2_duplicates <- run_plate_info_duplicates %>% filter(run == "run_2")  #23 samples
+inner_join(run1_duplicates, run2_duplicates, by = "id") #23 samples
+#So all 23 of these samples were sequenced twice, once on the 1st MiSeq_run, and a 2nd time on the 2nd MiSeq_Run
+
+
+#Pull out samples with no in name (also represent duplicates)
+run_plate_info_no1or2 <- run_plate_info %>% 
+  filter(str_detect(id, "No|no"))
+#Returns 8 samples
+# C21D0E2no2 & E21D1E2No2 are the only pair listed without a corresponding no1
+
+#Check what's shared or different between mothur outputted sample ids in the .shared files and ids from the plate map
+
 
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
