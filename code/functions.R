@@ -46,7 +46,6 @@ missing <- anti_join(shared_sample_names, metadata, by = c('Group' = "id"))
 # Y13D8E2. Okay to lose this sample? There was only a Y13 mouse in the 1st experiment and Y13D8E1 is already listed in shared_sample_names. 
 #Looking back at the plate layout maps Y13D9E1 (Y13_D9_E1) was listed twice, so maybe this sample was really a duplicate of that one.
 #Y13D9E1 shows up in run_plate_info duplicates, while Y13D8E2 is not present in run_plate_info
-# 13 sets of duplicate samples on plate layout sheet. Only 2 likely apply to some of the missing samples (C21D0E2 & E212Dn1E2)
 
 #Check for any duplicate values in final metadata data frame:
 duplicated <- metadata %>% 
