@@ -159,7 +159,8 @@ plot_pcoa_miseq_run <- pcoa_data %>%
          y="PCoA 2",
          color= "MiSeq Run",
          alpha= "Day") +
-    theme_classic()
+    theme_classic()+
+  ggsave("exploratory/notebook/pcoa_by_MiSeq_run.pdf")
 #All the NA samples for run are from D8 of Experiment 2
 
 #Check within run duplicate samples on PCoA----
