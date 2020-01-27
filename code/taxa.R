@@ -31,11 +31,11 @@ percent_baseline_weight_data <- percent_baseline_weight_data %>%
   select(id, baseline_weight, percent_baseline_weight, lowest_percent_baseline_weight)
 cfu_data_final <- cfu_data_final %>% 
   ungroup() %>% 
-  select(id, cfu)
+  select(id, cfu, cfu_d3, cfu_d4, cfu_d5, cfu_d6, cfu_d7)
 #Join weight data to metadata
 metadata <- left_join(metadata, percent_baseline_weight_data, by = "id")
 #Join cfu data to metadata
-metadata <- left_join(metadata, cfu_data_final, by = "id")
+metadata <- left_join(metadata, cfu_data_final, by = "id") 
 
 # Function to summarize relative abundance level for a given taxonomic level (ex. genus, family, phlyum, etc.)
 agg_taxonomic_data <- function(taxonomic_level) {
@@ -79,7 +79,7 @@ kruskal_wallis_groups <- function(dataframe, timepoint, taxonomic_level){
     arrange(p.value.adj) 
 }
 
-#Kruskal_wallis test for family differences across treatment groups with Benjamini-Hochburg correction----
+#Kruskal_wallis test for family differences across sources of mice with Benjamini-Hochburg correction----
 #Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
 #Creates a family_tests_day_ data frame for each date of interest.
 #Also creates a sig_family_dayX list of all the significant familes for each date of interest. Significance based on adjusted p value < 0.05.
@@ -90,7 +90,7 @@ for(d in dates_of_interest){
   assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_groups(agg_family_data, d, family)), family))
 }
 
-#Kruskal_wallis test for genus differences across treatment groups with Benjamini-Hochburg correction---- 
+#Kruskal_wallis test for genus differences across sources of mice with Benjamini-Hochburg correction---- 
 #Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
 #Creates a genus_tests_day_ data frame for each date of interest.
 #Also creates a sig_genus_dayX list of all the significant genera for each date of interest. Significance based on adjusted p value < 0.05.
@@ -511,25 +511,6 @@ family_over_time <- function(family_plot){
 family_over_time("Clostridiaceae_1")
 
 # Exploratory correlation analyses----
-#Are there genera that significantly correlate with the amount of weight lost at specific timepoints?----
-for (g in sig_genus_day0){
-  agg_genus_data %>% filter(day == 0) %>% filter(genus == g)
-  name <- paste("Spearman_day0_cor_", g, sep ="")
-  assign(name, cor.test(agg_genus_data$agg_rel_abund, agg_genus_data$percent_baseline_weight, method ="spearman"))
-}
-#These significant genera vary across mouse sources, may not be related to C. difficile infection dynamics.
-#Next step find genera that are consistently varying over key timepoints of the 9 day C. difficile infection.
-#See which genera significantly vary over time and are shared across the colony sources. See if these correlate with C. difficile relative abundance at a particular timepoint.
-
-
-for (g in sig_genus_day1){
-  agg_genus_data %>% filter(day == 1) %>% filter(genus == g)
-  name <- paste("Spearman_day1_cor_", g, sep ="")
-  assign(name, cor.test(agg_genus_data$agg_rel_abund, agg_genus_data$percent_baseline_weight, method ="spearman"))
-}
-
-Enterococcous_data <- agg_genus_data %>% filter(genus == "Enterococcus" & day == 0) 
-Enterococcus_corr <- cor.test(Enterococcous_data$agg_rel_abund, Enterococcous_data$lowest_percent_baseline_weight, method = "spearman")
 
 #Does C. difficile cfu correlate with max. amount of weight lost----
 metadata_day1 <- metadata %>% filter(day == 1)
@@ -561,8 +542,51 @@ save_plot("results/figures/cfu_weight_corr_day5_lowest_weight.png", cfu_weight_c
 C.diff_weight_corr_5 <- cor.test(metadata_day5$cfu, metadata_day5$percent_baseline_weight, method = "spearman")
 #rho = 0.405, p-value = 0.006932
 
-#Are there genera with relative abundance levels that correlate with C. difficile relative abundance levels over time. Since data includes longitudinal data, can't just test with Spearman correlation.
+#Are there genera that significantly correlate with the amount of weight lost at specific timepoints?----
+for (g in sig_genus_day0){
+  agg_genus_data %>% filter(day == 0) %>% filter(genus == g)
+  name <- paste("Spearman_day0_cor_", g, sep ="")
+  assign(name, cor.test(agg_genus_data$agg_rel_abund, agg_genus_data$percent_baseline_weight, method ="spearman"))
+}
+#These significant genera vary across mouse sources, may not be related to C. difficile infection dynamics.
+#Next step find genera that are consistently varying over key timepoints of the 9 day C. difficile infection.
+#See which genera significantly vary over time and are shared across the colony sources. See if these correlate with C. difficile relative abundance at a particular timepoint.
+
+for (g in sig_genus_day1){
+  agg_genus_data %>% filter(day == 1) %>% filter(genus == g)
+  name <- paste("Spearman_day1_cor_", g, sep ="")
+  assign(name, cor.test(agg_genus_data$agg_rel_abund, agg_genus_data$percent_baseline_weight, method ="spearman"))
+}
 
 #Alternative: pick timepoints and taxa of interest based on above tests on all family/genus identified from Kruskal-Wallis test with Benjamini-Hochburg correction above
-#See if the relative abundances of significant taxa correlate with C. difficile relative abundance or amount of weight lost at a specific timepoint
+#See if the relative abundances of significant taxa correlate with C. difficile relative abundance or amount of weight lost at a specific timepoint----
 
+Enterococcous_data_D0 <- agg_genus_data %>% filter(genus == "Enterococcus" & day == 0)
+Enterococcus_corr_D0_lowest_weight <- cor.test(Enterococcous_data$agg_rel_abund, Enterococcous_data$lowest_percent_baseline_weight, method = "spearman")
+#Not significant p-value = 0.1535
+
+Enterococcus_D0_corr_C.diff_D5 <- cor.test(Enterococcous_data_D0$agg_rel_abund, Enterococcous_data_D0$cfu_d5, method = "spearman")
+#Significant: p-value = 0.00102; rho = 0.52
+
+#Test Enterobacteriaceae correlations
+Enterobacteriaceae_data_D0 <- agg_family_data %>% filter(family == "Enterobacteriaceae" & day == 0) 
+Enterobacteriaceae_D0_corr_C.diff_D5 <- cor.test(Enterobacteriaceae_data_D0$agg_rel_abund, Enterobacteriaceae_data_D0$cfu_d5, method = "spearman")
+# p = 0.0224, rho = -0.38
+
+# Plot of cfu at day 5 versus Enterococcus relative abundance D0----
+cfu_d5_EnterococcusD0 <- ggplot(Enterococcous_data_D0)+
+  geom_point(mapping = aes(x=cfu_d5, y=agg_rel_abund, color=vendor, alpha = .2), show.legend = FALSE, size = 2.5)+
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  scale_x_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+  labs(title= "Enterococcus D0 versus C. difficile CFU D5",
+       x="C. difficile CFU D5",
+       y="Enterococcus D0 relative abundance") +
+  theme_classic()+
+  theme(plot.title=element_text(hjust=0.5, face = "italic"))+
+  theme(legend.title=element_blank())
+#  theme(text = element_text(size = 16))  # Change font size for entire plot
+save_plot("results/figures/cfu_d5_EnterococcusD0.png", cfu_d5_EnterococcusD0, base_aspect_ratio = 2)
