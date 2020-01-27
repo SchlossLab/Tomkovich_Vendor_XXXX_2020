@@ -119,7 +119,7 @@ plot_grid(combined_exp_cfu, exp1_cfu, exp2_cfu, labels = c("Combined Experiments
 plot_C.diff_timepoint <- function(timepoint){
   plot_CFU_DX <- cfu_data_final %>% 
     filter(day == timepoint) %>% 
-    ggplot(aes(x= day, y=cfu, color=vendor))+
+    ggplot(aes(x= vendor, y=cfu, color=vendor))+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
@@ -134,8 +134,8 @@ plot_C.diff_timepoint <- function(timepoint){
     scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5))+
-    theme(legend.position = c(0.85, 0.2)) + #Get rid of legend title & move legend position
-    theme(text = element_text(size = 16))  # Change font size for entire plot
+    theme(legend.position = "none") + #Get rid of legend title & move legend position
+    theme(text = element_text(size = 16))  #Remove legend
   save_plot(filename = paste0("results/figures/C.diff_CFU_D", timepoint,".png"), plot_CFU_DX, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
 }
 #Plot all the timepoints where C. diff CFUs were significantly different across sources of mice
@@ -145,6 +145,14 @@ for(d in sig_C.diff_CFU_timepoints){
 
 ##Test of ggpubr----
 library(ggpubr)
+cfu_ggpubr <- cfu_data_final %>% 
+  filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9))  #only test days that we have CFU data for
+
+KW_testcfu_ggpubr <- compare_means(cfu ~ vendor, data = cfu_ggpubr, method = kruskal.test, group.by = "day", p.adjust.method = "BH")
+## Error
+  
+ 
+#Add p.value manually, also not working right
 pairwise_wilcox_day5_plot <- pairwise_wilcox_day5 %>% 
   filter(p.value <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
   mutate(y.position = c(1320000, 1360000, 1400000, 1440000, 1480000, 1520000))
@@ -162,12 +170,12 @@ plot_CFU_D5 <- cfu_data_final %>%
   labs(title=NULL, 
        x=NULL,
        y="CFU/g Feces")+
-#  stat_pvalue_manual(pairwise_wilcox_day5_plot, label = "p.value") +
   scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
   theme_classic()+
   theme(plot.title=element_text(hjust=0.5))+
-  theme(legend.position = NULL) + #Get rid of legend title & move legend position
-  theme(text = element_text(size = 16))  # Change font size for entire plot
+  theme(legend.position = "none") + #Get rid of legend 
+  theme(text = element_text(size = 16)) +  # Change font size for entire plot
+  stat_pvalue_manual(data = pairwise_wilcox_day5_plot, label = "p.value", y.position = "y.position") 
 save_plot(filename = paste0("results/figures/C.diff_CFU_D5_stats.png"), plot_CFU_D5, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
  ##Y-axis is off
 
