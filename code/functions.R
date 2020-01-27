@@ -78,7 +78,6 @@ run2_duplicates <- run_plate_info_duplicates %>% filter(run == "run_2")  #23 sam
 inner_join(run1_duplicates, run2_duplicates, by = "id") #23 samples
 #So all 23 of these samples were sequenced twice, once on the 1st MiSeq_run, and a 2nd time on the 2nd MiSeq_Run
 
-
 #Pull out samples with no in name (also represent duplicates)
 run_plate_info_no1or2 <- run_plate_info %>% 
   filter(str_detect(id, "No|no"))
@@ -91,15 +90,32 @@ matching_platemap <- inner_join(run_plate_info, shared_sample_names, by = c('id'
 matching_platemap_duplicates <- matching_platemap %>%  filter(duplicated(id)) 
 #23 of these matches are duplicates
 
-#What's missing from plate_map compared to shared_sample_names----
+#What's missing from run_plate_info compared to shared_sample_names----
 missing_platemap <- anti_join(shared_sample_names, run_plate_info, by = c('Group' = "id")) %>% pull(Group)
 #19 samples: "C11D8E2" "C21D8E2" "C22D8E2" "E12D8E2" "E21D8E2" "E22D8E2" "J11D8E2" "J21D8E2" "J22D8E2" "S12D8E2" "S21D8E2" "S22D8E2" "T11D8E2" "T12D8E2" "T21D8E2" "Y12D8E2" "Y13D8E2" "Y21D8E2" "Y22D8E2" 
 #All have corresponding .fastq files in the raw data folder but not a corresponding pair of .fastq files in the BaseCalls folder of either sequencing run
 
-#What's missing from shared_sample_names compared to plate_map----
+#What's missing from shared_sample_names compared to run_plate_info----
 missing_shared_samples <- anti_join(run_plate_info, shared_sample_names, by = c('id' = 'Group')) %>% pull(id)
 #20 samples: "C21Dn1E1" "S21Dn1E2" "C11D0E2" "E21D0E1" "Y11D5E2" "C11D2E2" "C12D2E2" "T11D7E2" "Y21D6E2" "T21D4E2" "T22D7E2" "C22D7E2" "C22D2E2" "Y21D1E2" "Y22D4E2" "Y22D3E2" "S22D3E2ANDT22D3E2" "S21D7E1" "T21D7E1" "S22D3E1"
 #All but "S22D3E2ANDT22D3E2" are found as .fastq files in raw data folder. Suspect these samples were dropped during subsampling?
+
+#Check if anything is missing from metadata compared to list of samples on run_plate_info
+missing_metadata_v_runplate <- anti_join(run_plate_info, metadata, by = "id") %>% pull(id)
+#11 samples that were previous identified above:  "E212Dn1E2" "E21Dn1E1no2" "C21D0E2no2" "S22D1E2No1" "S22D1E2No2" "E21D1E2No2"       
+# "E21D1E2No1" "S22D3E2ANDT22D3E2" "T12D13E1" "T12D8E1No2" "T12D8E1No1" 
+#Check for the opposite situation
+missing_runplate_v_metadata <- anti_join(metadata, run_plate_info, by = "id") %>% pull(id)
+#141 samples are in metadata but not in the plate map
+
+#Join run/plate/plate_location info to metadata file----
+run_plate_info <- run_plate_info %>% 
+  select(id, run, plate, plate_location)
+metadata <- left_join(metadata, run_plate_info, by = "id") #Increased by 23 rows thanks to the 23 duplicates across 2 runs
+duplicated_v2 <- metadata_v2 %>% 
+  filter(duplicated(id)) #Returns the 23 duplicates (all from D9 timepoint)
+#Remove duplicates for now (will talk to Josh to see how he handled the fastqs for these duplicates)----
+metadata <- distinct(metadata, id, .keep_all = TRUE) #Keeps just 1 of the duplicates
 
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
