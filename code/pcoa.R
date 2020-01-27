@@ -55,6 +55,7 @@ plot_pcoa_timepoint <- function(df, desired_day){
   save_plot(filename = paste0("results/figures/pcoa_day", desired_day,".png"), pcoa_timeppoint)
 }
 #PCoA plot for D0, 1, 2, 3, 4, 5, 6, 7, 8, 9 timepoints----
+pcoa_dayn1 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == -1), -1)
 pcoa_day0 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 0), 0)
 pcoa_day1 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 1), 1)
 pcoa_day2 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 2), 2)
