@@ -139,7 +139,26 @@ plot_grid(Schloss_initial, Young_initial, Charles_River_initial, Envigo_initial,
           ncol = 2, label_x = .086, label_y = 1)+
   ggsave("exploratory/notebook/pcoa_by_vendor_initial.pdf", width = 8.5, height = 11)
 
-#Check duplicate samples on PCoA----
+#Check if points separate according to MiSeq run number.----
+#Added MiSeq run #, plate# and plate_location columns to metadata in functions.R script. (Created 23 duplicate sample rows because these were sequenced twice on separate runs)
+plot_pcoa_miseq_run <- pcoa_data %>% 
+    ggplot(aes(x=axis1, y=axis2, color = run)) +
+    geom_point(size=2, alpha = 0.4) +
+#    scale_alpha_continuous(range = c(.3, 1),
+#                           breaks= c(2, 4, 6, 8, 10),
+#                           labels=c(2, 4, 6, 8, 10))+
+    coord_fixed() + 
+    xlim(-0.4, 0.6)+
+    ylim(-0.6, 0.4)+
+    labs(title = NULL,
+         x="PCoA 1",
+         y="PCoA 2",
+         color= "MiSeq Run",
+         alpha= "Day") +
+    theme_classic()
+#All the NA samples for run are from D8 of Experiment 2
+
+#Check within run duplicate samples on PCoA----
 pcoa_data_duplicates <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.axes") %>%
   select(group, axis1, axis2) %>% #Limit to 2 PCoA axes
   rename(id = group) %>% #group is the same as id in the metadata data frame
@@ -148,7 +167,7 @@ pcoa_data_duplicates <- read_tsv("data/process/vendors.subsample.thetayc.ave.pco
 plot_pcoa_duplicates <- function(limited_dataframe){
     limited_dataframe %>% 
     ggplot(aes(x=axis1, y=axis2, label = id)) +
-    geom_point(size=3, , alpha = 0.4) + 
+    geom_point(size=3, alpha = 0.4) + 
     geom_text(color = "black", size =2,
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
@@ -160,7 +179,7 @@ plot_pcoa_duplicates <- function(limited_dataframe){
     theme_classic()
 }
 
-#Check list of duplicates identified in functions.R. Presented these in lab meeting
+#Check list of within run duplicates identified in functions.R. Presented these in lab meeting
 C21D0E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'C21D0E2'| id == 'C21D0E2no2'))
 E212Dn1E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E212Dn1E2'| id == 'E21Dn1E2'))
 E21D1E2 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E21D1E2No1'| id == 'E21D1E2No2'))
@@ -173,11 +192,11 @@ plot_grid(C21D0E2, E212Dn1E2, E21D1E2, E21Dn1E1no2, S22D1E2, T12D8E1, Y13D8E2, l
           ncol = 2, label_x = .4, label_y = 1)+
   ggsave("exploratory/notebook/pcoa_duplicates.pdf", width = 8.5, height = 11)
 
-#Plot duplicates in context of the rest of the mice from same group & timepoint----
+#Plot within run duplicates in context of the rest of the mice from same group & timepoint----
 plot_pcoa_duplicates_context <- function(limited_dataframe){
   limited_dataframe %>% 
     ggplot(aes(x=axis1, y=axis2, label = id, color = experiment)) +
-    geom_point(size=3, , alpha = 0.4) + 
+    geom_point(size=3, alpha = 0.4) + 
     geom_text(color = "black", size =2,
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
@@ -189,26 +208,19 @@ plot_pcoa_duplicates_context <- function(limited_dataframe){
     theme_classic()
 }
 
-## Plots of duplicate samples in the context of the rest of the samples from that group & timepoint----
+## Plots of within run duplicate samples in the context of the rest of the samples from that group & timepoint----
 # C21D0E2no2 (duplicate of C21D0E2?, which is present in shared_sample_names (both part of run_1, plate_3) or C21D0E1 which isn't present)
-C21D0 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'C21D0E2'| id == 'C21D0E2no2' | vendor == "Charles River" & day == "0")) 
-# 6 samples total
-
+C21D0 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'C21D0E2'| id == 'C21D0E2no2' | vendor == "Charles River" & day == "0")) # 6 samples total
 # E212Dn1E2 (duplicate of E21Dn1E2?, which is present in shared_sample_names or E12Dn1E2, which is absent in shared_sample_names? E22Dn1E2, E12Dn1E1, E11Dn1E2 is also present in shared_sample names).
 E212Dn1 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'E212Dn1E2'| id == 'E21Dn1E2' | vendor == "Envigo" & day == "-1"))
-
 # E21D1E2No1 and E21D1E2No2. Sample sequenced twice? Both were part of the same plate on run_1, plate_2.
 E21D1 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'E21D1E2No1'| id == 'E21D1E2No2' | vendor == "Envigo" & day == "1"))
-
 # E21Dn1E1no2 (duplicate of E21Dn1E1?, which is present in shared_sample_names). Both a part of run_1, plate_3 and E21Dn1E2 is also present on run_1, plate_3
 E21Dn1 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'E21Dn1E1no2'| id == 'E21Dn1E1' | vendor == "Envigo" & day == "-1"))
-
 # S22D1E2No1 and S22D1E2No2. Sample sequenced twice? Which one to pick...Both a part of run_2, plate_1 and S22D1E2 was also sequenced on run_2, plate_3
 S22D1 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'S22D1E2No1'| id == 'S22D1E2No2' | vendor == "Schloss" & day == "1"))
-
 # T12D8E1No1 and T12D8E1No2. Sample sequenced twice? Which one to pick...Both  a part of run_2, plate_3, T12D8E2 is in shared_sample_names but not run_plate_info? 
 T12D8 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'T12D8E1No1'| id == 'T12D8E1No2' | vendor == "Taconic" & day == "8"))
-
 # Y13D8E2. Okay to lose this sample? There was only a Y13 mouse in the 1st experiment and Y13D8E1 is already listed in shared_sample_names. 
 #Looking back at the plate layout maps Y13D9E1 (Y13_D9_E1) was listed twice, so maybe this sample was really a duplicate of that one.
 #Y13D9E1 shows up in run_plate_info duplicates, while Y13D8E2 is not present in run_plate_info
@@ -217,4 +229,41 @@ Y13D8 <- plot_pcoa_duplicates_context(pcoa_data_duplicates %>% filter(id == 'Y13
 plot_grid(C21D0, E212Dn1, E21D1, E21Dn1, S22D1, T12D8, Y13D8, labels = c("CR Day 0", "Envigo Day -1", "Envigo Day 1", "Envigo Day -1", "Schloss Day 1", "Taconic D8", "Young Day 9"),
           ncol = 2, label_x = .4, label_y = 1)+
   ggsave("exploratory/notebook/pcoa_duplicates_in_context.pdf", width = 8.5, height = 11)
+
+#Examine the sample ids that were missing from plate_map but run through mothur on a PCoA----
+missing_platemap <- c("C11D8E2", "C21D8E2", "C22D8E2", "E12D8E2", "E21D8E2", "E22D8E2", "J11D8E2", "J21D8E2", "J22D8E2", "S12D8E2", "S21D8E2", "S22D8E2", "T11D8E2", "T12D8E2", "T21D8E2", "Y12D8E2", "Y13D8E2", "Y21D8E2", "Y22D8E2") 
+#All have corresponding .fastq files in the raw data folder but not a corresponding pair of .fastq files in the BaseCalls folder of either sequencing run
+plot_pcoa_missing_platemap <-   function(df){
+  df %>% 
+  ggplot(aes(x=axis1, y=axis2, color = vendor)) +
+    geom_point(size=2) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    coord_fixed() + 
+    xlim(-0.4, 0.6)+
+    ylim(-0.6, 0.4)+
+    labs(x="PCoA 1",
+         y="PCoA 2",
+         color= "Vendor") +
+    theme_classic()
+}
+
+missing_platemap_pcoa <- plot_pcoa_missing_platemap(pcoa_data %>% filter(id %in% missing_platemap))  
+plot_pcoa_d7E1 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 7 & experiment == 1)) 
+plot_pcoa_d7E2 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 7 & experiment == 2)) 
+plot_pcoa_d8E1 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 8 & experiment == 1)) 
+plot_pcoa_d8E2 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 8 & experiment == 2))
+plot_pcoa_d9E1 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 9 & experiment == 1))
+plot_pcoa_d9E2 <- plot_pcoa_missing_platemap(pcoa_data %>% filter(day == 9 & experiment == 2))
+
+#Examine duplicates that were sequenced on separate runs on PCoA----
+duplicates_across_runs <-  c("J12D9E1", "S11D9E1", "C12D9E1", "J22D9E1", "S21D9E1", "J11D9E1", "C21D9E1", "T11D9E1", "S22D9E1", "E22D9E1", "E21D9E1", "Y13D9E1", "T21D9E1", "S12D9E1", "J21D9E1", "C11D9E1", "Y12D9E1", "T12D9E1", "Y21D9E1", "E12D9E1", "C22D9E1", "E11D9E1", "Y22D9E1")
+duplicates_across_runs_pcoa <- plot_pcoa_missing_platemap(pcoa_data %>% filter(id %in% duplicates_across_runs))
+
+plot_grid(missing_platemap_pcoa, duplicates_across_runs_pcoa, plot_pcoa_d7E1, plot_pcoa_d7E2, plot_pcoa_d8E1, plot_pcoa_d8E2, plot_pcoa_d9E1, plot_pcoa_d9E2, 
+          labels = c("Samples not on MiSeq Plate Maps\n all Day 8 Experiment 2", "23 Duplicates Across MiSeq Runs\n all Day 9 Experiment 1", "Day 7 Experiment 1", "Day 7 Experiment 2", "Day 8 Experiment 1", "Day 8 Experiment 2", "Day 9 Experiment 1", "Day 9 Experiment 2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/pcoa_missing_from platemap&duplicates_across_runs.pdf", width = 8.5, height = 11)
 
