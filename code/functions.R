@@ -36,16 +36,16 @@ missing <- anti_join(shared_sample_names, metadata, by = c('Group' = "id"))
 
 #Some samples were sequenced twice. Checked with Lucas and the sample should be the same, just seqeunced across 2 wells.
 # C21D0E2no2 (duplicate of C21D0E2?, which is present in shared_sample_names (both part of run_1, plate_3) or C21D0E1 which isn't present)
-# E212Dn1E2 (duplicate of E21Dn1E2?, which is present in shared_sample_names or E12Dn1E2, which is absent in shared_sample_names? E22Dn1E2, E12Dn1E1, E11Dn1E2 is also present in shared_sample names).
+# E212Dn1E2 (actually E12Dn1E2, which is absent in shared_sample_names. Josh checked his notes from loading the plates and confirmed. 
 # E21D1E2No1 and E21D1E2No2. Sample sequenced twice? Both were part of the same plate on run_1, plate_2.
 # E21Dn1E1no2 (duplicate of E21Dn1E1?, which is present in shared_sample_names). Both a part of run_1, plate_3 and E21Dn1E2 is also present on run_1, plate_3
 # S22D1E2No1 and S22D1E2No2. Sample sequenced twice? Which one to pick...Both a part of run_2, plate_1 and S22D1E2 was also sequenced on run_2, plate_3
 # T12D8E1No1 and T12D8E1No2. Sample sequenced twice? Which one to pick...Both  a part of run_2, plate_3, T12D8E2 is in shared_sample_names but not run_plate_info? 
 
 #Okay to lose T12D13E1. The 1st experiment, we collected 1 last stool sample at D13 from this mouse since it was the only mouse still colonized.
-# Y13D8E2. Okay to lose this sample? There was only a Y13 mouse in the 1st experiment and Y13D8E1 is already listed in shared_sample_names. 
+# Y13D8E2. Okay to lose this sample? There was only a Y13 mouse in the 1st experiment according to the metadata and Y13D8E1 is already listed in shared_sample_names. 
 #Looking back at the plate layout maps Y13D9E1 (Y13_D9_E1) was listed twice, so maybe this sample was really a duplicate of that one.
-#Y13D9E1 shows up in run_plate_info duplicates, while Y13D8E2 is not present in run_plate_info
+#Y13D9E1 shows up in run_plate_info duplicates, while Y13D8E2 is not present in run_plate_info or metadata
 
 #Check for any duplicate values in final metadata data frame:
 duplicated <- metadata %>% 
@@ -99,6 +99,7 @@ missing_platemap <- anti_join(shared_sample_names, run_plate_info, by = c('Group
 missing_shared_samples <- anti_join(run_plate_info, shared_sample_names, by = c('id' = 'Group')) %>% pull(id)
 #20 samples: "C21Dn1E1" "S21Dn1E2" "C11D0E2" "E21D0E1" "Y11D5E2" "C11D2E2" "C12D2E2" "T11D7E2" "Y21D6E2" "T21D4E2" "T22D7E2" "C22D7E2" "C22D2E2" "Y21D1E2" "Y22D4E2" "Y22D3E2" "S22D3E2ANDT22D3E2" "S21D7E1" "T21D7E1" "S22D3E1"
 #All but "S22D3E2ANDT22D3E2" are found as .fastq files in raw data folder. Suspect these samples were dropped during subsampling?
+# 19 Samples dropped after rarefying to 5437 sequences: "C21Dn1E1" "S21Dn1E2" "C11D0E2" "E21D0E1" "Y11D5E2" "C11D2E2" "C12D2E2" "T11D7E2" "Y21D6E2" "T21D4E2" "T22D7E2" "C22D7E2" "C22D2E2" "Y21D1E2" "Y22D4E2" "Y22D3E2" "S21D7E1" "T21D7E1" "S22D3E1"
 
 #Check if anything is missing from metadata compared to list of samples on run_plate_info
 missing_metadata_v_runplate <- anti_join(run_plate_info, metadata, by = "id") %>% pull(id)
