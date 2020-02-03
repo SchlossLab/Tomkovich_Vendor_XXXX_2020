@@ -1,3 +1,9 @@
 make.file(inputdir=data/raw, type=gz, prefix=vendors)
 
 #Remove dashes from ids listed in group column before moving forward with analysis.
+#Use the fix_ids.R script to accomplish removing the dashes from the file names
+#Once R script has been run. Open up vendors.files.fixed.csv and vendors.files
+#Paste fix_id column (select all 439 samples, starting at row 2) over the 1st column with dashes in the grop name in vendors.files
+#Save vendors.files now that the sample ids have been corrected by removing the dashes
+
+#Continue running the data through mothur by moving on to code/get_good_seq.batch
