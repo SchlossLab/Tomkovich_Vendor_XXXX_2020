@@ -46,7 +46,7 @@ plot_pcoa_timepoint <- function(df, desired_day){
                         labels=color_vendors)+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(x="PCoA 1",
          y="PCoA 2",
          color= "Vendor",
@@ -95,7 +95,7 @@ plot_pcoa_vendor <- function(indiv_vendor){
                            labels=c(2, 4, 6, 8, 10))+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(title = indiv_vendor,
          x="PCoA 1",
          y="PCoA 2",
@@ -123,7 +123,7 @@ plot_pcoa_vendor_initial <- function(indiv_vendor){
     geom_point(size=2) +
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(title = indiv_vendor,
          x="PCoA 1",
          y="PCoA 2",
@@ -153,7 +153,7 @@ plot_pcoa_miseq_run <- pcoa_data %>%
 #                           labels=c(2, 4, 6, 8, 10))+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(title = NULL,
          x="PCoA 1",
          y="PCoA 2",
@@ -172,12 +172,12 @@ pcoa_data_duplicates <- read_tsv("data/process/vendors.subsample.thetayc.ave.pco
 plot_pcoa_duplicates <- function(limited_dataframe){
     limited_dataframe %>% 
     ggplot(aes(x=axis1, y=axis2, label = id)) +
-    geom_point(size=3, alpha = 0.4) + 
+    geom_point(size=3, alpha = 0.2) + 
     geom_text(color = "black", size =2,
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(title = NULL,
          x="PCoA 1",
          y="PCoA 2") +
@@ -206,7 +206,7 @@ plot_pcoa_duplicates_context <- function(limited_dataframe){
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(title = NULL,
          x="PCoA 1",
          y="PCoA 2") +
@@ -248,7 +248,7 @@ plot_pcoa_missing_platemap <-   function(df){
                         labels=color_vendors)+
     coord_fixed() + 
     xlim(-0.4, 0.6)+
-    ylim(-0.6, 0.4)+
+    ylim(-0.6, 0.41)+
     labs(x="PCoA 1",
          y="PCoA 2",
          color= "Vendor") +
@@ -270,5 +270,230 @@ duplicates_across_runs_pcoa <- plot_pcoa_missing_platemap(pcoa_data %>% filter(i
 plot_grid(missing_platemap_pcoa, duplicates_across_runs_pcoa, plot_pcoa_d7E1, plot_pcoa_d7E2, plot_pcoa_d8E1, plot_pcoa_d8E2, plot_pcoa_d9E1, plot_pcoa_d9E2, 
           labels = c("Samples not on MiSeq Plate Maps\n all Day 8 Experiment 2", "23 Duplicates Across MiSeq Runs\n all Day 9 Experiment 1", "Day 7 Experiment 1", "Day 7 Experiment 2", "Day 8 Experiment 1", "Day 8 Experiment 2", "Day 9 Experiment 1", "Day 9 Experiment 2"),
           ncol = 2, label_x = 0, label_y = 1)+
-  ggsave("exploratory/notebook/pcoa_missing_from platemap&duplicates_across_runs.pdf", width = 8.5, height = 11)
+  ggsave("exploratory/notebook/pcoa_missing_from platemap & duplicates_across_runs.pdf", width = 8.5, height = 11)
 
+#Directly compare Day 8 experiment 2 samples (19 total, 4 lost during subsampling) to Day 9 experiment 1 samples that were duplicates (23 total)----
+# The 4 Day 8 experiment 2 samples that don't have a corresponding match were dropped during subsampling ("C12D8E2" "E11D8E2" "J12D8E2" "S11D8E2").
+C11D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'C11D8E2'| id == 'C11D9E1'))
+C21D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'C21D8E2'| id == 'C21D9E1'))
+C22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'C22D8E2'| id == 'C22D9E1'))
+#E11D8E2 dropped during rarefaction, but should not exist because it was found dead prior to D3
+E12D8E2vD9E1 <-  plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E12D8E2'| id == 'E12D9E1'))
+E21D8E2vD9E1 <-  plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E21D8E2'| id == 'E21D9E1'))
+E22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'E22D8E2'| id == 'E22D9E1'))
+J11D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'J11D8E2'| id == 'J11D9E1'))
+#J21D8E2 should not exist because it was found dead prior to Day 3
+J21D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'J21D8E2'| id == 'J21D9E1'))
+J22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'J22D8E2' | id == 'J22D9E1'))
+S12D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'S12D8E2' | id == 'S12D9E1'))
+S21D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'S21D8E2' | id == 'S21D9E1'))
+S22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'S22D8E2' | id == 'S22D9E1'))
+T11D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'T11D8E2' | id == 'T11D9E1'))
+T12D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'T12D8E2' | id == 'T12D9E1'))
+T21D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'T21D8E2' | id == 'T21D9E1'))
+#T22 was NA in Experiment 1 but should have been present in Experiment 2
+#Y11 is missing for D8 Experiment 2
+Y12D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y12D8E2' | id == 'Y12D9E1'))
+Y13D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y13D8E2' | id == 'Y13D9E1'))
+#Y13 should only exist in Experiment 1
+Y21D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y21D8E2' | id == 'Y21D9E1'))
+Y22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y22D8E2' | id == 'Y22D9E1'))
+
+#Compare trajectories of individual mice within set of duplicate samples assuming they are part of experiment 1----
+#Function to plot duplicates across runs in context of that same mouse over the rest of the timepoints from experiment 1
+pcoa_duplicates_time_context <- function(limited_dataframe){
+  limited_dataframe %>% 
+    ggplot(aes(x=axis1, y=axis2, label = id, alpha = day, color = experiment)) +
+    geom_point(size=3, show.legend = FALSE) + 
+    scale_alpha_continuous(range = c(.3, 1),
+                           breaks= c(2, 4, 6, 8, 10),
+                           labels=c(2, 4, 6, 8, 10),
+                           guide = "none")+
+    geom_text(color = "black", size =2,
+              hjust = 0.5, vjust = 0.5, nudge_x = 0.034)+
+    coord_fixed() + 
+#    xlim(-0.4, 0.6)+
+#    ylim(-0.6, 0.41)+
+    labs(title = NULL,
+         x="PCoA 1",
+         y="PCoA 2") +
+    theme_classic()
+}
+
+#C11 Mouse----
+C11_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C11D8E2'| id == 'C11D9E1' | mouse_id == "1_Charles River_1_1"))
+C11_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C11D8E2'| id == 'C11D9E1' | mouse_id == "2_Charles River_1_1"))
+C11_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C11D9E1' | mouse_id == "1_Charles River_1_1"))
+plot_grid(C11D8E2vD9E1, C11_E1_rmD8E2, C11_E1, C11_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/C11.pdf", width = 8.5, height = 11)
+
+#C21 Mouse----
+C21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C21D8E2'| id == 'C21D9E1' | mouse_id == "1_Charles River_2_1"))
+C21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C21D8E2'| id == 'C21D9E1' | mouse_id == "2_Charles River_2_1"))
+C21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C21D9E1' | mouse_id == "1_Charles River_2_1"))
+plot_grid(C11D8E2vD9E1, C21_E1_rmD8E2, C21_E1, C21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/C21.pdf", width = 8.5, height = 11)
+
+#C22 Mouse----
+C22_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C22D8E2'| id == 'C22D9E1' | mouse_id == "1_Charles River_2_2"))
+C22_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C22D8E2'| id == 'C22D9E1' | mouse_id == "2_Charles River_2_2"))
+C22_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'C22D9E1' | mouse_id == "1_Charles River_2_2"))
+plot_grid(C22D8E2vD9E1, C22_E1_rmD8E2, C22_E1, C22_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/C22.pdf", width = 8.5, height = 11)
+
+#E11D8E2 dropped during rarefaction, but should not exist because it was found dead prior to D3
+
+#E12 Mouse----
+E12_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E12D8E2'| id == 'E12D9E1'| mouse_id == "1_Envigo_1_2"))
+E12_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E12D8E2'| id == 'E12D9E1'| mouse_id == "2_Envigo_1_2"))
+E12_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E12D9E1' | mouse_id == "1_Envigo_1_2"))
+plot_grid(E12D8E2vD9E1, E12_E1_rmD8E2, E12_E1, E12_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/E12.pdf", width = 8.5, height = 11)
+
+#E21 Mouse----
+E21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E21D8E2'| id == 'E21D9E1'| mouse_id == "1_Envigo_2_1"))
+E21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E21D8E2'| id == 'E21D9E1'| mouse_id == "2_Envigo_2_1"))
+E21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E21D9E1' | mouse_id == "1_Envigo_2_1"))
+plot_grid(E21D8E2vD9E1, E21_E1_rmD8E2, E21_E1, E21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/E21.pdf", width = 8.5, height = 11)
+
+#E22 Mouse----
+E22_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E22D8E2'| id == 'E22D9E1'| mouse_id == "1_Envigo_2_2"))
+E22_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E22D8E2'| id == 'E22D9E1'| mouse_id == "2_Envigo_2_2"))
+E22_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'E22D9E1' | mouse_id == "1_Envigo_2_2"))
+plot_grid(E22D8E2vD9E1, E22_E1_rmD8E2, E22_E1, E22_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/E22.pdf", width = 8.5, height = 11)
+
+#J11 Mouse----
+J11_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J11D8E2'| id == 'J11D9E1'| mouse_id == "1_Jackson_1_1"))
+J11_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J11D8E2'| id == 'J11D9E1'| mouse_id == "2_Jackson_1_1"))
+J11_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J11D9E1' | mouse_id == "1_Jackson_1_1"))
+plot_grid(J11D8E2vD9E1, J11_E1_rmD8E2, J11_E1, J11_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/J11.pdf", width = 8.5, height = 11)
+
+#J21D8E2 should not exist because it was found dead prior to Day 3
+#J21 Mouse----
+J21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J21D8E2'| id == 'J21D9E1'| mouse_id == "1_Jackson_2_1"))
+J21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J21D8E2'| id == 'J21D9E1'| mouse_id == "2_Jackson_2_1"))
+J21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J21D9E1' | mouse_id == "1_Jackson_2_1"))
+plot_grid(J21D8E2vD9E1, J21_E1_rmD8E2, J21_E1, J21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/J21.pdf", width = 8.5, height = 11)
+
+#J22 Mouse----
+J22_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J22D8E2' | id == 'J22D9E1'| mouse_id == "1_Jackson_2_2"))
+J22_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J22D8E2' | id == 'J22D9E1'| mouse_id == "2_Jackson_2_2"))
+J22_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'J22D9E1' | mouse_id == "1_Jackson_2_2"))
+plot_grid(J22D8E2vD9E1, J22_E1_rmD8E2, J22_E1, J22_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/J22.pdf", width = 8.5, height = 11)
+
+#S12 Mouse----
+S12_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S12D8E2' | id == 'S12D9E1'| mouse_id == "1_Schloss_1_2"))
+S12_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S12D8E2' | id == 'S12D9E1'| mouse_id == "2_Schloss_1_2"))
+S12_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S12D9E1' | mouse_id == "1_Schloss_1_2"))
+plot_grid(S12D8E2vD9E1, S12_E1_rmD8E2, S12_E1, S12_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/S12.pdf", width = 8.5, height = 11)
+
+#S21 Mouse----
+S21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S21D8E2' | id == 'S21D9E1'| mouse_id == "1_Schloss_2_1"))
+S21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S21D8E2' | id == 'S21D9E1'| mouse_id == "2_Schloss_2_1"))
+S21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S21D9E1' | mouse_id == "1_Schloss_2_1"))
+plot_grid(S21D8E2vD9E1, S21_E1_rmD8E2, S21_E1, S21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/S21.pdf", width = 8.5, height = 11)
+
+#S22 Mouse----
+S22_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S22D8E2' | id == 'S22D9E1'| mouse_id == "1_Schloss_2_2"))
+S22_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S22D8E2' | id == 'S22D9E1'| mouse_id == "2_Schloss_2_2"))
+S22_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'S22D9E1' | mouse_id == "1_Schloss_2_2"))
+plot_grid(S22D8E2vD9E1, S22_E1_rmD8E2, S22_E1, S22_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/S22.pdf", width = 8.5, height = 11)
+
+#T11 Mouse----
+T11_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T11D8E2' | id == 'T11D9E1'| mouse_id == "1_Taconic_1_1"))
+T11_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T11D8E2' | id == 'T11D9E1'| mouse_id == "2_Taconic_1_1"))
+T11_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T11D9E1' | mouse_id == "1_Taconic_1_1"))
+plot_grid(T11D8E2vD9E1, T11_E1_rmD8E2, T11_E1, T11_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/T11.pdf", width = 8.5, height = 11)
+
+#T12 Mouse----
+T12_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T12D8E2' | id == 'T12D9E1'| mouse_id == "1_Taconic_1_2"))
+T12_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T12D8E2' | id == 'T12D9E1'| mouse_id == "2_Taconic_1_2"))
+T12_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T12D9E1' | mouse_id == "1_Taconic_1_2"))
+plot_grid(T12D8E2vD9E1, T12_E1_rmD8E2, T12_E1, T12_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/T12.pdf", width = 8.5, height = 11)
+
+#T21 Mouse----
+T21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T21D8E2' | id == 'T21D9E1'| mouse_id == "1_Taconic_2_1"))
+T21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T21D8E2' | id == 'T21D9E1'| mouse_id == "2_Taconic_2_1"))
+T21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'T21D9E1' | mouse_id == "1_Taconic_2_1"))
+plot_grid(T21D8E2vD9E1, T21_E1_rmD8E2, T21_E1, T21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/T21.pdf", width = 8.5, height = 11)
+
+#T22 was NA in Experiment 1 but should have been present in Experiment 2
+#Y11 is missing for D8 Experiment 2
+#Y12 Mouse----
+Y12_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y12D8E2' | id == 'Y12D9E1'| mouse_id == "1_Young_1_2"))
+Y12_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y12D8E2' | id == 'Y12D9E1'| mouse_id == "2_Young_1_2"))
+Y12_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y12D9E1' | mouse_id == "1_Young_1_2"))
+plot_grid(Y12D8E2vD9E1, Y12_E1_rmD8E2, Y12_E1, Y12_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/Y12.pdf", width = 8.5, height = 11)
+
+#Y13 Mouse----
+#Y13 should only exist in Experiment 1
+Y13_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y13D8E2' | id == 'Y13D9E1'| mouse_id == "1_Young_1_3"))
+Y13_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y13D8E2' | id == 'Y13D9E1'| mouse_id == "2_Young_1_3"))
+Y13_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y13D9E1' | mouse_id == "1_Young_1_3"))
+plot_grid(Y13D8E2vD9E1, Y13_E1_rmD8E2, Y13_E1, Y13_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/Y13.pdf", width = 8.5, height = 11)
+
+#Y21 Mouse----
+Y21_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y21D8E2' | id == 'Y21D9E1'| mouse_id == "1_Young_2_1"))
+Y21_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y21D8E2' | id == 'Y21D9E1'| mouse_id == "2_Young_2_1"))
+Y21_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y21D9E1' | mouse_id == "1_Young_2_1"))
+plot_grid(Y21D8E2vD9E1, Y21_E1_rmD8E2, Y21_E1, Y21_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/Y21.pdf", width = 8.5, height = 11)
+
+#Y22 Mouse----
+Y22D8E2vD9E1 <- plot_pcoa_duplicates(pcoa_data_duplicates %>% filter(id == 'Y22D8E2' | id == 'Y22D9E1'))
+Y22_E1 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y22D8E2' | id == 'Y22D9E1'| mouse_id == "1_Young_2_2"))
+Y22_E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y22D8E2' | id == 'Y22D9E1'| mouse_id == "2_Young_2_2"))
+Y22_E1_rmD8E2 <- pcoa_duplicates_time_context(pcoa_data_duplicates %>% filter(id == 'Y22D9E1' | mouse_id == "1_Young_2_2"))
+plot_grid(Y22D8E2vD9E1, Y22_E1_rmD8E2, Y22_E1, Y22_E2, 
+          labels = c("Duplicates", "Exp.1 minus D8E2 sample", "Over time Exp.1", "Over time Exp.2"),
+          ncol = 2, label_x = 0, label_y = 1)+
+  ggsave("exploratory/notebook/duplicates/Y22.pdf", width = 8.5, height = 11)
