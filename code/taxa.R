@@ -23,8 +23,8 @@ otu_data <- read_tsv("data/process/vendors.subsample.shared", col_types=cols(Gro
 agg_taxa_data <- inner_join(otu_data, taxonomy)
 
 #Make sure weight & C. diff CFU data are included in metadata frame----
-source("code/weight_plot.R")
-source("code/cfu_plot.R")
+source("code/weight_plot.R") #ERROR, not sourcing correctly. Move to functions
+source("code/cfu_plot.R") ##ERROR, not sourcing correctly. Move to functions
 #Select only relevant columns from weight & cfu dataframes, plus the id column for merging dataframes
 percent_baseline_weight_data <- percent_baseline_weight_data %>% 
   ungroup() %>% 
