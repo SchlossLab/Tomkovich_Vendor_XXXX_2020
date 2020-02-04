@@ -45,7 +45,7 @@ plot_pcoa_timepoint <- function(df, desired_day){
                         breaks=color_vendors,
                         labels=color_vendors)+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(x="PCoA 1",
          y="PCoA 2",
@@ -94,7 +94,7 @@ plot_pcoa_vendor <- function(indiv_vendor){
                            breaks= c(2, 4, 6, 8, 10),
                            labels=c(2, 4, 6, 8, 10))+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(title = indiv_vendor,
          x="PCoA 1",
@@ -122,7 +122,7 @@ plot_pcoa_vendor_initial <- function(indiv_vendor){
     ggplot(aes(x=axis1, y=axis2, color = experiment)) +
     geom_point(size=2) +
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(title = indiv_vendor,
          x="PCoA 1",
@@ -152,7 +152,7 @@ plot_pcoa_miseq_run <- pcoa_data %>%
 #                           breaks= c(2, 4, 6, 8, 10),
 #                           labels=c(2, 4, 6, 8, 10))+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(title = NULL,
          x="PCoA 1",
@@ -176,7 +176,7 @@ plot_pcoa_duplicates <- function(limited_dataframe){
     geom_text(color = "black", size =2,
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(title = NULL,
          x="PCoA 1",
@@ -205,7 +205,7 @@ plot_pcoa_duplicates_context <- function(limited_dataframe){
     geom_text(color = "black", size =2,
               hjust = 0, nudge_x = 0.05)+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(title = NULL,
          x="PCoA 1",
@@ -247,7 +247,7 @@ plot_pcoa_missing_platemap <-   function(df){
                         breaks=color_vendors,
                         labels=color_vendors)+
     coord_fixed() + 
-    xlim(-0.4, 0.6)+
+    xlim(-0.42, 0.6)+
     ylim(-0.4, 0.6)+
     labs(x="PCoA 1",
          y="PCoA 2",
@@ -312,7 +312,7 @@ pcoa_duplicates_time_context <- function(limited_dataframe){
     geom_text(color = "black", size =2,
               hjust = 0.5, vjust = 0.5, nudge_x = 0.034)+
     coord_fixed() + 
-#    xlim(-0.4, 0.6)+
+#    xlim(-0.42, 0.6)+
 #    ylim(-0.4, 0.6)+
     labs(title = NULL,
          x="PCoA 1",
