@@ -113,7 +113,7 @@ missing_runplate_v_metadata <- anti_join(metadata, run_plate_info, by = "id") %>
 run_plate_info <- run_plate_info %>% 
   select(id, run, plate, plate_location)
 metadata <- left_join(metadata, run_plate_info, by = "id") #Increased by 23 rows thanks to the 23 duplicates across 2 runs
-duplicated_v2 <- metadata_v2 %>% 
+duplicated_v2 <- metadata %>% 
   filter(duplicated(id)) #Returns the 23 duplicates (all from D9 timepoint)
 #Remove duplicates for now (will talk to Josh to see how he handled the fastqs for these duplicates)----
 metadata <- distinct(metadata, id, .keep_all = TRUE) #Keeps just 1 of the duplicates
@@ -147,3 +147,4 @@ fancy_scientific <- function(l) {
   # return this as an expression
   parse(text=l)
 }
+
