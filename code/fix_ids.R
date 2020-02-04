@@ -12,6 +12,22 @@ vendor.files <- read_csv("data/raw/vendors.files.csv", col_names = FALSE) #No co
 vendor.files <- vendor.files %>% 
   mutate(fix_id = gsub("-", "", vendor.files$X1))
 
+#Correct id typos that were made in the MiSeq plate map, so that they will match to the metadata ids
+vendor.files <- vendor.files %>% 
+  mutate(fix_id = replace(fix_id, fix_id == "Y22E6E2", "Y22D6E2"), #Typo, E6 should be D6 (D stands for Day)
+         fix_id = replace(fix_id, fix_id == "E212Dn1E2","E12Dn1E2")) #Josh checked his notes from loading the DNA extraction bead plates and confirmed.
+
+#Merge any duplicate sequences by giving them the same id (sample added to 2 different wells and was sequenced twice within the same run)
+vendor.files <- vendor.files %>% 
+  mutate(fix_id = replace(fix_id, fix_id == "C21D0E2no2", "C21D0E2"),
+         fix_id = replace(fix_id, fix_id == "E21D1E2No1", "E21D1E2"),
+         fix_id = replace(fix_id, fix_id == "E21D1E2No2", "E21D1E2"),
+         fix_id = replace(fix_id, fix_id == "E21Dn1E1no2", "E21Dn1E1"),
+         fix_id = replace(fix_id, fix_id == "S22D1E2No1", "S22D1E2"),
+         fix_id = replace(fix_id, fix_id == "S22D1E2No2", "S22D1E2"),
+         fix_id = replace(fix_id, fix_id == "T12D8E1No1", "T12D8E1"),
+         fix_id = replace(fix_id, fix_id == "T12D8E1No2", "T12D8E1"))
+
 #Export .csv file
 write.csv(vendor.files, file= "data/raw/vendors.files.fixed.csv")
 
