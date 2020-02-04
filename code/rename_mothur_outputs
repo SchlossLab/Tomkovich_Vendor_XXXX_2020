@@ -3,7 +3,7 @@
 
 cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.groups.ave-std.summary data/process/vendors.diversity.summary
 
-cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.groups data/process/vendors.subsample.rarefaction
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.groups.rarefaction data/process/vendors.subsample.rarefaction
 
 cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.shared data/process/vendors.subsample.shared
 
