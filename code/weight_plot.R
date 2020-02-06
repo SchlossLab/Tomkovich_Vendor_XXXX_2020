@@ -92,4 +92,69 @@ exp2_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
 plot_grid(combined_exp_weight, exp1_weight, exp2_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
   ggsave("exploratory/notebook/weight_changes.pdf", width = 8.5, height = 11)
 
+#Statistical analysis----
+#Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction----
+kruskal_wallis_weight <- weight_data %>% 
+  filter(day %in% c('-1', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)) %>%  #only test days that we have weight data for
+  group_by(day) %>% 
+  do(tidy(kruskal.test(weight_change~factor(vendor), data=.))) %>% ungroup() %>% 
+  mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
+  arrange(p.value.adj) 
+#Timepoints where weight_change is significantly different across the sources of mice
+sig_C.diff_weight_timepoints <- kruskal_wallis_cfu %>% 
+  filter(p.value.adj <= 0.05) %>% 
+  pull(day) 
+#Days 5, 6, 7, 4, and 3 are when there are significant differences in weight_change across the different sources of mice (listed in order of increasing adjusted P values)
+
+#For significant timepoints, do pairwise.wilcox.test to determine which sources of mice are significantly different from each other regarding the weight_change.
+pairwise.wilcox_groups <- function(timepoint){
+  weight_by_day <- weight_data %>% 
+    filter(day == timepoint)
+  tidy(pairwise.wilcox.test(g = weight_by_day$vendor, x = weight_by_day$weight_change, p.adjust.method = "BH"))
+}
+
+# Do pairwise.wilcox tests with BH correction for all significant timepoints----
+for(d in sig_C.diff_weight_timepoints){
+  name <- paste("pairwise_wilcox_day", d, sep = "") #Way to name the data frames based on the date of interest
+  assign(name, pairwise.wilcox_groups(d))
+}
+pairwise_wilcox_day5 #5 significant: Jackson vs Schloss, Jackson vs Young, Charles River vs Jackson, Taconic vs Jackson, Envigo vs Jackson
+pairwise_wilcox_day5 %>% filter(p.value <= 0.05) 
+pairwise_wilcox_day6 
+pairwise_wilcox_day6 %>% filter(p.value <= 0.05) #0 pairwise comparisons with p < 0.05.
+pairwise_wilcox_day7 
+pairwise_wilcox_day7 %>% filter(p.value <= 0.05) #4 significant: Jackson vs Schloss, Charles River vs Schloss, Taconic vs Schloss, Jackson vs Young
+pairwise_wilcox_day4
+pairwise_wilcox_day4 %>% filter(p.value <= 0.05) #0 pairwise comparisons with p < 0.05.
+pairwise_wilcox_day3 
+pairwise_wilcox_day3 %>% filter(p.value <= 0.05) #0 pairwise comparisons with p < 0.05.
+
+# Boxplots of weight_change data at timepoints where there were significant differences in CFU levels across the different sources of mice:
+#Function to plot weight_change data across sources of mice at a specific timepoint----
+#Arguments:
+# timepoint = timepoint to be analyzed
+plot_weight_timepoint <- function(timepoint){
+  plot_weight_DX <- weight_data %>% 
+    filter(day == timepoint) %>% 
+    ggplot(aes(x= vendor, y=weight_change, color=vendor))+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_text(x = 11, y = 104, color = "black", label = "LOD")+
+    geom_boxplot(outlier.shape = NA, size = 1.2)+
+    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+    labs(title=NULL, 
+         x=NULL,
+         y="Weight Change (g)")+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5))+
+    theme(legend.position = "none") + #Get rid of legend title & move legend position
+    theme(text = element_text(size = 16))  #Remove legend
+  save_plot(filename = paste0("results/figures/weight_D", timepoint,".png"), plot_weight_DX, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
+}
+#Plot all the timepoints where weight_changes were significantly different across sources of mice
+for(d in sig_C.diff_weight_timepoints){
+  plot_weight_timepoint(d)
+}
 
