@@ -44,9 +44,6 @@ cfu2_0s <- cfu_data_final %>% filter(cfu2 == 0) #0 instances of 0.
 cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instances for cfu2
 
 #Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction----
-#Arguments:
-# dataframe=dataframe to analyze
-# timepoint = timepoint being analyzed
 kruskal_wallis_cfu <- cfu_data_final %>% 
   filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9)) %>%  #only test days that we have CFU data for
   group_by(day) %>% 
