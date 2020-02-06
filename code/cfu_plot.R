@@ -108,10 +108,9 @@ exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))
 plot_grid(combined_exp_cfu, exp1_cfu, exp2_cfu, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = .2, label_y = 1)+
   ggsave("exploratory/notebook/cfu_over_time.pdf", width = 8.5, height = 11)
 
-# Boxplots of C. diff CFU data at timepoints where there are significant differences in CFU levels across the different sources of mice:
-#Function to plot all significant genus relative abundances across vendors at a specific timepoint----
+# Boxplots of C. diff CFU data at timepoints where there were significant differences in CFU levels across the different sources of mice:
+#Function to plot C. diff CFU data across sources of mice at a specific timepoint----
 #Arguments:
-# list_of_genera = list of genera to plot. Example: sig_genus_day2
 # timepoint = timepoint to be analyzed
 plot_C.diff_timepoint <- function(timepoint){
   plot_CFU_DX <- cfu_data_final %>% 
