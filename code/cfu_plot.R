@@ -71,11 +71,11 @@ for(d in sig_C.diff_CFU_timepoints){
   name <- paste("pairwise_wilcox_day", d, sep = "") #Way to name the data frames based on the date of interest
   assign(name, pairwise.wilcox_groups(d))
 }
- pairwise_wilcox_day5
- pairwise_wilcox_day6
- pairwise_wilcox_day7
- pairwise_wilcox_day4
- pairwise_wilcox_day3
+ pairwise_wilcox_day5 #Jackson vs Schloss, Taconic vs Schloss, Jackson vs Young, Taconic vs Young, Charles River vs Jackson, Taconic vs Charles River
+ pairwise_wilcox_day6 #Jackson vs Schloss, Taconic vs Schloss, Jackson vs Young, Taconic vs Young, Charles River vs Jackson, Taconic vs Charles River
+ pairwise_wilcox_day7 #Jackson vs Young, Taconic vs Young, Charles River vs Jackson, Taconic vs Charles River
+ pairwise_wilcox_day4 #No pairwise comparisons with p < 0.05. Overall p.adj = 0.00753
+ pairwise_wilcox_day3 #Jackson vs Schloss, Envigo vs Schloss, Envigo vs Young
 
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
