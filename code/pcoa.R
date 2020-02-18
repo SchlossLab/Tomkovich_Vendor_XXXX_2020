@@ -144,7 +144,7 @@ plot_grid(Schloss_initial, Young_initial, Charles_River_initial, Envigo_initial,
   ggsave("exploratory/notebook/pcoa_by_vendor_initial.pdf", width = 8.5, height = 11)
 
 #Check if points separate according to MiSeq run number.----
-#Added MiSeq run #, plate# and plate_location columns to metadata in functions.R script. (Created 23 duplicate sample rows because these were sequenced twice on separate runs)
+#Note, don't need to worry about 5 samples with duplicate_run entries. Since the sequences were part of the same run and were merged after make_file_fix_ids.batch with fix_ids.R
 plot_pcoa_miseq_run <- pcoa_data %>% 
     ggplot(aes(x=axis1, y=axis2, color = run)) +
     geom_point(size=2, alpha = 0.4) +
