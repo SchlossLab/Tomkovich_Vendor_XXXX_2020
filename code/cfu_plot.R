@@ -41,9 +41,13 @@ cfu_data_final <- cfu_data %>%
   mutate(cfu = na_if(cfu, "NaN")) #Changes the NaNs in cfu column back to Nas
 cfu1_0s <- cfu_data_final %>% filter(cfu1 == 0) #Now only 184 instances, which is what we predicted on line 21
 cfu2_0s <- cfu_data_final %>% filter(cfu2 == 0) #0 instances of 0.
-cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instances for cfu2
+cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instances for cfu2. #182 for cfu
 
-#Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction----
+#Drop NAs from cfu column
+cfu_data_final <- cfu_data_final %>% 
+  filter(!is.na(cfu)) #381 observations that are not NAs
+
+#Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction. getOption("na.action") = "na.omit", so NAs are not included in statistical analysis----
 kruskal_wallis_cfu <- cfu_data_final %>% 
   filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9)) %>%  #only test days that we have CFU data for
   group_by(day) %>% 
