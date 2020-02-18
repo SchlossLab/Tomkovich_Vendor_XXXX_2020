@@ -3,7 +3,8 @@ source("code/functions.R")
 pcoa_data <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.axes") %>%
   select(group, axis1, axis2) %>% #Limit to 2 PCoA axes
   rename(id = group) %>% #group is the same as id in the metadata data frame
-  right_join(metadata, by= "id") #merge metadata and PCoA data frames
+  right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
+  filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
   
 #Function to plot pcoa data for all vendors----
 plot_pcoa <- function(df){
@@ -161,3 +162,4 @@ plot_pcoa_miseq_run <- pcoa_data %>%
          alpha= "Day") +
     theme_classic()+
   ggsave("exploratory/notebook/pcoa_by_MiSeq_run.pdf")
+
