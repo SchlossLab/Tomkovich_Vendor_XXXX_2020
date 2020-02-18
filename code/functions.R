@@ -104,8 +104,9 @@ run_plate_info <- run_plate_info %>%
 metadata <- left_join(metadata, run_plate_info, by = "id") #Increased by 23 rows thanks to the 23 duplicates across 2 runs
 duplicated_v2 <- metadata %>% 
   filter(duplicated(id)) #Returns the 23 duplicates (all from D9 timepoint)
-#Remove duplicates for now (will talk to Josh to see how he handled the fastqs for these duplicates)----
-metadata <- distinct(metadata, id, .keep_all = TRUE) #Keeps just 1 of the duplicates
+metadata <- distinct(metadata, id, .keep_all = TRUE) %>% #Keeps just 1 of the duplicates
+  write_xlsx(path = "data/process/metadata.v3.xlsx", format_headers = FALSE)
+
 
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
