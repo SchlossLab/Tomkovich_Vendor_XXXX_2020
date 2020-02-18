@@ -45,7 +45,8 @@ cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instance
 
 #Drop NAs from cfu column
 cfu_data_final <- cfu_data_final %>% 
-  filter(!is.na(cfu)) #381 observations that are not NAs
+  filter(!is.na(cfu)) %>% #381 observations that are not NAs
+  filter(!day == 10) #Removes 3 observations from Day 10. Drop this timepoint because the data was not collected from all groups of mice.
 
 #Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction. getOption("na.action") = "na.omit", so NAs are not included in statistical analysis----
 kruskal_wallis_cfu <- cfu_data_final %>% 
@@ -91,8 +92,8 @@ summarize_plot <- function(df){
                         breaks=color_vendors,
                         labels=color_vendors)+
     labs(x = "Days Post-Infection", y = "CFU/g Feces") +
-    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-                       limits = c(-1.5, 10.5)) +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                       limits = c(-1.5, 9.5)) +
     geom_hline(yintercept = 100, linetype=2) +
     geom_text(x = 11, y = 104, color = "black", label = "LOD")+
     scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
