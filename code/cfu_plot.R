@@ -128,7 +128,7 @@ plot_C.diff_timepoint <- function(timepoint){
     geom_hline(yintercept = 100, linetype=2) +
     geom_text(x = 11, y = 104, color = "black", label = "LOD")+
     geom_boxplot(outlier.shape = NA, size = 1.2)+
-    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.5, jitter.width=0.2)) +
     labs(title=NULL, 
          x=NULL,
          y="CFU/g Feces")+
