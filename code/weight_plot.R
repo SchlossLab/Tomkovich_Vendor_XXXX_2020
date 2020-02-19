@@ -12,7 +12,10 @@ baseline_weight <- metadata %>% select(mouse_id, weight, day) %>%
 
 #Join baseline data frame to main metadata
 baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
-  select(experiment, id, mouse_id, vendor, day, weight, baseline_weight)
+  select(experiment, id, mouse_id, vendor, day, weight, baseline_weight) %>% 
+  filter(!is.na(weight)) %>% #534 observations that are not NAs
+  filter(!day == 10) #Removes 22 observations from Day 10 experiment 2. Drop this timepoint because the data was not collected from any mice from experiment.
+
 
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
 weight_data <- baseline_weight_data %>%  
@@ -20,9 +23,8 @@ weight_data <- baseline_weight_data %>%
   mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100) %>% 
   ungroup() %>% 
   group_by(mouse_id) %>% #Group by just mouse_id to figure out the lowest percent baseline weight for each mouse
-  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight)) %>%  #Create a column to display the lowest percent baseline weight for each mouse
-  filter(day != 10) #Exclude this timepoint since C. difficile CFU quantification and 16S rRNA sequencing were not done on the majority of mice from this timepoint
-  
+  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight))  #Create a column to display the lowest percent baseline weight for each mouse
+
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 
@@ -61,7 +63,7 @@ weight_data <- weight_data %>%
   mutate(weight_change = weight-baseline_weight) %>% 
   ungroup() 
 
-#Function to summarize data (calculate the mean for each group) and plot the data
+#Function to summarize weight change data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 
     group_by(vendor, day) %>% 
@@ -79,14 +81,14 @@ summarize_plot <- function(df){
     theme_classic()
 }
 
-#Combined percent baseline weight plot for the 2 experiments----
+#Combined weight change plot for the 2 experiments----
 combined_exp_weight <- summarize_plot(weight_data)
 
-#Percent baseline weight plot for the 1st experiment----
+#Percent weight change plot for the 1st experiment----
 exp1_weight <- summarize_plot(weight_data %>% filter(experiment == 1))
 #Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
 
-#Percent baseline weight plot for the 2nd experiment----
+#Percent weight change plot for the 2nd experiment----
 exp2_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
 
 plot_grid(combined_exp_weight, exp1_weight, exp2_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
