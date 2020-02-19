@@ -1,7 +1,7 @@
 source("code/functions.R")
 
-#Graph weight data as percent baseline weight (see Theriot et al. 2011).----
-#Percent baseline weight for each mouse will be calculated for each mouse
+#Graph weight data as percent baseline weight (see Theriot et al. 2011) or weight change (g) from baseline weight.----
+#Percent baseline weight for each mouse will be calculated 
 #based on the weight recorded on D-1 of the experiment
 
 #Create data frame that has just the baseline_weight data for D-1 of each mouse
@@ -16,7 +16,6 @@ baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %
   filter(!is.na(weight)) %>% #534 observations that are not NAs
   filter(!day == 10) #Removes 22 observations from Day 10 experiment 2. Drop this timepoint because the data was not collected from any mice from experiment.
 
-
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
 weight_data <- baseline_weight_data %>%  
   group_by(mouse_id, day) %>% 
@@ -25,7 +24,13 @@ weight_data <- baseline_weight_data %>%
   group_by(mouse_id) %>% #Group by just mouse_id to figure out the lowest percent baseline weight for each mouse
   mutate(lowest_percent_baseline_weight = min(percent_baseline_weight))  #Create a column to display the lowest percent baseline weight for each mouse
 
-#Function to summarize data (calculate the mean for each group) and plot the data
+#Calculate weight change (g) for each mouse based on the D-1 weight.
+weight_data <- weight_data %>%  
+  group_by(mouse_id, day) %>% 
+  mutate(weight_change = weight-baseline_weight) %>% 
+  ungroup() 
+
+#Function to summarize percent_baseline_weight data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 
     group_by(vendor, day) %>% 
@@ -56,11 +61,6 @@ plot_grid(combined_exp_percent_weight, exp1_percent_weight, exp2_percent_weight,
   ggsave("exploratory/notebook/percent_weight_changes.pdf", width = 8.5, height = 11)
 
 #Plot weight data as Weight change (g)----
-#Calculate weight change (g) for each mouse based on the D-1 weight.
-weight_data <- weight_data %>%  
-  group_by(mouse_id, day) %>% 
-  mutate(weight_change = weight-baseline_weight) %>% 
-  ungroup() 
 
 #Function to summarize weight change data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
