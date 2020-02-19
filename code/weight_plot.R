@@ -48,7 +48,6 @@ combined_exp_percent_weight <- summarize_plot(weight_data)
 
 #Percent baseline weight plot for the 1st experiment----
 exp1_percent_weight <- summarize_plot(weight_data %>% filter(experiment == 1))
-#Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
 
 #Percent baseline weight plot for the 2nd experiment----
 exp2_percent_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
@@ -86,7 +85,6 @@ combined_exp_weight <- summarize_plot(weight_data)
 
 #Percent weight change plot for the 1st experiment----
 exp1_weight <- summarize_plot(weight_data %>% filter(experiment == 1))
-#Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
 
 #Percent weight change plot for the 2nd experiment----
 exp2_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
