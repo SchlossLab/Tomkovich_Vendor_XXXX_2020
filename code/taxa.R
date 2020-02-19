@@ -23,19 +23,19 @@ otu_data <- read_tsv("data/process/vendors.subsample.shared", col_types=cols(Gro
 agg_taxa_data <- inner_join(otu_data, taxonomy)
 
 #Make sure weight & C. diff CFU data are included in metadata frame----
-source("code/weight_plot.R") #ERROR, not sourcing correctly. Move to functions
-source("code/cfu_plot.R") ##ERROR, not sourcing correctly. Move to functions
+#source("code/weight_plot.R") #ERROR, not sourcing correctly. Move to functions
+#source("code/cfu_plot.R") ##ERROR, not sourcing correctly. Move to functions
 #Select only relevant columns from weight & cfu dataframes, plus the id column for merging dataframes
-percent_baseline_weight_data <- percent_baseline_weight_data %>% 
-  ungroup() %>% 
-  select(id, baseline_weight, percent_baseline_weight, lowest_percent_baseline_weight)
-cfu_data_final <- cfu_data_final %>% 
-  ungroup() %>% 
-  select(id, cfu, cfu_d3, cfu_d4, cfu_d5, cfu_d6, cfu_d7)
+#weight_data <- weight_data %>% 
+#  ungroup() %>% 
+#  select(id, baseline_weight, percent_baseline_weight, weight_change)
+#cfu_data_final <- cfu_data_final %>% 
+#  ungroup() %>% 
+#  select(id, cfu, cfu_d3, cfu_d4, cfu_d5, cfu_d6, cfu_d7)
 #Join weight data to metadata
-metadata <- left_join(metadata, percent_baseline_weight_data, by = "id")
+#metadata <- left_join(metadata, weight_data, by = "id")
 #Join cfu data to metadata
-metadata <- left_join(metadata, cfu_data_final, by = "id") 
+#metadata <- left_join(metadata, cfu_data_final, by = "id") 
 
 # Function to summarize relative abundance level for a given taxonomic level (ex. genus, family, phlyum, etc.)
 agg_taxonomic_data <- function(taxonomic_level) {
@@ -47,6 +47,9 @@ agg_taxonomic_data <- function(taxonomic_level) {
   inner_join(., metadata, by = "id") %>% 
   ungroup() 
 }
+
+# Relative abundance data at the otu level:
+agg_otu_data <- agg_taxonomic_data(otu)
 
 # Relative abundance data at the genus level:
 agg_genus_data <- agg_taxonomic_data(genus)
@@ -80,10 +83,10 @@ kruskal_wallis_groups <- function(dataframe, timepoint, taxonomic_level){
 }
 
 #Kruskal_wallis test for family differences across sources of mice with Benjamini-Hochburg correction----
-#Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
+#Analyze the following days of the experiment: -1, 0, 1, 3, 4, 5, 6, 7, 9. Dates chosen based on key timepoints in experiment -1 = start, 0 = post-clind. 1 = post clind + C. diff, 9 = the end of the experiment. Days 3-7 were all timepoints where C. difficile CFUs were significantly different across all sources of mice
 #Creates a family_tests_day_ data frame for each date of interest.
 #Also creates a sig_family_dayX list of all the significant familes for each date of interest. Significance based on adjusted p value < 0.05.
-dates_of_interest <- c(-1, 0, 1, 2, 5, 8, 9)
+dates_of_interest <- c(-1, 0, 1, 3, 4, 5, 6, 7, 9)
 for(d in dates_of_interest){
   name <- paste("family_tests_day", d, sep = "") #Way to name the data frames based on the date of interest
   sig_name <- paste("sig_family_day", d, sep ="") 
@@ -91,13 +94,23 @@ for(d in dates_of_interest){
 }
 
 #Kruskal_wallis test for genus differences across sources of mice with Benjamini-Hochburg correction---- 
-#Analyze the following days of the experiment: -1, 0, 1, 2, 5, 8, 9 
+#Analyze the following days of the experiment: -1, 0, 1, 3, 4, 5, 6, 7, 9. 
 #Creates a genus_tests_day_ data frame for each date of interest.
 #Also creates a sig_genus_dayX list of all the significant genera for each date of interest. Significance based on adjusted p value < 0.05.
 for(d in dates_of_interest){
   name <- paste("genus_tests_day", d, sep = "") #Way to name the data frames based on the date of interest
   sig_name <- paste("sig_genus_day", d, sep ="") 
   assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_groups(agg_genus_data, d, genus)), genus))
+}
+
+#Kruskal_wallis test for otu differences across sources of mice with Benjamini-Hochburg correction---- 
+#Analyze the following days of the experiment: -1, 0, 1, 3, 4, 5, 6, 7, 9.
+#Creates a otu_tests_day_ data frame for each date of interest.
+#Also creates a sig_otu_dayX list of all the significant otus for each date of interest. Significance based on adjusted p value < 0.05.
+for(d in dates_of_interest){
+  name <- paste("otu_tests_day", d, sep = "") #Way to name the data frames based on the date of interest
+  sig_name <- paste("sig_otu_day", d, sep ="") 
+  assign(sig_name, pull_significant_taxa(assign(name, kruskal_wallis_groups(agg_otu_data, d, otu)), otu))
 }
 
 #Only 9 significant genera at D2. Check to see if we have a lower amount of samples on D2
