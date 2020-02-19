@@ -170,32 +170,32 @@ cfu_data_final <-  cfu_data_final %>% ungroup()
 cfu_d3 <- cfu_data_final %>% 
   filter(day == 3) %>% 
   mutate(cfu_d3 = cfu) %>% 
-  select(mouse_id, cfu_d3)
+  select(mouse_id, cfu_d3) #39 values
 
 cfu_d4 <- cfu_data_final %>% 
   filter(day == 4) %>% 
   mutate(cfu_d4 = cfu) %>% 
-  select(mouse_id, cfu_d4)
+  select(mouse_id, cfu_d4) #29 values
 
 cfu_d5 <- cfu_data_final %>% 
   filter(day == 5) %>% 
   mutate(cfu_d5 = cfu) %>% 
-  select(mouse_id, cfu_d5)
+  select(mouse_id, cfu_d5) #43 values
 
 cfu_d6 <- cfu_data_final %>% 
   filter(day == 6) %>% 
   mutate(cfu_d6 = cfu) %>% 
-  select(mouse_id, cfu_d6)
+  select(mouse_id, cfu_d6) #34 values
 
 cfu_d7 <- cfu_data_final %>% 
   filter(day == 7) %>% 
   mutate(cfu_d7 = cfu) %>% 
-  select(mouse_id, cfu_d7)
+  select(mouse_id, cfu_d7) #40 values
 
 #Merge all individual cfu_dx data frames onto cfu_data_final
-cfu_data_final <- inner_join(cfu_data_final, cfu_d3, by = "mouse_id") 
-cfu_data_final <- inner_join(cfu_data_final, cfu_d4, by = "mouse_id")
-cfu_data_final <- inner_join(cfu_data_final, cfu_d5, by = "mouse_id")
-cfu_data_final <- inner_join(cfu_data_final, cfu_d6, by = "mouse_id")
-cfu_data_final <- inner_join(cfu_data_final, cfu_d7, by = "mouse_id")
+cfu_data_final <- full_join(cfu_data_final, cfu_d3, by = "mouse_id") 
+cfu_data_final <- full_join(cfu_data_final, cfu_d4, by = "mouse_id")
+cfu_data_final <- full_join(cfu_data_final, cfu_d5, by = "mouse_id")
+cfu_data_final <- full_join(cfu_data_final, cfu_d6, by = "mouse_id")
+cfu_data_final <- full_join(cfu_data_final, cfu_d7, by = "mouse_id")
  
