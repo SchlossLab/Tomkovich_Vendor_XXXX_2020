@@ -9,7 +9,7 @@ cfu_data <- metadata %>% select(experiment, vendor, day, count1, dilution1, coun
   mutate(cfu1 = count1 * 20 * 1 / (10 ^ dilution1), cfu2 = count2 * 20 * (1 / (10 ^ dilution2))) %>% # Quantify CFU/g for each dilution that was plated
   select(-starts_with("count"))
 
-#Need to figure out a way to make sure 0s are true 0s (i.e. only when the -1 was plated). 
+#Make sure 0s are true 0s, meaning the -1 dilution (which is the limit of detection) was plated. Any 0s for dilutions above the -1 dilution should be transformed to NAs. 
 #Number of 0s in cfu1 should equal number of -1s in dilution1. Since -1 dilution was never plated in dilution2 column, don't have to worry about counting any zeros from that column.
 #Quantify how many instances we have 0s for cfu1
 cfu1_0s <- cfu_data %>% filter(cfu1 == 0) #245/563 instances
@@ -137,7 +137,6 @@ cfu_ggpubr <- cfu_data_final %>%
 KW_testcfu_ggpubr <- compare_means(cfu ~ vendor, data = cfu_ggpubr, method = kruskal.test, group.by = "day", p.adjust.method = "BH")
 ## Error
   
- 
 #Add p.value manually, also not working right
 pairwise_wilcox_day5_plot <- pairwise_wilcox_day5 %>% 
   filter(p.value <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
