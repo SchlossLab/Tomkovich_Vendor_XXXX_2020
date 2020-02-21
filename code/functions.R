@@ -2,6 +2,7 @@ library(tidyverse)
 library(broom)
 library(cowplot)
 library(magick)
+library(vegan)
 
 ### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
