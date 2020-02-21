@@ -437,7 +437,6 @@ plot_families_timepoint(sig_family_day9, 9)
 
 #Function to plot specific genera over time
 genera_over_time <- function(genus_plot){
-#  genus_plot <- enquo(genus_plot)
   genus_mean <- agg_genus_data %>% 
     filter(genus == genus_plot) %>% 
     group_by(vendor, day) %>% 
@@ -448,7 +447,7 @@ genera_over_time <- function(genus_plot){
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
     select(vendor, day, agg_rel_abund, genus)
   genus_time <- ggplot(NULL)+
-    geom_point(genus_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), show.legend = FALSE, size = 2.5)+
+    geom_point(genus_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
     geom_line(genus_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -468,8 +467,49 @@ genera_over_time <- function(genus_plot){
   save_plot(filename = paste0("results/figures/", genus_plot,"_time.png"), genus_time, base_aspect_ratio = 2)
 }
 
-#Plot of C. difficile Otu over time across all timepoints
-genera_over_time("Peptostreptococcaceae Unclassified") #Otu0020 & or Otu1801 corresponds to C. difficile? 
+#Plot of C. difficile genus over time across all timepoints
+genera_over_time("Peptostreptococcaceae Unclassified")  
+
+#Function to plot specific Otus over time
+otu_over_time <- function(otu_plot){
+  otu_mean <- agg_otu_data %>% 
+    filter(otu == otu_plot) %>% 
+    group_by(vendor, day) %>% 
+    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    ungroup
+  otu_mice <-  agg_otu_data %>% 
+    filter(otu == otu_plot) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
+    select(vendor, day, agg_rel_abund, otu)
+  otu_time <- ggplot(NULL)+
+    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
+    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    labs(title=otu_plot,
+         x="Day",
+         y="Relative abundance (%)") +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                       limits = c(-1.5, 9.5)) +
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
+    theme(legend.title=element_blank())+
+    theme(text = element_text(size = 16))  # Change font size for entire plot
+  save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
+}
+#Plot of potential C. difficile Otus over time across all timepoints----
+#Otu0020 corresponds to C. difficile, only possible C. difficile Otu with relative abundance values
+otu_over_time("Otu0020") #Looks the same as Peptostreptococcaceae Unclassified. 
+
+#Plots of potenital SFB Otus over time (Clostridiaceae_1 family) 
+otu_over_time("Otu0291") #Only in Jax/Charles Rier mice, classified as Clostridium sensu_stricto genus
+otu_over_time("Otu0797") # Only a few Env/Jax mice above detection limit classified as Clostridium sensu_stricto genus
+otu_over_time("Otu0942") #classified as Clostridium sensu_stricto genus
+
 
 #Plots of shared significant genera across D-1 to D1 for all timepoints----
 shared_sig_genera_Dn1toD1 #= Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Proteus, Clostridium XVIII, Enterococcus, Lachnospiraceae Unclassified
@@ -499,7 +539,7 @@ family_over_time <- function(family_plot){
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
     select(vendor, day, agg_rel_abund, family)
   family_time <- ggplot(NULL)+
-    geom_point(family_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), show.legend = FALSE, size = 2.5)+
+    geom_point(family_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
     geom_line(family_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -533,7 +573,7 @@ C.diff_weight_corr_5 <- cor.test(metadata_day5$cfu, metadata_day5$lowest_percent
 
 # Plot of cfu at day 5 versus max. amount of weight lost----
 cfu_weight_corr_day5_lowest_weight <- ggplot(metadata_day5)+
-  geom_point(mapping = aes(x=cfu, y=lowest_percent_baseline_weight, color=vendor, alpha = .2), show.legend = FALSE, size = 2.5)+
+  geom_point(mapping = aes(x=cfu, y=lowest_percent_baseline_weight, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -586,7 +626,7 @@ Enterobacteriaceae_D0_corr_C.diff_D5 <- cor.test(Enterobacteriaceae_data_D0$agg_
 
 # Plot of cfu at day 5 versus Enterococcus relative abundance D0----
 cfu_d5_EnterococcusD0 <- ggplot(Enterococcous_data_D0)+
-  geom_point(mapping = aes(x=cfu_d5, y=agg_rel_abund, color=vendor, alpha = .2), show.legend = FALSE, size = 2.5)+
+  geom_point(mapping = aes(x=cfu_d5, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
