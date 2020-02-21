@@ -8,6 +8,7 @@ taxonomy <- read_tsv(file="data/process/vendors.taxonomy") %>%
                                               ';$' = "", #removes semi-colon at end of line
                                               'Bacteria_unclassified' = 'Unclassified',
                                               "Clostridium_" = "Clostridium ", #Remove underscores after Clostridium
+                                              "_" = " ", #Removes all other underscores
                                               "_unclassified" = " Unclassified"))) %>% 
   # Separate taxonomic levels into separate columns according to semi-colon.
   separate(taxonomy, into=c("kingdom", "phylum", "class", "order", "family", "genus"), sep=';')
