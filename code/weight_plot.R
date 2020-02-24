@@ -13,8 +13,7 @@ baseline_weight <- metadata %>% select(mouse_id, weight, day) %>%
 #Join baseline data frame to main metadata
 baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
   select(experiment, id, mouse_id, vendor, day, weight, baseline_weight) %>% 
-  filter(!is.na(weight)) %>% #534 observations that are not NAs
-  filter(!day == 10) #Removes 22 observations from Day 10 experiment 2. Drop this timepoint because the data was not collected from any mice from experiment.
+  filter(!is.na(weight)) #534 observations that are not NAs
 
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
 weight_data <- baseline_weight_data %>%  

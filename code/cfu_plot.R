@@ -30,8 +30,7 @@ cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instance
 
 #Drop NAs from cfu column
 cfu_data_final <- cfu_data_final %>% 
-  filter(!is.na(cfu)) %>% #381 observations that are not NAs
-  filter(!day == 10) #Removes 3 observations from Day 10. Drop this timepoint because the data was not collected from all groups of mice.
+  filter(!is.na(cfu)) #381 observations that are not NAs
 
 #Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction. getOption("na.action") = "na.omit", so NAs are not included in statistical analysis----
 kruskal_wallis_cfu <- cfu_data_final %>% 
@@ -90,7 +89,6 @@ combined_exp_cfu <- summarize_plot(cfu_data_final)
 
 #CFU plot for the 1st experiment----
 exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))
-#Note: weight and cfu data was only recorded for 1 mouse on D10 of experiment.
 
 #CFU plot for the 2nd experiment----
 exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))
