@@ -6,7 +6,6 @@ library(vegan)
 
 ### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
-  unite(col = mouse_id, c(experiment, vendor, cage, mouse), remove = FALSE) %>% 
   mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure experiment is treated as a factor
          vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) %>% 
   filter(!grepl("Mock", id), #Remove all 5 Mock controls
