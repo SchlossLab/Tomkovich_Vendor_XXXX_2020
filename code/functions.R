@@ -11,6 +11,70 @@ metadata <- read_csv("data/process/vendor_metadata.csv") %>%
   filter(!grepl("Mock", id), #Remove all 5 Mock controls
          !grepl("Water", id)) #Remove all 5 water controls
 
+#Quantify C. diff cfu based on the colonies counted from the 2 different dilutions plated. Formula based on protocol used by the Young lab----
+#0s should only be kept when the -1 dilution was checked, as that represents the limit of detection.
+# If -1 dilution was not plated, we can not say for sure whether C. diff CFU for a mouse is really zero. Thus, zeros for any dilutions greater than the -1 dilution were converted to NAs
+metadata <- metadata %>% 
+  mutate(cfu1 = count1 * 20 * 1 / (10 ^ dilution1), cfu2 = count2 * 20 * (1 / (10 ^ dilution2))) %>% # Quantify CFU/g for each dilution that was plated
+  select(-starts_with("count")) # gets rid of count columns since these are now represented as cfu1 and cfu2 columns
+
+#Make sure 0s are true 0s, meaning the -1 dilution (which is the limit of detection) was plated. Any 0s for dilutions above the -1 dilution should be transformed to NAs. 
+#Number of 0s in cfu1 should equal number of -1s in dilution1. Since -1 dilution was never plated in dilution2 column, don't have to worry about counting any zeros from that column.
+#Quantify how many instances we have 0s for cfu1, cfu2, etc. so we can be sure we transformed data correctly in the next step.
+cfu1_0s <- metadata %>% filter(cfu1 == 0) #229/563 instances
+cfu1_d <- metadata %>% filter(dilution1 == -1 & cfu1 == 0) #184 instances, meaning there should only be 184 0s.
+cfu2_0s <- metadata %>% filter(cfu2 == 0) #133/563 instances. Most of these should be transformed to NAs
+cfu_nas <- map(metadata, ~sum(is.na(.))) #151 for cfu1, 234 for cfu2
+
+#Transform data so that 0s from -1 dilution remain 0s, but 0s for any dilutions beyond -1 become NA.----
+metadata <- metadata %>%
+  mutate(cfu1 = ifelse(cfu1 == 0 & dilution1 != -1, NA, cfu1)) %>% #Keeps 0s for -1 dilution, replaces 0s from any other dilution with NA
+  mutate_at(vars(cfu2), ~replace(., . == 0, NA)) %>% #Changes all 0s for cfu2 to NA since the -1 dilution (the limit of detection) was not plated.
+  group_by(id, experiment, mouse_id, day) %>% 
+  mutate(cfu = mean(c(cfu1, cfu2), na.rm = TRUE)) %>% #Create a final cfu per ID (combination of mouse ID & date sample was collected) based on the average CFU/g for cfu1 and cfu2
+  mutate(cfu = na_if(cfu, "NaN")) %>% #Changes the NaNs in cfu column back to Nas
+  ungroup()
+cfu1_0s <- metadata %>% filter(cfu1 == 0) #Now only 184 instances, which is what we predicted on line 21
+cfu2_0s <- metadata %>% filter(cfu2 == 0) #0 instances of 0.
+cfu_nas_final <- map(metadata, ~sum(is.na(.))) #196 for cfu1, 367 instances for cfu2. #161 for cfu
+
+# Create columns for C. difficile CFU at Day 5 and Day 6 since these were the 2 timepoints where there were significant differences across vendors and the most significant pairwise.wilcox values (6 pairs)
+cfu_d5 <- metadata %>% 
+  filter(day == 5) %>% 
+  mutate(cfu_d5 = cfu) %>% 
+  select(mouse_id, cfu_d5) #43 values with 6 NAs
+cfu_d6 <- metadata %>% 
+  filter(day == 6) %>% 
+  mutate(cfu_d6 = cfu) %>% 
+  select(mouse_id, cfu_d6) #34 values with 15 NAs
+cfu_d7 <- metadata %>% 
+  filter(day == 7) %>% 
+  mutate(cfu_d7 = cfu) %>% 
+  select(mouse_id, cfu_d7) #40 values with 5 NAs. 17 mice with 0, 23 still colonized. Close to half have cleared. By D8 33 mice with 0s, 3 still colonized, 13 NAs
+
+# add cfu_d5, d6, d7 columns to metadata----
+metadata <- full_join(metadata, cfu_d5, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d6, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>% 
+  #Add a column denoting C. difficile clearance status at Day 7
+  mutate(clearance_status_d7 = case_when(cfu_d7 > 0 ~ "colonized",
+                                         cfu_d7 == 0 ~ "cleared",
+                                         cfu_d7 == NA ~ "NA"))
+
+#Create a column to denote baseline_weight and weight_change from baseline_weight for each mouse----
+#Percent baseline weight for each mouse will be calculated 
+#based on the weight recorded on D-1 of the experiment
+baseline_weight <- metadata %>% select(mouse_id, weight, day) %>% 
+  filter(day == -1) %>% 
+  mutate(baseline_weight = weight) %>% 
+  select(mouse_id, baseline_weight)
+#Join baseline data frame to main metadata
+metadata <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
+  #Calculate weight change(g) for each mouse based on D-1 weight.
+  group_by(mouse_id, day) %>% 
+  mutate(weight_change = weight-baseline_weight) %>% 
+  ungroup()
+  
 #Check to make sure sample ids on shared file match the sample ids in the metadata file----
 #Figure out number of samples that were sequenced:
 shared_sample_names <- read.table('data/process/vendors.subsample.shared', 

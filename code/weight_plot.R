@@ -1,34 +1,17 @@
 source("code/functions.R")
 
 #Graph weight data as percent baseline weight (see Theriot et al. 2011) or weight change (g) from baseline weight.----
-#Percent baseline weight for each mouse will be calculated 
-#based on the weight recorded on D-1 of the experiment
-
-#Create data frame that has just the baseline_weight data for D-1 of each mouse
-baseline_weight <- metadata %>% select(mouse_id, weight, day) %>% 
-  filter(day == -1) %>% 
-  mutate(baseline_weight = weight) %>% 
-  select(mouse_id, baseline_weight)
-
-#Join baseline data frame to main metadata
-baseline_weight_data <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
-  select(experiment, id, mouse_id, vendor, day, weight, baseline_weight) %>% 
-  filter(!is.na(weight)) #534 observations that are not NAs
 
 #Calculate percent baseline weight data for each mouse based on the D-1 weight.
-weight_data <- baseline_weight_data %>%  
+weight_data <- metadata %>%  
   group_by(mouse_id, day) %>% 
   mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100) %>% 
   ungroup() %>% 
   group_by(mouse_id) %>% #Group by just mouse_id to figure out the lowest percent baseline weight for each mouse
-  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight))  #Create a column to display the lowest percent baseline weight for each mouse
-
-#Calculate weight change (g) for each mouse based on the D-1 weight.
-weight_data <- weight_data %>%  
-  group_by(mouse_id, day) %>% 
-  mutate(weight_change = weight-baseline_weight) %>% 
-  ungroup() 
-
+  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight)) %>% #Create a column to display the lowest percent baseline weight for each mouse
+  ungroup() %>% 
+  filter(!is.na(weight)) #512 observations that are not NAs
+  
 #Function to summarize percent_baseline_weight data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 

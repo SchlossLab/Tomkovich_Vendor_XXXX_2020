@@ -1,36 +1,8 @@
 source("code/functions.R")
 
-#CFU quantification formula based on protocol used by the Young lab----
-#Noticed 0 is counted as CFU even for dilutions where the -1 dilution was not checked. 
-# If -1 dilution was not plated, we can not say for sure whether C. diff CFU for a mouse is really zero. Thus, zeros for any dilutions greater than the -1 dilution were converted to NAs
-#Also need to be careful averaging counts together because if there's a 0 at a higher dilution (10^-6) but a count at a lower dilution (10^-5) the CFU count will be half of what it actually should be. (Above rule should take care of that).
-# How to handle averaging...(hopefully rule to only keep 0s from -1 dilution will fix this issue)
-cfu_data <- metadata %>% select(experiment, vendor, day, count1, dilution1, count2, dilution2, mouse_id, id) %>% 
-  mutate(cfu1 = count1 * 20 * 1 / (10 ^ dilution1), cfu2 = count2 * 20 * (1 / (10 ^ dilution2))) %>% # Quantify CFU/g for each dilution that was plated
-  select(-starts_with("count"))
-
-#Make sure 0s are true 0s, meaning the -1 dilution (which is the limit of detection) was plated. Any 0s for dilutions above the -1 dilution should be transformed to NAs. 
-#Number of 0s in cfu1 should equal number of -1s in dilution1. Since -1 dilution was never plated in dilution2 column, don't have to worry about counting any zeros from that column.
-#Quantify how many instances we have 0s for cfu1
-cfu1_0s <- cfu_data %>% filter(cfu1 == 0) #245/563 instances
-cfu1_d <- cfu_data %>% filter(dilution1 == -1 & cfu1 == 0) #184 instances, meaning there should only be 184 0s.
-cfu2_0s <- cfu_data %>% filter(cfu2 == 0) #133/563 instances. Most of these should be transformed to NAs
-cfu_nas <- map(cfu_data, ~sum(is.na(.))) #156 for cfu1, 258 for cfu2
-
-#Transform data so that 0s from -1 dilution remain 0s, but 0s for any dilutions beyond -1 become NA.----
-cfu_data_final <- cfu_data %>%
-  mutate(cfu1 = ifelse(cfu1 == 0 & dilution1 != -1, NA, cfu1)) %>% #Keeps 0s for -1 dilution, replaces 0s from any other dilution with NA
-  mutate_at(vars(cfu2), ~replace(., . == 0, NA)) %>% #Changes all 0s for cfu2 to NA since the -1 dilution (the limit of detection) was not plated.
-  group_by(id, experiment, mouse_id, day) %>% 
-  mutate(cfu = mean(c(cfu1, cfu2), na.rm = TRUE)) %>% #Create a final cfu per ID (combination of mouse ID & date sample was collected) based on the average CFU/g for cfu1 and cfu2
-  mutate(cfu = na_if(cfu, "NaN")) #Changes the NaNs in cfu column back to Nas
-cfu1_0s <- cfu_data_final %>% filter(cfu1 == 0) #Now only 184 instances, which is what we predicted on line 21
-cfu2_0s <- cfu_data_final %>% filter(cfu2 == 0) #0 instances of 0.
-cfu_nas_final <- map(cfu_data_final, ~sum(is.na(.))) #217 for cfu1, 391 instances for cfu2. #182 for cfu
-
-#Drop NAs from cfu column
-cfu_data_final <- cfu_data_final %>% 
-  filter(!is.na(cfu)) #381 observations that are not NAs
+#Drop any samples with NAs in the cfu column
+cfu_data_final <- metadata %>% 
+  filter(!is.na(cfu)) #378 observations that are not NAs
 
 #Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction. getOption("na.action") = "na.omit", so NAs are not included in statistical analysis----
 kruskal_wallis_cfu <- cfu_data_final %>% 
@@ -57,11 +29,11 @@ for(d in sig_C.diff_CFU_timepoints){
   name <- paste("pairwise_wilcox_day", d, sep = "") #Way to name the data frames based on the date of interest
   assign(name, pairwise.wilcox_groups(d))
 }
- pairwise_wilcox_day5
- pairwise_wilcox_day6
- pairwise_wilcox_day7
- pairwise_wilcox_day4
- pairwise_wilcox_day3
+ pairwise_wilcox_day5 %>% filter(p.value <= 0.05) # 6 sig. pairwise: Jax vs Schloss, Tac. vs Schloss, Jax vs Young, Tac. vs Young, CR vs Jax, CR vs Tac
+ pairwise_wilcox_day6 %>% filter(p.value <= 0.05) # 6 sig. pairwise:
+ pairwise_wilcox_day7 %>% filter(p.value <= 0.05) # 4 sig. pairwise:
+ pairwise_wilcox_day4 %>% filter(p.value <= 0.05) # 0 sig. pairwise:
+ pairwise_wilcox_day3 %>% filter(p.value <= 0.05) # 3 sig. pairwise:
 
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
@@ -161,39 +133,4 @@ plot_CFU_D5 <- cfu_data_final %>%
   stat_pvalue_manual(data = pairwise_wilcox_day5_plot, label = "p.value", y.position = "y.position") 
 save_plot(filename = paste0("results/figures/C.diff_CFU_D5_stats.png"), plot_CFU_D5, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
  ##Y-axis is off
-
-#Add columns noting the C. diff CFU at significant timepoints for each mouse
-cfu_data_final <-  cfu_data_final %>% ungroup()
-
-cfu_d3 <- cfu_data_final %>% 
-  filter(day == 3) %>% 
-  mutate(cfu_d3 = cfu) %>% 
-  select(mouse_id, cfu_d3) #39 values
-
-cfu_d4 <- cfu_data_final %>% 
-  filter(day == 4) %>% 
-  mutate(cfu_d4 = cfu) %>% 
-  select(mouse_id, cfu_d4) #29 values
-
-cfu_d5 <- cfu_data_final %>% 
-  filter(day == 5) %>% 
-  mutate(cfu_d5 = cfu) %>% 
-  select(mouse_id, cfu_d5) #43 values
-
-cfu_d6 <- cfu_data_final %>% 
-  filter(day == 6) %>% 
-  mutate(cfu_d6 = cfu) %>% 
-  select(mouse_id, cfu_d6) #34 values
-
-cfu_d7 <- cfu_data_final %>% 
-  filter(day == 7) %>% 
-  mutate(cfu_d7 = cfu) %>% 
-  select(mouse_id, cfu_d7) #40 values
-
-#Merge all individual cfu_dx data frames onto cfu_data_final
-cfu_data_final <- full_join(cfu_data_final, cfu_d3, by = "mouse_id") 
-cfu_data_final <- full_join(cfu_data_final, cfu_d4, by = "mouse_id")
-cfu_data_final <- full_join(cfu_data_final, cfu_d5, by = "mouse_id")
-cfu_data_final <- full_join(cfu_data_final, cfu_d6, by = "mouse_id")
-cfu_data_final <- full_join(cfu_data_final, cfu_d7, by = "mouse_id")
  
