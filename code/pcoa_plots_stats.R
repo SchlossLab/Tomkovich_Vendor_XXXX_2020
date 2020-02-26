@@ -1,7 +1,19 @@
 source("code/functions.R")
 
 all_data <- read_tsv("data/process/vendors.subsample.shared") %>%
-  left_join(metadata, by = c("Group" = "id"))
+  left_join(metadata, by = c("Group" = "id")) 
+
+#Get factor levels for mouse_id variable:
+mouse_id_levels <- unique(as.factor(all_data$mouse_id))
+
+variables <- all_data %>% 
+  select(-starts_with("Otu")) %>% #get rid of Otu variables
+  mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure variables of interest are treated as factors
+         vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo")),
+         run=factor(run, levels=c("run_1", "run_2")),
+         day=factor(day, levels=c("-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9")),
+         mouse_id=factor(mouse_id, levels =mouse_id_levels))
+
 
 all <- all_data %>%
   select(Group, starts_with("Otu")) %>%
@@ -109,18 +121,18 @@ pcoa_exp <- all_pcoa %>%
   ggsave("exploratory/notebook/pcoa_by_experiment.pdf")
 
 #Statistical Analysis----
-set.seed(4)
+set.seed(848)
 #Bray curtis distance matrix generated with vegan vegdist command using Bray-Curtis method with subsampling and iteration
 all_dist <- avgdist(all, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
 
-run_adonis <- adonis(all_dist~ run, data = all_data, method = "bray")
-# P = 0.001
-exp_adonis <- adonis(all_dist~ experiment, data = all_pcoa, method = "bray")
-# P = 0.001
-vendor_adonis <- adonis(all_dist~ vendor, data = all_pcoa, method = "bray", set.seed = 4)
-# P = 0.002 #Unsure why, but sometimes get 0.001 or 0.003
-day_adonis <- adonis(all_dist~ day, data = all_pcoa, method = "bray")
-#Df = 1, should be 10?
+run_adonis <- adonis(all_dist~ run, data = variables, method = "bray", permutations = 9999)
+# P = 1e-04
+exp_adonis <- adonis(all_dist~ experiment, data = variables, method = "bray", permutations = 9999)
+# P = 1e-04
+vendor_adonis <- adonis(all_dist~ vendor, data = variables, method = "bray", permutations = 9999)
+# P = 1e-04 
+day_adonis <- adonis(all_dist~ day, data = variables, method = "bray", permutations = 9999)
+# P = 1e-04
 
 #With mothur amova command (based on thetayc distance matrix so values won't be an exact match):----
 # Differences between experiments
