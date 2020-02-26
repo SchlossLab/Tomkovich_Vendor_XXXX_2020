@@ -17,7 +17,7 @@ plot_pcoa <- function(df){
   scale_alpha_continuous(range = c(.3, 1),
                          breaks= c(2, 4, 6, 8, 10),
                          labels=c(2, 4, 6, 8, 10))+
-	coord_fixed() + 
+#	coord_fixed() + 
 	labs(x="PCoA 1",
 	     y="PCoA 2",
 	     color= "Vendor",
