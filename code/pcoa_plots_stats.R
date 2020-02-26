@@ -19,29 +19,32 @@ exp2 <- all_data %>%
 
 #Function to calculate PCoA scores based on a specified dataframe of samples
 #Must supply a distance matrix, otherwise vegdist will be used to find the dissimilarities
+
+#Decide to subset data and generate subsetted distance matrices using mothur instead
+
 #Use avgdist() to create distance matrix using subsampling and iterations to mimic dist.shared calculator in mothur
-calculate_pcoa <- function(subset_data){
-  dist_matrix <- avgdist(subset_data, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
-  pcoa <- capscale(dist_matrix~1, distance = "bray")
-  pcoa_data <- as.data.frame(scores(pcoa, display="sites")) %>% #Note scores(exp1_pcoa, display="species") #Displays scores based on Otus
-    mutate("id" = rownames(.)) %>% #Convert samples as rownames to entries in id coloumn
-    right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
-    filter(!is.na(MDS1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
-}
+# calculate_pcoa <- function(subset_data){
+#   dist_matrix <- avgdist(subset_data, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
+#   pcoa <- capscale(dist_matrix~1, distance = "bray")
+#   pcoa_data <- as.data.frame(scores(pcoa, display="sites")) %>% #Note scores(exp1_pcoa, display="species") #Displays scores based on Otus
+#     mutate("id" = rownames(.)) %>% #Convert samples as rownames to entries in id coloumn
+#     right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
+#     filter(!is.na(MDS1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
+# }
 
-all_pcoa <- calculate_pcoa(all)
-exp1_pcoa <- calculate_pcoa(exp1)
-exp2_pcoa <- calculate_pcoa(exp2)
-
-exp_days <- c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-for(d in exp_days){
-  name <- paste("day", d, "_pcoa", sep = "")
-  subset_data <- all_data %>% 
-    filter(day == d) %>% 
-    select(Group, starts_with("Otu")) %>%
-    column_to_rownames(var = "Group")
-  assign(name, calculate_pcoa(subset_data))
-}
+# all_pcoa <- calculate_pcoa(all)
+# exp1_pcoa <- calculate_pcoa(exp1)
+# exp2_pcoa <- calculate_pcoa(exp2)
+# 
+# exp_days <- c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+# for(d in exp_days){
+#   name <- paste("day", d, "_pcoa", sep = "")
+#   subset_data <- all_data %>% 
+#     filter(day == d) %>% 
+#     select(Group, starts_with("Otu")) %>%
+#     column_to_rownames(var = "Group")
+#   assign(name, calculate_pcoa(subset_data))
+# }
 
 #Function to plot PCoA data for all vendors----
 plot_pcoa <- function(df){
