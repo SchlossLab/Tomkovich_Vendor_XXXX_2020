@@ -18,8 +18,11 @@ exp2 <- all_data %>%
   column_to_rownames(var = "Group")
 
 #Function to calculate PCoA scores based on a specified dataframe of samples
+#Must supply a distance matrix, otherwise vegdist will be used to find the dissimilarities
+#Use avgdist() to create distance matrix using subsampling and iterations to mimic dist.shared calculator in mothur
 calculate_pcoa <- function(subset_data){
-  pcoa <- capscale(subset_data~1, distance = "bray")
+  dist_matrix <- avgdist(subset_data, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
+  pcoa <- capscale(dist_matrix~1, distance = "bray")
   pcoa_data <- as.data.frame(scores(pcoa, display="sites")) %>% #Note scores(exp1_pcoa, display="species") #Displays scores based on Otus
     mutate("id" = rownames(.)) %>% #Convert samples as rownames to entries in id coloumn
     right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
@@ -29,7 +32,6 @@ calculate_pcoa <- function(subset_data){
 all_pcoa <- calculate_pcoa(all)
 exp1_pcoa <- calculate_pcoa(exp1)
 exp2_pcoa <- calculate_pcoa(exp2)
-dayn1_pcoa <- calculate_pcoa(`day-1`)
 
 exp_days <- c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 for(d in exp_days){
@@ -60,7 +62,7 @@ plot_pcoa <- function(df){
     theme_classic()
 }
 
-plot_pcoa(all_pcoa)
+plot_pcoa(all_pcoa) #Vegan version calculated with avgdist still looks slighltly different than mothur generated version 
 plot_pcoa(exp1_pcoa)
 plot_pcoa(exp2_pcoa)
 plot_pcoa(`day-1_pcoa`)
@@ -101,22 +103,23 @@ pcoa_exp <- all_pcoa %>%
        color= "Experiment",
        alpha= "Day") +
   theme_classic()+
-  ggsave("exploratory/notebook/pcoa_by_MiSeq_run.pdf")
+  ggsave("exploratory/notebook/pcoa_by_experiment.pdf")
 
 #Statistical Analysis----
-#Bray curtis distance matrix generated with vegan vegdist command using Bray-Curtis method
-all_dist <- vegdist(all, method = "bray")
+set.seed(4)
+#Bray curtis distance matrix generated with vegan vegdist command using Bray-Curtis method with subsampling and iteration
+all_dist <- avgdist(all, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
 
 run_adonis <- adonis(all_dist~ run, data = all_data, method = "bray")
 # P = 0.001
 exp_adonis <- adonis(all_dist~ experiment, data = all_pcoa, method = "bray")
 # P = 0.001
-vendor_adonis <- adonis(all_dist~ vendor, data = all_pcoa, method = "bray")
-# P = 0.001
+vendor_adonis <- adonis(all_dist~ vendor, data = all_pcoa, method = "bray", set.seed = 4)
+# P = 0.002 #Unsure why, but sometimes get 0.001 or 0.003
 day_adonis <- adonis(all_dist~ day, data = all_pcoa, method = "bray")
 #Df = 1, should be 10?
 
-#With mothur amova command (based on thetayc distance matrix):----
+#With mothur amova command (based on thetayc distance matrix so values won't be an exact match):----
 # Differences between experiments
 # amova(phylip=data/process/vendors.subsample.thetayc.ave.dist, design=data/process/vendor.experiment.design)
 # p-value < 0.001
