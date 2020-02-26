@@ -125,13 +125,13 @@ set.seed(848)
 #Bray curtis distance matrix generated with vegan vegdist command using Bray-Curtis method with subsampling and iteration
 all_dist <- avgdist(all, sample = 5347, distfun = vegdist, meanfun = mean, transf = NULL, iterations = 1000, dmethod = "bray")
 
-run_adonis <- adonis(all_dist~ run, data = variables, method = "bray", permutations = 9999)
+run_adonis <- adonis(all_dist~ run + mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1e-04
-exp_adonis <- adonis(all_dist~ experiment, data = variables, method = "bray", permutations = 9999)
+exp_adonis <- adonis(all_dist~ experiment + mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1e-04
-vendor_adonis <- adonis(all_dist~ vendor, data = variables, method = "bray", permutations = 9999)
+vendor_adonis <- adonis(all_dist~ vendor + mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1e-04 
-day_adonis <- adonis(all_dist~ day, data = variables, method = "bray", permutations = 9999)
+day_adonis <- adonis(all_dist~ day + mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1e-04
 
 #With mothur amova command (based on thetayc distance matrix so values won't be an exact match):----
