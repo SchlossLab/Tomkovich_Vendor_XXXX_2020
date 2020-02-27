@@ -68,6 +68,34 @@ pcoa_day7 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 7), 7)
 pcoa_day8 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 8), 8)
 pcoa_day9 <- plot_pcoa_timepoint(pcoa_data %>% filter(day == 9), 9)
 
+#Function to plot pcoa data for a specific day with C. difficile colonization 7-days post challenge represented by point shape
+shape_legend <- c(expression("Day 7", paste(italic("C. difficile"), "\ status"))) #title for shape legend
+plot_pcoa_d7status <- function(df, desired_day){
+  pcoa_timeppoint <- ggplot(df, aes(x=axis1, y=axis2, color = vendor, shape = clearance_status_d7)) +
+    geom_point(size=2, alpha = 0.4) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    scale_shape_manual(name=shape_legend,
+                       values=c(19, 4),
+                       breaks=c("cleared", "colonized"),
+                       labels=c("cleared", "colonized"))+
+    coord_fixed() + 
+    xlim(-0.42, 0.6)+
+    ylim(-0.4, 0.6)+
+    labs(x="PCoA 1",
+         y="PCoA 2",
+         color= "Vendor",
+         alpha= "Day") +
+    theme_classic()
+  save_plot(filename = paste0("results/figures/pcoa_day", desired_day,"_+d7status.png"), pcoa_timeppoint)
+}
+pcoa_day7_status <- plot_pcoa_d7status(pcoa_data %>% filter(day == 7), 7)
+pcoa_dayn1_status <- plot_pcoa_d7status(pcoa_data %>% filter(day == -1), -1)
+pcoa_day0_status <- plot_pcoa_d7status(pcoa_data %>% filter(day == 0), 0)
+pcoa_day1_status <- plot_pcoa_d7status(pcoa_data %>% filter(day == 1), 1)
+
 #Plot pcoa data by experiment on Day -1 (start of the experiment before clindamycin treatment) ----
 plot_initial_communities <- pcoa_data %>% filter(day == -1) %>% 
   ggplot(aes(x=axis1, y=axis2, color = vendor, shape = experiment)) +
