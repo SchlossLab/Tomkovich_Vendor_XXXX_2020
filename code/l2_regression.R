@@ -207,7 +207,7 @@ select_timepoint <- function(timepoint){
     drop_na() %>%
     select(cfu_d5, everything()) %>%
     rename(regress=cfu_d5) %>% #rename column, the cfu_d5 values are what we want to predict
-    write_csv(paste0("data/process/input_day", timepoint, "_data.csv"))
+    write_csv(paste0("data/process/regress_input_day", timepoint, "_data.csv"))
 }
 data_dn1 <- select_timepoint(-1)
 data_d0 <- select_timepoint(0)
@@ -239,19 +239,19 @@ data_d1 <- select_timepoint(1)
 #Test of day -1 input data
 seed <- 0
 path <- "data/process/regression/dayn1"
-data <- read.csv("data/process/input_day-1_data.csv")
+data <- read.csv("data/process/regress_input_day-1_data.csv")
 get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
 
 #Test of day 0 input data
 seed <- 0
 path <- "data/process/regression/day0"
-data <- read.csv("data/process/input_day0_data.csv")
+data <- read.csv("data/process/regress_input_day0_data.csv")
 get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
 
 #Test of day 1 input data
 seed <- 0
 path <- "data/process/regression/day1"
-data <- read.csv("data/process/input_day1_data.csv")
+data <- read.csv("data/process/regress_input_day1_data.csv")
 get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
 
 
