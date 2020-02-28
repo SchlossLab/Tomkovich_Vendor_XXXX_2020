@@ -217,42 +217,42 @@ data_d1 <- select_timepoint(1)
 ######################## RUN PIPELINE #############################
 # Get the cv and test AUCs for 100 data-splits
 
-# if running from make:
-# input <- commandArgs(trailingOnly=TRUE) # receive input from model
-# # Get variables from command line
-# seed <- as.numeric(input[1])
-# path <- input[2]
-# 
-# if(!dir.exists(path)){
-# 	dir.create(path, recursive=TRUE)
-# }
-# 
-# start_time <- Sys.time()
-# 
-# set.seed(seed)
+ input <- commandArgs(trailingOnly=TRUE) # receive input from model
+ # Get variables from command line
+ seed <- as.numeric(input[1])
+ path <- input[2]
+ data <- read.csv(input[3])
+
+ if(!dir.exists(path)){
+ 	dir.create(path, recursive=TRUE)
+ }
+
+ start_time <- Sys.time()
+
+ set.seed(seed)
 # data <- read.csv(path)
-# get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
-# 
-# end_time <- Sys.time()
-# print(end_time - start_time)
+ get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
+
+ end_time <- Sys.time()
+ print(end_time - start_time)
 ###################################################################
 
-#Test of day -1 input data
-seed <- 0
-path <- "data/process/regression/dayn1"
-data <- read.csv("data/process/regress_input_day-1_data.csv")
-get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
-
-#Test of day 0 input data
-seed <- 0
-path <- "data/process/regression/day0"
-data <- read.csv("data/process/regress_input_day0_data.csv")
-get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
-
-#Test of day 1 input data
-seed <- 0
-path <- "data/process/regression/day1"
-data <- read.csv("data/process/regress_input_day1_data.csv")
-get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
+# #Test of day -1 input data
+# seed <- 0
+# path <- "data/process/regression/dayn1"
+# data <- read.csv("data/process/regress_input_day-1_data.csv")
+# get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
+# 
+# #Test of day 0 input data
+# seed <- 0
+# path <- "data/process/regression/day0"
+# data <- read.csv("data/process/regress_input_day0_data.csv")
+# get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
+# 
+# #Test of day 1 input data
+# seed <- 0
+# path <- "data/process/regression/day1"
+# data <- read.csv("data/process/regress_input_day1_data.csv")
+# get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
 
 
