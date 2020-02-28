@@ -207,6 +207,7 @@ select_timepoint <- function(timepoint){
     drop_na() %>%
     select(cfu_d5, everything()) %>%
     rename(regress=cfu_d5) %>% #rename column, the cfu_d5 values are what we want to predict
+    select(-Otu0020) %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is what we're predicting
     write_csv(paste0("data/process/regress_input_day", timepoint, "_data.csv"))
 }
 data_dn1 <- select_timepoint(-1)

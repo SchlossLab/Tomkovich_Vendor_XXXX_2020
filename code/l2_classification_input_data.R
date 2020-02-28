@@ -25,6 +25,7 @@ select_timepoint <- function(timepoint){
     drop_na() %>%
     select(clearance_status_d7, everything()) %>%
     rename(dx=clearance_status_d7) %>% #rename column, the clearance_status_d7 values are what we want to predict
+    select(-Otu0020) %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is what we're predicting
     write_csv(paste0("data/process/classification_input_day", timepoint, "_data.csv"))
 }
 class_data_dn1 <- select_timepoint(-1)
