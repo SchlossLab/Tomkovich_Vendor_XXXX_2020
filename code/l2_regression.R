@@ -35,15 +35,6 @@ inTraining <- createDataPartition(dataTransformed$regress, p = .80, list = FALSE
 trainTransformed <- dataTransformed[ inTraining,]
 testTransformed  <- dataTransformed[-inTraining,]
 
-#	n_features <- ncol(trainTransformed) - 1
-#	if(n_features > 20000) n_features <- 20000
-
-#	if(n_features < 19){ mtry <- 1:6
-#	} else { mtry <- floor(seq(1, n_features/3, length=6)) }
-
-#	mtry <- mtry[mtry <= n_features]
-  
-
 # cv index to make sure the internal 5-folds are stratified for diagnosis classes and also resampled 100 times.
 # 100 repeat internally is necessary to get robust readings of hyperparameter setting performance
   folds <- 5
@@ -122,98 +113,6 @@ get_RMSE_R2_MAE <- function(dataset, split_number, dir){
 ############### Run the actual programs to get the data ######################################
 ##############################################################################################
 
-#Code for formatting data for running pipeline for the SCFA paper
-# read_shared <- function(shared_file_name, min_samples=2, min_abundance=1){
-# 
-# 	data <- fread(shared_file_name, header=T, colClasses=c(Group="character"))[, -c(1,3)]
-# 
-# 	if(min_abundance != 1){
-# 		abundant <- names(which(apply(data[,-1], 2, sum) >= min_abundance))
-# 		data <- select(data, Group, abundant)
-# 	}
-# 
-# 	frequent <- names(which(apply(data[, -1] > 0, 2, sum) >= min_samples))
-# 
-# 	select(data, Group, frequent)
-# 
-# }
-# 
-# get_data <- function(path){
-# 
-# 	parse_path <- unlist(str_split(unlist(str_split(path, '/'))[3], "_"))
-# 	target_scfa <- parse_path[1]
-# 	feature_sources <- parse_path[-1]
-# 
-# 	tax_levels <- c("kingdom", "phylum", "class", "order", "family", "genus")
-# 
-# 	# Read in metadata
-# 	if(any(feature_sources %in% metagenomics)){
-# 		data <- read_tsv('data/metadata/zackular_metadata.tsv') %>%
-# 						mutate(sample=str_replace(sample, "(\\d{1,2})", " \\1")) %>%
-# 						separate(sample, into=c("disease", "subject")) %>%
-# 						mutate(disease=str_replace(disease, "^(.).*", "\\1"),
-# 										dx=tolower(dx)) %>%
-# 						unite(sample, disease, subject, sep="") %>%
-# 						select(sample, fit_result, dx)
-# 	} else {
-# 		data <- read_csv('data/metadata/cross_section.csv', col_types=cols(sample=col_character()))
-# 	}
-# 
-# 	# Read in OTU table and remove label and numOtus columns
-# 	if("otu" %in% feature_sources){
-# 
-# 		data <- read_shared('data/mothur/crc.otu.shared') %>%
-# 			inner_join(data, ., by=c("sample"="Group"))
-# 
-# 	}
-# 
-# 	if(any(feature_sources %in% tax_levels)){
-# 		taxon <- feature_sources[which(feature_sources %in% tax_levels)]
-# 		shared_taxon_file <- paste0('data/phylotype/crc.', taxon, ".shared")
-# 
-# 		data <- read_shared(shared_taxon_file) %>%
-# 			inner_join(data, ., by=c("sample"="Group"))
-# 
-# 	}
-# 
-# 	# Read in SCFAs spread columns
-# 	read_tsv('data/scfa/scfa_composite.tsv', col_types=cols(study_id=col_character())) %>%
-# 		spread(key=scfa, value=mmol_kg) %>%
-# 		select(study_id, target_scfa) %>%
-# 		inner_join(., data, by=c("study_id" = "sample")) %>%
-# 		rename(regress = target_scfa) %>%
-# 		drop_na() %>%
-# 		select(-study_id)
-# }
-
-#Begum's suggestion for formatting input data for ML_pipeline_microbiome----
-######################## DATA PREPARATION #############################
-# Features: 16S rRNA gene sequences(OTUs) in the stool
-# Labels: - C. difficile CFU levels in the stool 5 days post-challenge
-
-# Read in metadata and select only sample id, day, and cfu_d5 columns
-source("code/functions.R")
-metadata <- metadata %>% select(id, day, cfu_d5)
-# Read in OTU table and remove label and numOtus columns
-shared <- read.delim('data/process/vendors.subsample.shared', header=T, sep='\t') %>%
-  select(-label, -numOtus)
-# Merge metadata and OTU table.
-# Filter merged dataframe to just timepoints we want to use community structure to predict C. difficile CFU 5 days post-challenge
-# Then remove the sample ID and day columns
-select_timepoint <- function(timepoint){
-  data <- inner_join(metadata, shared, by=c("id"="Group")) %>% 
-    filter(day == timepoint) %>% 
-    select(-id, -day) %>%
-    drop_na() %>%
-    select(cfu_d5, everything()) %>%
-    rename(regress=cfu_d5) %>% #rename column, the cfu_d5 values are what we want to predict
-    select(-Otu0020) %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is what we're predicting
-    write_csv(paste0("data/process/regress_input_day", timepoint, "_data.csv"))
-}
-data_dn1 <- select_timepoint(-1)
-data_d0 <- select_timepoint(0)
-data_d1 <- select_timepoint(1)
-
 ######################## RUN PIPELINE #############################
 # Get the cv and test AUCs for 100 data-splits
 
@@ -230,7 +129,6 @@ data_d1 <- select_timepoint(1)
  start_time <- Sys.time()
 
  set.seed(seed)
-# data <- read.csv(path)
  get_RMSE_R2_MAE(data, seed, path) # model will be "L2 regularized L2-loss support vector regression"
 
  end_time <- Sys.time()
