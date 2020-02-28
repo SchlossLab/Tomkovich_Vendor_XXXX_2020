@@ -2,8 +2,6 @@
 
 #Script prepares the dataset to have C. difficile colonization status on day 7 post-challenge as the outcome. The features are Otu abundances at Day -1, 0, and 1
 
-library(tidyverse)
-
 ######################## DATA PREPARATION #############################
 # Features: 16S rRNA gene sequences(OTUs) in the stool on Day -1 of the experiment
 # Labels: - C. difficile colonization status in the stool 7 days post-challenge
