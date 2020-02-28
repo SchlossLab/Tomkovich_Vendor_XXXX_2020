@@ -1,6 +1,6 @@
 #Source: https://github.com/SchlossLab/ML_pipeline_microbiome/blob/master/test/code/prepare_input_data.R
 
-#Script prepares the dataset to have C. difficile colonization status on day 7 post-challenge as the outcome. The features are Otu abundances at Day -1 (the start of the experiment before antibiotic treatment)
+#Script prepares the dataset to have C. difficile colonization status on day 7 post-challenge as the outcome. The features are Otu abundances at Day -1, 0, and 1
 
 library(tidyverse)
 
