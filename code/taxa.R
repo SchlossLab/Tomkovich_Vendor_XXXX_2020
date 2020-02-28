@@ -505,6 +505,7 @@ otu_over_time <- function(otu_plot){
 #Plot of potential C. difficile Otus over time across all timepoints----
 #Otu0020 corresponds to C. difficile, only possible C. difficile Otu with relative abundance values
 otu_over_time("Otu0020") #Looks the same as Peptostreptococcaceae Unclassified. 
+#Also blasted the sequence from this Otu (taken from vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.fasta) in NCBI and it was ~98% identical to C. difficile
 
 #Plots of potenital SFB Otus over time (Clostridiaceae_1 family) 
 otu_over_time("Otu0291") #Only in Jax/Charles Rier mice, classified as Clostridium sensu_stricto genus
