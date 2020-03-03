@@ -3,6 +3,10 @@ library(broom)
 library(cowplot)
 library(magick)
 library(vegan)
+library(reshape2)
+library(knitr)
+library(rmarkdown) 
+library(gtools)
 
 ### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
@@ -136,4 +140,34 @@ fancy_scientific <- function(l) {
   # return this as an expression
   parse(text=l)
 }
+
+#Functions for machine learning analysis from Begum's paper:
+#Source: https://github.com/SchlossLab/Topcuoglu_ML_XXX_2019/blob/master/code/learning/functions.R
+# -------------------- Make performance files tidy------------------>
+# Instead of 2 columns with names cv_aucs and test_aucs
+# We will have 1 column with name Performance that tells us if test or cv
+melt_data <-  function(data) {
+  data_melt <- data %>%
+    melt(measure.vars=c('cv_aucs', 'test_aucs')) %>%
+    rename(AUC=value) %>%
+    mutate(Performance = case_when(variable == "cv_aucs" ~ 'Cross-validation', variable == "test_aucs" ~ 'Testing')) %>%
+    group_by(Performance)
+  return(data_melt)
+}
+# -------------------------------------------------------------------->
+
+
+# -------------------- Read files ------------------------------------>
+# Read in files as delim that are saved in a list with a pattern
+read_files <- function(filenames){
+  for(file in filenames){
+    # Read the files generated in main.R
+    # These files have cvAUCs and testAUCs for 100 data-splits
+    data <- read.delim(file, header=T, sep=',')
+  }
+  return(data)
+}
+# -------------------------------------------------------------------->
+
+
 
