@@ -7,6 +7,7 @@ library(reshape2)
 library(knitr)
 library(rmarkdown) 
 library(gtools)
+library(ggpubr)
 
 ### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
@@ -169,5 +170,11 @@ read_files <- function(filenames){
 }
 # -------------------------------------------------------------------->
 
-
+#Function to calculate the mean cfu values from a dataframe (x) 
+get_cfu_mean_vendor <- function(x){
+  x %>%
+    group_by(vendor) %>%
+    summarize(mean=mean(cfu)) %>%
+    spread(key=vendor, value=mean)
+}
 
