@@ -4,36 +4,58 @@ source("code/functions.R")
 cfu_data_final <- metadata %>% 
   filter(!is.na(cfu)) #378 observations that are not NAs
 
-#Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction. getOption("na.action") = "na.omit", so NAs are not included in statistical analysis----
-kruskal_wallis_cfu <- cfu_data_final %>% 
-  filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9)) %>%  #only test days that we have CFU data for
+#Kruskal-wallis test of all timepoints where cfu data was collected (Days 0 through 9)
+set.seed(19881117) #Same seed used for mothur analysis
+cfu_kruskal_stats <- cfu_data_final %>% 
+  select(day, vendor, cfu) %>% 
   group_by(day) %>% 
-  do(tidy(kruskal.test(cfu~factor(vendor), data=.))) %>% ungroup() %>% 
+  nest() %>% 
+  mutate(model=map(data, ~kruskal.test(x=.x$cfu, g=as.factor(.x$vendor)) %>%  tidy())) %>% 
+  mutate(mean = map(data, get_cfu_mean_vendor)) %>% 
+  unnest(c(model, mean)) %>% 
+  ungroup() #Ungroup before adjusting p values
+
+#Adjust p-values for testing multiple days and write results to table
+cfu_kruskal_stats_adjust <- cfu_kruskal_stats %>% 
+  select(day, statistic, p.value, parameter, method, Schloss, Young, Jackson, `Charles River`, Taconic, Envigo) %>% 
   mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-  arrange(p.value.adj) 
-#Timepoints where C. diff CFU is significantly different across the sources of mice
-sig_C.diff_CFU_timepoints <- kruskal_wallis_cfu %>% 
-    filter(p.value.adj <= 0.05) %>% 
-    pull(day) 
-#Days 5, 6, 7, 4, and 3 are when there are significant differences in C. difficile CFUs across the different sources of mice (listed in order of increasing adjusted P values)
+  arrange(p.value.adj) %>% 
+  write_tsv("data/process/cfu_stats_all_days.tsv")
 
-#For significant timepoints, do pairwise.wilcox.test to determine which sources of mice are significantly different from each other regarding the amount of C. difficile CFUs.
-pairwise.wilcox_groups <- function(timepoint){
-  cfu_by_day <- cfu_data_final %>% 
-    filter(day == timepoint)
-  tidy(pairwise.wilcox.test(g = cfu_by_day$vendor, x = cfu_by_day$cfu, p.adjust.method = "BH"))
+#List significant days after BH adjustment of p-values:
+sig_cfu_days <- cfu_kruskal_stats_adjust %>% 
+  filter(p.value.adj <= 0.05) %>% 
+  pull(day)
+
+#Perform pairwise Wilcoxan rank sum tests for days that were significant by Kruskal-Wallis rank sum test
+cfu_stats_pairwise <- cfu_kruskal_stats %>% 
+  filter(day %in% sig_cfu_days) %>% #only perform pairwise tests for days that were significant 
+  group_by(day) %>% 
+  mutate(model=map(data, ~pairwise.wilcox.test(x=.x$cfu, g=as.factor(.x$vendor), p.adjust.method="BH") %>% 
+                     tidy() %>% 
+                     mutate(compare=paste(group1, group2, sep="-")) %>% 
+                     select(-group1, -group2) %>% 
+                     pivot_wider(names_from=compare, values_from=p.value)
+                   )
+         ) %>% 
+  unnest(model) %>% 
+  select(-data, -parameter, -statistic) %>% 
+  write_tsv("data/process/cfu_stats_sig_days.tsv")
+
+#Function to tidy pairwise comparisons to use for adding stats to plots
+tidy_pairwise <- function(spread_pairwise){
+  spread_pairwise %>% 
+    pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>% 
+    separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
 
-# Do pairwise.wilcox tests with BH correction for all significant timepoints----
-for(d in sig_C.diff_CFU_timepoints){
-  name <- paste("pairwise_wilcox_day", d, sep = "") #Way to name the data frames based on the date of interest
-  assign(name, pairwise.wilcox_groups(d))
-}
- pairwise_wilcox_day5 %>% filter(p.value <= 0.05) # 6 sig. pairwise: Jax vs Schloss, Tac. vs Schloss, Jax vs Young, Tac. vs Young, CR vs Jax, CR vs Tac
- pairwise_wilcox_day6 %>% filter(p.value <= 0.05) # 6 sig. pairwise:
- pairwise_wilcox_day7 %>% filter(p.value <= 0.05) # 4 sig. pairwise:
- pairwise_wilcox_day4 %>% filter(p.value <= 0.05) # 0 sig. pairwise:
- pairwise_wilcox_day3 %>% filter(p.value <= 0.05) # 3 sig. pairwise:
+#Format pairwise stats to use with ggpubr package
+plot_format_stats <- cfu_stats_pairwise %>%
+  #Remove all columns except pairwise comparisons and day
+  select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+  group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
+  lapply(tidy_pairwise) %>% 
+  bind_rows()
 
 #Function to summarize data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
@@ -87,7 +109,7 @@ plot_C.diff_timepoint <- function(timepoint){
     labs(title=NULL, 
          x=NULL,
          y="CFU/g Feces")+
-    scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
+    scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9), limits=c(NA, 10^9))+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5))+
     theme(legend.position = "none") + #Get rid of legend title & move legend position
@@ -95,22 +117,21 @@ plot_C.diff_timepoint <- function(timepoint){
   save_plot(filename = paste0("results/figures/C.diff_CFU_D", timepoint,".png"), plot_CFU_DX, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
 }
 #Plot all the timepoints where C. diff CFUs were significantly different across sources of mice
-for(d in sig_C.diff_CFU_timepoints){
+for(d in sig_cfu_days){
   plot_C.diff_timepoint(d)
 }
 
-##Test of ggpubr----
-library(ggpubr)
-cfu_ggpubr <- cfu_data_final %>% 
-  filter(day %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9))  #only test days that we have CFU data for
+#Add p.value manually
+#Figure out y.position via log transformation to match y-axis scale
+y <- log10(max(cfu_data_final$cfu))
+#Data frames of p.values to add manually
+pairwise_wilcox_day5_plot <- plot_format_stats %>% 
+  filter(day == 5) %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj=round(p.adj, digits = 4)) %>% 
+  mutate(y.position = c(y-2, y, y-1.4, y-0.5, y-1.0, y-1.7))
 
-KW_testcfu_ggpubr <- compare_means(cfu ~ vendor, data = cfu_ggpubr, method = kruskal.test, group.by = "day", p.adjust.method = "BH")
-## Error
-  
-#Add p.value manually, also not working right
-pairwise_wilcox_day5_plot <- pairwise_wilcox_day5 %>% 
-  filter(p.value <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(y.position = c(1320000, 1360000, 1400000, 1440000, 1480000, 1520000))
+#Plot with p values added manually
 plot_CFU_D5 <- cfu_data_final %>% 
   filter(day == 5) %>% 
   ggplot(aes(x= vendor, y=cfu, color=vendor))+
@@ -125,12 +146,11 @@ plot_CFU_D5 <- cfu_data_final %>%
   labs(title=NULL, 
        x=NULL,
        y="CFU/g Feces")+
-  scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
+  scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9), limits = c(NA, 10^9))+
   theme_classic()+
   theme(plot.title=element_text(hjust=0.5))+
   theme(legend.position = "none") + #Get rid of legend 
   theme(text = element_text(size = 16)) +  # Change font size for entire plot
-  stat_pvalue_manual(data = pairwise_wilcox_day5_plot, label = "p.value", y.position = "y.position") 
+  stat_pvalue_manual(data = pairwise_wilcox_day5_plot, label = "p.adj", y.position = "y.position") 
 save_plot(filename = paste0("results/figures/C.diff_CFU_D5_stats.png"), plot_CFU_D5, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
- ##Y-axis is off
- 
+
