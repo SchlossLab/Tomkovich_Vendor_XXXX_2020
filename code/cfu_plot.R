@@ -42,13 +42,6 @@ cfu_stats_pairwise <- cfu_kruskal_stats %>%
   select(-data, -parameter, -statistic) %>% 
   write_tsv("data/process/cfu_stats_sig_days.tsv")
 
-#Function to tidy pairwise comparisons to use for adding stats to plots
-tidy_pairwise <- function(spread_pairwise){
-  spread_pairwise %>% 
-    pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>% 
-    separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
-}
-
 #Format pairwise stats to use with ggpubr package
 plot_format_stats <- cfu_stats_pairwise %>%
   #Remove all columns except pairwise comparisons and day

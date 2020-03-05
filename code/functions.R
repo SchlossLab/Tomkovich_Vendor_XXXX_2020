@@ -178,3 +178,17 @@ get_cfu_mean_vendor <- function(x){
     spread(key=vendor, value=mean)
 }
 
+#Function to calculate the mean weight_change values from a dataframe (x) 
+get_weight_mean_vendor <- function(x){
+  x %>%
+    group_by(vendor) %>%
+    summarize(mean=mean(weight_change)) %>%
+    spread(key=vendor, value=mean)
+}
+
+#Function to tidy pairwise comparisons to use for adding stats to plots----
+tidy_pairwise <- function(spread_pairwise){
+  spread_pairwise %>% 
+    pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>% 
+    separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
+}
