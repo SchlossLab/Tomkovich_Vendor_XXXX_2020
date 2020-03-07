@@ -52,6 +52,7 @@ ABSTRAAAAAAAAAAAAACT
 * mothur (v1.43.0) should be located in the user's PATH
 * R (v. 3.5.2) should be located in the user's PATH
 * R packages:
+
  *knitr v1.20
  *rmarkdown v1.10
  *broom v0.5.0
