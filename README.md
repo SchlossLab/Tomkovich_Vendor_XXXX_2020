@@ -52,6 +52,7 @@ ABSTRAAAAAAAAAAAAACT
 * mothur (v1.43.0) should be located in the user's PATH
 * R (v. 3.5.2) should be located in the user's PATH
 * R packages:
+
  * broom v0.5.0
  * tidyverse_1.3.0
  * cowplot v0.9.3
