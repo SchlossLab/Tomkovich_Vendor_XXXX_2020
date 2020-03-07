@@ -389,3 +389,37 @@ linear <- plot_grid(interp_graph_D0, interp_graph_Dn1, interp_graph_D1, labels =
 ggdraw(add_sub(linear, "Feature ranks", vpadding=grid::unit(0,"lines"), y=5, x=0.7, vjust=4.75, size=15))
 
 ggsave("results/figures/class_interp.pdf", plot = linear, width = 6, height = 9.2, dpi=300)
+
+#Analysis of 3 classification models using 50:50 split instead of 80:20----
+dn1_50_rank <- create_rank_file("data/process/classification/combined_all_imp_features_cor_results_dayn1_50.csv", "dayn1_50")
+d0_50_rank <- create_rank_file("data/process/classification/combined_all_imp_features_cor_results_day0_50.csv", "day0_50")
+d1_50_rank <- create_rank_file("data/process/classification/combined_all_imp_features_cor_results_day1_50.csv", "day1_50")
+
+interp_D1_50 <- get_feature_ranked_files("data/process/classification/day1_50_L2_Logistic_Regression_feature_ranking.tsv", "L2_Logistic_Regression")
+interp_graph_D1_50 <- plot_feature_ranks(interp_D1_50) +
+  scale_x_discrete(name = "Day 1 Community",
+                   labels = get_taxa_info_as_labels(interp_D1_50)) +
+  theme(axis.text.x=element_text(size = 12, colour='black'))
+# -------------------------------------------------------------------->
+
+
+interp_Dn1_50 <- get_feature_ranked_files("data/process/classification/dayn1_50_L2_Logistic_Regression_feature_ranking.tsv", "L2_Logistic_Regression")
+interp_graph_Dn1_50 <- plot_feature_ranks(interp_Dn1_50) +
+  scale_x_discrete(name = "Day -1 Community",
+                   labels = get_taxa_info_as_labels(interp_Dn1_50)) +
+  theme(axis.text.x=element_text(size = 12, colour='black'))
+
+interp_D0_50 <- get_feature_ranked_files("data/process/classification/day0_50_L2_Logistic_Regression_feature_ranking.tsv", "L2_Logistic_Regression")
+interp_graph_D0_50 <- plot_feature_ranks(interp_D0_50) +
+  scale_x_discrete(name = "Day 0 Community",
+                   labels = get_taxa_info_as_labels(interp_D0_50)) +
+  theme(axis.text.x=element_text(size = 12, colour='black'))
+
+######################################################################
+#-----------------------Save figure as .pdf ------------------------ #
+######################################################################
+linear <- plot_grid(interp_graph_D0_50, interp_graph_Dn1_50, interp_graph_D1_50, labels = c("A", "B", "C"), align = 'v', ncol = 1)
+
+ggdraw(add_sub(linear, "Feature ranks", vpadding=grid::unit(0,"lines"), y=5, x=0.7, vjust=4.75, size=15))
+
+ggsave("results/figures/class_interp_50.pdf", plot = linear, width = 6, height = 9.2, dpi=300)
