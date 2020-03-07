@@ -112,7 +112,7 @@ Fix the sample ids in vendor.files before proceeding with the rest of the analys
 Make a copy of data/raw/vendors.files and save as a .csv file (data/raw/vendors.files.csv)
 Then run the following rscript to fix the ids:
 ```
-Rscript code/cfu_plot.R
+Rscript code/fix_ids.R
 ```
 Open up data/raw/vendors.files.fixed.csv and data/raw/vendors.files. Paste rhe fix_id column (select all 439 samples, starting at row 2) from data/raw/vendors.files.fixed.csv over the 1st column with dashes in the group name in data/raw/vendors.files and save data/raw/vendors.files. Now that the sample ids have been corrected, the analysis can proceed.
 ```
