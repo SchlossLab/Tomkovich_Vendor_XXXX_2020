@@ -52,18 +52,17 @@ ABSTRAAAAAAAAAAAAACT
 * mothur (v1.43.0) should be located in the user's PATH
 * R (v. 3.5.2) should be located in the user's PATH
 * R packages:
- + broom v0.5.0
- + tidyverse_1.3.0
- + cowplot v0.9.3
- + magick v2.0
- + vegan v2.5-2
- + reshape2 v1.4.3
- + knitr v1.20
- + rmarkdown v1.10
- + gtools v3.8.1
- + ggpubr v.0.2.4
-
-*Analysis assumes the use of 8 processors  
+    * broom v0.5.0
+    * tidyverse_1.3.0
+    * cowplot v0.9.3
+    * magick v2.0
+    * vegan v2.5-2
+    * reshape2 v1.4.3
+    * knitr v1.20
+    * rmarkdown v1.10
+    * gtools v3.8.1
+    * ggpubr v.0.2.4
+* Analysis assumes the use of 8 processors  
 
 
 #### Running analysis
