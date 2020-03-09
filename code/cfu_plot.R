@@ -217,3 +217,21 @@ cfu_stats <- ggplot(NULL) +
         legend.key= element_rect(colour = "transparent", fill = "transparent"))
 save_plot(filename = paste0("results/figures/cfu_over_time.png"), plot = cfu_stats, base_aspect_ratio = 2)
 
+#Plot of colonization status at day 7, separated by mouse colony sources
+d7_title <- c(expression(paste(italic("C. difficile"), " status on Day 7"))) #Expression variable for the title so that bacteria name will be in italics
+d7_status <- cfu_data_final %>% 
+  filter(day == 7) %>% 
+  ggplot(aes(x=clearance_status_d7, group=vendor, fill=vendor))+
+  scale_fill_manual(name=d7_title,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_bar()+
+  facet_wrap(~vendor)+
+  labs(title=d7_title,
+       x=NULL,
+       y="Number of mice")+ 
+  theme_classic()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) # Center title
+save_plot(filename = paste0("results/figures/c.diff_status_d7.png"), plot = d7_status, base_aspect_ratio = 2)
