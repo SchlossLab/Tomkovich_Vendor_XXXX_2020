@@ -193,7 +193,7 @@ label <- cfu_kruskal_stats_adjust %>%
   )) %>% 
   pull(p.signif)
 
-#Plot data for all timepoints with annoated significance symbols for test of CFU differences across sources of mice at each timepoint
+#Plot data for all timepoints with annotated significance symbols for test of CFU differences across sources of mice at each timepoint
 mean_summary <- cfu_data_final %>% 
   group_by(vendor, day) %>% 
   summarize(mean_cfu = mean(cfu, na.rm = TRUE))
