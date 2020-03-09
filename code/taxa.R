@@ -23,21 +23,6 @@ otu_data <- read_tsv("data/process/vendors.subsample.shared", col_types=cols(Gro
 #Merge otu_data to taxonomy data frame
 agg_taxa_data <- inner_join(otu_data, taxonomy)
 
-#Make sure weight & C. diff CFU data are included in metadata frame----
-#source("code/weight_plot.R") #ERROR, not sourcing correctly. Move to functions
-#source("code/cfu_plot.R") ##ERROR, not sourcing correctly. Move to functions
-#Select only relevant columns from weight & cfu dataframes, plus the id column for merging dataframes
-#weight_data <- weight_data %>% 
-#  ungroup() %>% 
-#  select(id, baseline_weight, percent_baseline_weight, weight_change)
-#cfu_data_final <- cfu_data_final %>% 
-#  ungroup() %>% 
-#  select(id, cfu, cfu_d3, cfu_d4, cfu_d5, cfu_d6, cfu_d7)
-#Join weight data to metadata
-#metadata <- left_join(metadata, weight_data, by = "id")
-#Join cfu data to metadata
-#metadata <- left_join(metadata, cfu_data_final, by = "id") 
-
 # Function to summarize relative abundance level for a given taxonomic level (ex. genus, family, phlyum, etc.)
 agg_taxonomic_data <- function(taxonomic_level) {
   taxonomic_level <- enquo(taxonomic_level) #Part of transformation of taxonomic_level argument into a column name
