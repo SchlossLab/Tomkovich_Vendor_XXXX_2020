@@ -314,7 +314,8 @@ plot_feature_ranks <- function(data){
           axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.title.y=element_text(size = 11, colour='black', face="bold"), 
-          axis.text.y=element_text(size = 8, colour='black'))
+          axis.text.y=element_text(size = 8, colour='black'))+
+    theme(axis.text.y = element_text(face = "italic")) #Have the taxa show up as italics
   return(plot)
 }
 
