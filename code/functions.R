@@ -9,12 +9,14 @@ library(rmarkdown)
 library(gtools)
 library(ggpubr)
 
-### Load in metadata & create new column to give unique mouse_id based on exp. #, vendor, cage #, and mouse #.
+### Load in metadata and make sure experiment and vendor columns are treated as factors
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
   mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure experiment is treated as a factor
          vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) %>% 
   filter(!grepl("Mock", id), #Remove all 5 Mock controls
-         !grepl("Water", id)) #Remove all 5 water controls
+         !grepl("Water", id)) %>% #Remove all 5 water controls
+  #Create a variable for mouse cage (has to combine exp., vendor, and cage)
+  unite(col = unique_cage, c(experiment, vendor, cage), remove = FALSE)
 
 #Quantify C. diff cfu based on the colonies counted from the 2 different dilutions plated. Formula based on protocol used by the Young lab----
 #0s should only be kept when the -1 dilution was checked, as that represents the limit of detection.
@@ -186,9 +188,32 @@ get_weight_mean_vendor <- function(x){
     spread(key=vendor, value=mean)
 }
 
+#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by vendor
+get_rel_abund_mean_vendor <- function(x){
+  x %>%
+    group_by(vendor) %>%
+    summarize(mean=mean(agg_rel_abund)) %>%
+    spread(key=vendor, value=mean)
+}
+
+#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by day
+get_rel_abund_mean_day <- function(x){
+  x %>%
+    group_by(day) %>%
+    summarize(mean=mean(agg_rel_abund)) %>%
+    spread(key=day, value=mean)
+}
+
 #Function to tidy pairwise comparisons to use for adding stats to plots----
 tidy_pairwise <- function(spread_pairwise){
   spread_pairwise %>% 
     pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>% 
+    separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
+}
+
+#Function to tidy pairwise comparisons to use for adding stats to otu plots----
+tidy_pairwise_otu <- function(spread_pairwise){
+  spread_pairwise %>% 
+    pivot_longer(-otu, names_to = "compare", values_to = "p.adj") %>% 
     separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
