@@ -458,3 +458,30 @@ linear <- plot_grid(interp_graph_D0_60, interp_graph_Dn1_60, interp_graph_D1_60,
 ggdraw(add_sub(linear, "Feature ranks", vpadding=grid::unit(0,"lines"), y=5, x=0.7, vjust=4.75, size=15))
 
 ggsave("results/figures/class_interp_60.pdf", plot = linear, width = 6, height = 9.2, dpi=300)
+
+
+#Function to find which significant otus are shared 
+intersect_all <- function(a,b,...){
+  Reduce(intersect, list(a,b,...))
+}
+# Use results from 60:40 splits since that had the best AUROC results
+#List of day -1 imp. taxa:
+dn1_taxa <- get_taxa_info_as_labels(interp_Dn1_60)
+#List of day 0 imp. taxa:
+d0_taxa <- get_taxa_info_as_labels(interp_D0_60)
+#List of day 1 imp. taxa:
+d1_taxa <- get_taxa_info_as_labels(interp_D1_60)
+
+#Shared between all 3 models:
+all_shared <- intersect_all(dn1_taxa, d0_taxa, d1_taxa)
+# 0 Taxa: 
+#Shared between -1 & 0:
+dn1_0_shared <- intersect_all(dn1_taxa, d0_taxa)
+#"Ruminococcaceae (OTU 520)"  "Enterobacteriaceae (OTU 1)"
+#Shared between 0 & 1:
+d1_0_shared <- intersect_all(d0_taxa, d1_taxa)
+# "Erysipelotrichaceae (OTU 234)" "Porphyromonadaceae (OTU 7)"   
+# "Lactobacillus (OTU 18)"        "Bacteroides (OTU 2)"
+#Shared between -1 & 1:
+dn1_1_shared <- intersect_all(dn1_taxa, d1_taxa)
+#"Enterococcus (OTU 23)"
