@@ -53,7 +53,8 @@ pull_significant_taxa <- function(dataframe, taxonomic_level){
   pull(!!taxonomic_level) #!!Completes the transformation of taxonomic_level argument into a column name
 }
 
-#Kruskal_wallis test for differences across groups at different taxonomic levels with Benjamini-Hochburg correction
+#Function to perform Kruskal_wallis test for differences across groups at different taxonomic levels with Benjamini-Hochburg correction----
+set.seed(19881117) #Same seed used for mothur analysis
 #Arguments:
 # dataframe=dataframe to analyze
 # timepoint = timepoint being analyzed
