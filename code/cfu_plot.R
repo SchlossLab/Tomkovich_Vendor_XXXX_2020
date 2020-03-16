@@ -221,6 +221,8 @@ save_plot(filename = paste0("results/figures/cfu_over_time.png"), plot = cfu_sta
 d7_title <- c(expression(paste(italic("C. difficile"), " status on Day 7"))) #Expression variable for the title so that bacteria name will be in italics
 d7_status <- cfu_data_final %>% 
   filter(day == 7) %>% 
+  mutate(clearance_status_d7 = case_when(clearance_status_d7 == "colonized" ~ "colonized", #Redo labeling so it makes sense on plot
+                                         clearance_status_d7 == "not_detectable" ~ "cleared")) %>% 
   ggplot(aes(x=clearance_status_d7, group=vendor, fill=vendor))+
   scale_fill_manual(name=d7_title,
                       values=color_scheme,

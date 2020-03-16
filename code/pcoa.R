@@ -79,7 +79,7 @@ plot_pcoa_d7status <- function(df, desired_day){
                         labels=color_vendors)+
     scale_shape_manual(name=shape_legend,
                        values=c(19, 4),
-                       breaks=c("cleared", "colonized"),
+                       breaks=c("cleared", "not_detectable"),
                        labels=c("cleared", "colonized"))+
     coord_fixed() + 
     xlim(-0.42, 0.6)+

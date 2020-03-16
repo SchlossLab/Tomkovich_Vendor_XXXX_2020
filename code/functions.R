@@ -65,7 +65,7 @@ metadata <- full_join(metadata, cfu_d6, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>% 
   #Add a column denoting C. difficile clearance status at Day 7
   mutate(clearance_status_d7 = case_when(cfu_d7 > 0 ~ "colonized",
-                                         cfu_d7 == 0 ~ "cleared",
+                                         cfu_d7 == 0 ~ "not_detectable",
                                          cfu_d7 == NA ~ "NA"))
 
 #Create a column to denote baseline_weight and weight_change from baseline_weight for each mouse----
