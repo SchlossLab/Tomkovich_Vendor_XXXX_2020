@@ -38,7 +38,7 @@ get_interp_info <- function(data, model_name){
       select(key, median_rank)
     
     # Here we want to only grab the data (rank info from 100 datasplits) of only the top 20 median ranked OTUs
-    # The imp data will be returned for Figure 3 where we plot each rank info for each data-split of the 20 top OTUs
+    # The imp data will be returned for Figure where we plot each rank info for each data-split of the 20 top OTUs
     imp <- data %>%
       filter(key %in% imp_first_20$key) %>%
       group_by(key)
@@ -95,7 +95,7 @@ get_interp_info <- function(data, model_name){
 # ------------------- Re-organize feature importance  ----------------->
 # This function:
 #     1. Takes in a combined (100 split) feature rankings for each model) and the model name
-#     2. Returns the top 5 ranked (1-5 with 1 being the highest ranked) OTUs (ranks of the OTU for 100 splits)
+#     2. Returns the top 20 ranked (1-20 with 1 being the highest ranked) OTUs (ranks of the OTU for 100 splits)
 get_feature_ranked_files <- function(file_name, model_name){
   importance_data <- read_tsv(file_name)
   ranks <- get_interp_info(importance_data, model_name) %>%
@@ -104,15 +104,15 @@ get_feature_ranked_files <- function(file_name, model_name){
 }
 
 # This function:
-#     1. Top 5 ranked (1-5 lowest rank) OTUs (ranks of the OTU for 100 splits)
+#     1. Top 20 ranked (1-20 lowest rank) OTUs (ranks of the OTU for 100 splits)
 #     2. Returns a plot. Each datapoint is the rank of the OTU at one datasplit.
 
 plot_feature_ranks <- function(data){
-  # Plot from highest median ranked OTU to least (only top 5) and thir ranks that lay between 1-100
+  # Plot from highest median ranked OTU to least (only top 20) and thir ranks that lay between 1-100
   # Rank 1 is the highest rank
   plot <- ggplot(data, aes(reorder(data$key, -data$rank, FUN = median), data$rank)) +
     geom_point(aes(colour= factor(data$sign)), size=1.5) + # datapoints lighter color
-    scale_color_manual(values=c("#56B4E9","red3", "#999999")) +
+    scale_color_manual(values=c("#56B4E9","red3", "#999999")) + #blue, red3 and black
     stat_summary(fun.y = function(x) median(x), colour = 'black', geom = "point", size = 3) + # Median darker
     coord_flip(ylim=c(0,100)) +
     theme_classic() +
@@ -138,7 +138,7 @@ plot_feature_ranks <- function(data){
 
 get_taxa_info_as_labels <- function(data){
   
-  # Grab the names of the top 5 OTUs in the order of their median rank  
+  # Grab the names of the top 20 OTUs in the order of their median rank  
   otus <- data %>% 
     group_by(key) %>% 
     summarise(imp = median(rank)) %>% 
@@ -284,7 +284,7 @@ get_interp_info <- function(data, model_name){
 # ------------------- Re-organize feature importance  ----------------->
 # This function:
 #     1. Takes in a combined (100 split) feature rankings for each model) and the model name
-#     2. Returns the top 5 ranked (1-5 with 1 being the highest ranked) OTUs (ranks of the OTU for 100 splits)
+#     2. Returns the top 20 ranked (1-20 with 1 being the highest ranked) OTUs (ranks of the OTU for 100 splits)
 get_feature_ranked_files <- function(file_name, model_name){
   importance_data <- read_tsv(file_name)
   ranks <- get_interp_info(importance_data, model_name) %>%
