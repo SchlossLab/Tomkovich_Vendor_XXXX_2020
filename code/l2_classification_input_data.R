@@ -6,7 +6,7 @@
 # Features: 16S rRNA gene sequences(OTUs) in the stool on Day -1 of the experiment
 # Labels: - C. difficile colonization status in the stool 7 days post-challenge
 
-# Read in metadata and select only sample id, day, and cfu_d5 columns
+# Read in metadata and select only sample id, day, and clearance_status_d7 columns
 source("code/functions.R")
 metadata <- metadata %>% select(id, day, clearance_status_d7)
 # Read in OTU table and remove label and numOtus columns
