@@ -8,7 +8,6 @@ source("code/functions.R")
 
 
 #Classification: L2 Logistic Regression model used to predict C. difficile colonization status on Day 7 post-challenge (cleared, colonized)----
-#Trained with data from 32 mice: 15 cleared, 17 colonized on Day 7
 #Based on the Otu relative abundances on Day -1, 0 or 1 of the experiment
 
 #Trained and tested with 50/50 splits----
