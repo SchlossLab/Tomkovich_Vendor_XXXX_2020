@@ -474,7 +474,7 @@ d1_taxa <- get_taxa_info_as_labels(interp_D1_60)
 
 #Shared between all 3 models:
 all_shared <- intersect_all(dn1_taxa, d0_taxa, d1_taxa)
-# 0 Taxa: 
+# 0 Taxa
 #Shared between -1 & 0:
 dn1_0_shared <- intersect_all(dn1_taxa, d0_taxa)
 #"Ruminococcaceae (OTU 520)"  "Enterobacteriaceae (OTU 1)"
