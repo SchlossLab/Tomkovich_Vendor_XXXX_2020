@@ -70,22 +70,18 @@ summarize_plot <- function(df){
     scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
                        limits = c(-0.5, 9.5)) +
     geom_hline(yintercept = 100, linetype=2) +
-    geom_text(x = 11, y = 104, color = "black", label = "LOD")+
-    scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9))+
+    geom_text(x = 9.2, y = 102, color = "black", label = "LOD")+
+    scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9), limits = c(40, 350000000))+
     theme_classic()
 }
 
-#CFU plot that combines the 2 experiments----
-combined_exp_cfu <- summarize_plot(cfu_data_final)
-
 #CFU plot for the 1st experiment----
 exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))
+save_plot(filename = paste0("results/figures/exp1_cfu_time.png"), plot = exp1_cfu, base_aspect_ratio = 2)
 
 #CFU plot for the 2nd experiment----
 exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))
-
-plot_grid(combined_exp_cfu, exp1_cfu, exp2_cfu, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = .2, label_y = 1)+
-  ggsave("exploratory/notebook/cfu_over_time.pdf", width = 8.5, height = 11)
+save_plot(filename = paste0("results/figures/exp2_cfu_time.png"), plot = exp2_cfu, base_aspect_ratio = 2)
 
 # Boxplots of C. diff CFU data at timepoints where there are significant differences in CFU levels across the different sources of mice:
 #Function to plot all significant genus relative abundances across vendors at a specific timepoint----
