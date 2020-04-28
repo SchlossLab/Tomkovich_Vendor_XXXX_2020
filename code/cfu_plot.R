@@ -4,6 +4,10 @@ source("code/functions.R")
 cfu_data_final <- metadata %>% 
   filter(!is.na(cfu)) #378 observations that are not NAs
 
+#Range of N mice per day
+cfu_data_final %>% 
+  group_by(day) %>% count() %>% arrange(n)
+
 #Kruskal-wallis test of all timepoints where cfu data was collected (Days 0 through 9)
 set.seed(19881117) #Same seed used for mothur analysis
 cfu_kruskal_stats <- cfu_data_final %>% 

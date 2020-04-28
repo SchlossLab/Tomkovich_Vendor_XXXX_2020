@@ -11,7 +11,10 @@ weight_data <- metadata %>%
   mutate(lowest_percent_baseline_weight = min(percent_baseline_weight)) %>% #Create a column to display the lowest percent baseline weight for each mouse
   ungroup() %>% 
   filter(!is.na(weight)) #512 observations that are not NAs
-  
+
+#Range of N mice per day
+weight_data %>% group_by(day) %>% count() %>% arrange(n) 
+
 #Function to summarize percent_baseline_weight data (calculate the mean for each group) and plot the data
 summarize_plot <- function(df){
   mean_summary <- df %>% 
