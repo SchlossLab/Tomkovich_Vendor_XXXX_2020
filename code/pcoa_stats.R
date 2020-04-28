@@ -48,7 +48,9 @@ all_variables <- tibble(id = attr(all_dist, "Labels")) %>%
          run=factor(run, levels=c("run_1", "run_2")),
          day=factor(day, levels=c("-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9")),
          mouse_id=factor(mouse_id, levels =mouse_id_levels),  
-         unique_cage=factor(unique_cage, levels=unique_cage_levels))
+         unique_cage=factor(unique_cage, levels=unique_cage_levels)) %>% 
+         rename(source = vendor) #Rename vendor variable to reflect language used in paper: mice from different sources
+  
 
 variables <- all_variables %>% 
   select(-starts_with("Otu")) #get rid of Otu variables
@@ -61,29 +63,21 @@ run_adonis <- adonis(all_dist~ run, strata = variables$mouse_id, data = variable
 exp_adonis <- adonis(all_dist~ experiment, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1 NS
 # R2 = .01712
-vendor_adonis <- adonis(all_dist~ vendor, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
+source_adonis <- adonis(all_dist~ source, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1 NS
 # R2 = .35
 day_adonis <- adonis(all_dist~ day, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
 # P = 1e-04
 # R2 = .11025
 
-all_adonis <- adonis(all_dist~vendor*day*experiment*run, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
+all_adonis <- adonis(all_dist~(source/(unique_cage*experiment*run))*day, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
 
-tibble(effects = c("vendor", "day", "experiment", "vendor:day", "vendor:experiment", "day:experiment", "vendor:day:experiment"),
+tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:day", "source:unique_cage:run", "source:unique_cage:day"),
         r_sq = all_adonis$aov.tab$R2[1:7],
         p = all_adonis$aov.tab$Pr[1:7]) %>% 
   write_tsv("data/process/adonis_all.tsv")
 
-#Test ordering (Terms added sequentially: first to last)
-all_adonis_test <- adonis(all_dist~experiment*run*vendor*day, strata = variables$mouse_id, data = variables, method = "bray", permutations = 9999)
-
-tibble(effects = c("experiment", "run", "vendor", "day", "experiment:run", "experiment:vendor", "run:vendor", "experiment:day", "vendor:day", "experiment:run:vendor", "experiment:vendor:day"),
-       r_sq = all_adonis_test$aov.tab$R2[1:11],
-       p = all_adonis_test$aov.tab$Pr[1:11]) %>% 
-  write_tsv("data/process/adonis_all_test.tsv")
-
-#Function to plot pcoa data for all vendors at a specific timepoint----
+#Function to plot pcoa data for all sources of mice at a specific timepoint----
 plot_pcoa <- function(df, timepoint){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = vendor)) +
     geom_point(size=2, alpha = 0.4) +
@@ -94,7 +88,7 @@ plot_pcoa <- function(df, timepoint){
     coord_fixed() + 
     labs(x="PCoA 1",
          y="PCoA 2",
-         color= "Vendor",
+         color= "Source",
          alpha= "Day") +
     theme_classic()
   save_plot(filename = paste0("results/figures/pcoa_day", timepoint,".png"), plot)
@@ -107,14 +101,13 @@ dn1_dist <- read_dist("data/mothur/d-1/vendors.trim.contigs.good.unique.good.fil
 dn1_variables <- tibble(id = attr(dn1_dist, "Labels")) %>% 
   left_join(variables, by = "id") 
 
-dn1_vendor_adonis <- adonis(dn1_dist~ vendor*experiment, data = dn1_variables, method = "bray", permutations = 9999)
+#Unique cage & source are not completely independent so these variables should be nested along with experiment, which cage is nested within
+#All of these samples were on the same MiSeq run so that variable does not need to be examined
+dn1_adonis <- adonis(dn1_dist~source/(unique_cage*experiment), data = dn1_variables, method = "bray", permutations = 9999)
 
-#Unique cage & vendor are not completely independent so do not use strata by unique cage
-dn1_adonis_cage <- adonis(dn1_dist~vendor*experiment*unique_cage, data = dn1_variables, method = "bray", permutations = 9999)
-
-tibble(effects = c("vendor", "experiment", "unique_cage"),
-       r_sq = dn1_adonis_cage $aov.tab$R2[1:3],
-       p = dn1_adonis_cage$aov.tab$Pr[1:3]) %>% 
+tibble(effects = c("source", "source:unique_cage"),
+       r_sq = dn1_adonis$aov.tab$R2[1:2],
+       p = dn1_adonis$aov.tab$Pr[1:2]) %>% 
   write_tsv("data/process/adonis_dn1.tsv")
 
 dn1_pcoa <- read_tsv("data/mothur/d-1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.axes") %>%
@@ -132,12 +125,13 @@ d0_dist <- read_dist("data/mothur/d0/vendors.trim.contigs.good.unique.good.filte
 d0_variables <- tibble(id = attr(d0_dist, "Labels")) %>% 
   left_join(variables, by = "id") 
 
-#Unique cage & vendor are not completely independent so do not use strata by unique cage
-d0_adonis_cage <- adonis(d0_dist~vendor*experiment*unique_cage, data = d0_variables, method = "bray", permutations = 9999)
+#Unique cage & source are not completely independent so these variables should be nested along with experiment, which cage is nested within
+#All of these samples were on the same MiSeq run so that variable does not need to be examined
+d0_adonis <- adonis(d0_dist~source/(unique_cage*experiment), data = d0_variables, method = "bray", permutations = 9999)
 
-tibble(effects = c("vendor", "experiment", "unique_cage"),
-       r_sq = d0_adonis_cage$aov.tab$R2[1:3],
-       p = d0_adonis_cage$aov.tab$Pr[1:3]) %>% 
+tibble(effects = c("source", "source:unique_cage"),
+       r_sq = d0_adonis$aov.tab$R2[1:2],
+       p = d0_adonis$aov.tab$Pr[1:2]) %>% 
   write_tsv("data/process/adonis_d0.tsv")
 
 d0_pcoa <- read_tsv("data/mothur/d0/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.axes") %>%
@@ -155,12 +149,13 @@ d1_dist <- read_dist("data/mothur/d1/vendors.trim.contigs.good.unique.good.filte
 d1_variables <- tibble(id = attr(d1_dist, "Labels")) %>% 
   left_join(variables, by = "id") 
 
-#Unique cage & vendor are not completely independent so do not use strata by unique cage
-d1_adonis_cage <- adonis(d1_dist~vendor*experiment*unique_cage, data = d1_variables, method = "bray", permutations = 9999)
+#Unique cage & source are not completely independent so these variables should be nested along with experiment, which cage is nested within
+#All of these samples were on the same MiSeq run so that variable does not need to be examined
+d1_adonis <- adonis(d1_dist~source/(unique_cage*experiment), data = d1_variables, method = "bray", permutations = 9999)
 
-tibble(effects = c("vendor", "experiment", "unique_cage"),
-       r_sq = d1_adonis_cage$aov.tab$R2[1:3],
-       p = d1_adonis_cage$aov.tab$Pr[1:3]) %>% 
+tibble(effects = c("source", "source:unique_cage"),
+       r_sq = d1_adonis$aov.tab$R2[1:2],
+       p = d1_adonis$aov.tab$Pr[1:2]) %>% 
   write_tsv("data/process/adonis_d1.tsv")
 
 d1_pcoa <- read_tsv("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.axes") %>%
