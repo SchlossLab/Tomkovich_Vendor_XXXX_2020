@@ -1,5 +1,5 @@
-#Splits the sequenced samples into individual timepoints. 
-#Used to fill in groups parameter of dX_dist_PCoA.batch scripts. 
+#Splits the sequenced samples into individual timepoints or vendors. 
+#Used to fill in groups parameter of dX_dist_PCoA.batch and dX_vendor_PCoA.batch scripts. 
 
 source("code/functions.R")
 
@@ -21,6 +21,60 @@ dn1_ids <- (paste(pcoa_dn1, collapse = "-"))
 #Day-1 ids:
 #Output with the quotes removed, which is what we'll use for groups argument for the dist.shared command in mothur
 #S11Dn1E2-S12Dn1E2-S22Dn1E2-Y11Dn1E2-Y12Dn1E2-Y21Dn1E2-Y22Dn1E2-J12Dn1E2-J21Dn1E2-J22Dn1E2-C11Dn1E2-C12Dn1E2-C21Dn1E2-C22Dn1E2-T11Dn1E2-T12Dn1E2-T21Dn1E2-T22Dn1E2-E11Dn1E2-E12Dn1E2-E21Dn1E2-E22Dn1E2-S11Dn1E1-S12Dn1E1-S21Dn1E1-Y11Dn1E1-Y12Dn1E1-Y21Dn1E1-Y22Dn1E1-J11Dn1E1-J12Dn1E1-C12Dn1E1-C22Dn1E1-T11Dn1E1-T12Dn1E1-T21Dn1E1-T22Dn1E1-E12Dn1E1-E21Dn1E1-E22Dn1E1
+
+#Dn1 Schloss samples----
+pcoa_dn1_s <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Schloss") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_s_ids <- (paste(pcoa_dn1_s, collapse = "-"))
+#Day -1 Schloss ids:
+#S11Dn1E2-S12Dn1E2-S22Dn1E2-S11Dn1E1-S12Dn1E1-S21Dn1E1
+
+#Dn1 Young samples----
+pcoa_dn1_y <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Young") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_y_ids <- (paste(pcoa_dn1_y, collapse = "-"))
+#Day -1 Young ids:
+#Y11Dn1E2-Y12Dn1E2-Y21Dn1E2-Y22Dn1E2-Y11Dn1E1-Y12Dn1E1-Y21Dn1E1-Y22Dn1E1
+
+#Dn1 Jackson samples----
+pcoa_dn1_j <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Jackson") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_j_ids <- (paste(pcoa_dn1_j, collapse = "-"))
+#Day -1 Jackson ids:
+#J12Dn1E2-J21Dn1E2-J22Dn1E2-J11Dn1E1-J12Dn1E1
+
+#Dn1 Charles River samples----
+pcoa_dn1_c <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Charles River") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_c_ids <- (paste(pcoa_dn1_c, collapse = "-"))
+#Day -1 Charles River ids:
+#C11Dn1E2-C12Dn1E2-C21Dn1E2-C22Dn1E2-C12Dn1E1-C22Dn1E1
+
+#Dn1 Taconic samples----
+pcoa_dn1_t <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Taconic") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_t_ids <- (paste(pcoa_dn1_t, collapse = "-"))
+#Day -1 Taconic ids:
+#T11Dn1E2-T12Dn1E2-T21Dn1E2-T22Dn1E2-T11Dn1E1-T12Dn1E1-T21Dn1E1-T22Dn1E1
+
+#Dn1 Envigo samples----
+pcoa_dn1_e <- pcoa_data %>% 
+  filter(day == -1 & vendor == "Envigo") %>% 
+  pull(id) %>% 
+  noquote() 
+dn1_e_ids <- (paste(pcoa_dn1_e, collapse = "-"))
+#Day -1 Envigo ids:
+#E11Dn1E2-E12Dn1E2-E21Dn1E2-E22Dn1E2-E12Dn1E1-E21Dn1E1-E22Dn1E1
 
 #Day 0 samples----
 pcoa_d0 <- pcoa_data %>% 
