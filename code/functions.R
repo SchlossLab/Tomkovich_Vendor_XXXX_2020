@@ -12,6 +12,7 @@ library(ggpubr)
 ### Load in metadata and make sure experiment and vendor columns are treated as factors
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
   mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure experiment is treated as a factor
+         cage=factor(cage, levels=c("1", "2")), #Make sure cage is treated as a factor
          vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) %>% 
   filter(!grepl("Mock", id), #Remove all 5 Mock controls
          !grepl("Water", id)) %>% #Remove all 5 water controls
