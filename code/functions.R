@@ -218,3 +218,19 @@ tidy_pairwise_otu <- function(spread_pairwise){
     pivot_longer(-otu, names_to = "compare", values_to = "p.adj") %>% 
     separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
+
+#Function to calculate the mean shannon values from a dataframe (x) grouped by vendor
+get_shannon_mean_vendor <- function(x){
+  x %>%
+    group_by(vendor) %>%
+    summarize(mean=mean(shannon)) %>%
+    spread(key=vendor, value=mean)
+}
+
+#Function to calculate the mean sobs (richness) values from a dataframe (x) grouped by vendor
+get_sobs_mean_vendor <- function(x){
+  x %>%
+    group_by(vendor) %>%
+    summarize(mean=mean(sobs)) %>%
+    spread(key=vendor, value=mean)
+}
