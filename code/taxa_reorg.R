@@ -114,9 +114,49 @@ for (d in exp_days_seq){
   assign(name, pull_significant_taxa(stats, family))
 }
 
-#Shared significant familes across days, but excluding day 2 (low number of samples sequenced)----
-shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day3, sig_family_day4, sig_family_day5, sig_family_day6, sig_family_day7,  sig_family_day8, sig_family_day9)
-# Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae
+#Shared significant familes across days, but excluding day 2 and day 8 (low number of samples sequenced)----
+shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day3, sig_family_day4, sig_family_day5, sig_family_day6, sig_family_day7, sig_family_day9)
+# 6 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae, Porphyromonadaceae
+
+#Shared significant genera across D-1 to D1----
+shared_sig_families_Dn1toD1 <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1)
+# 8 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae
+
+#Function to plot a list of families across sources of mice at a specific timepoint:
+#Arguments: families = list of families to plot; timepoint = day of the experiment to plot
+plot_families_dx <- function(families, timepoint){
+  agg_family_data %>% 
+  filter(family %in% families) %>% 
+  filter(day == timepoint) %>% 
+  mutate(family=factor(family, levels=families)) %>% 
+  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
+  ggplot(aes(x= family, y=agg_rel_abund, color=vendor))+
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  geom_boxplot(outlier.shape = NA, size = 1.2)+
+#  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+  labs(title=NULL, 
+       x=NULL,
+       y="Relative abundance (%)")+
+  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
+  coord_flip()+
+  theme_classic()+
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.y = element_text(face = "italic"), #Have the families show up as italics
+        text = element_text(size = 16)) # Change font size for entire plot
+}
+
+#Plots of the relative abundances of families that significantly vary across sources of mice from day -1 to day 1----
+Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) 
+save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_aspect_ratio = 2)
+Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) 
+save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_aspect_ratio = 2)
+Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) 
+save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_aspect_ratio = 2)
+
 
 #Function to test at the genus level:
 kruskal_wallis_g <- function(timepoint){
@@ -145,13 +185,13 @@ for (d in exp_days_seq){
   assign(name, pull_significant_taxa(stats, genus))
 }
 
-#Shared significant genera across all days except 2 (low number of samples sequenced that day)----
-shared_sig_genera <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day3, sig_genus_day4, sig_genus_day5, sig_genus_day6, sig_genus_day7, sig_genus_day8, sig_genus_day9)
-#Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Bacteroides, Proteus, Clostridium XVIII
+#Shared significant genera across all days except 2 and 8 (low number of samples sequenced that day)----
+shared_sig_genera <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day3, sig_genus_day4, sig_genus_day5, sig_genus_day6, sig_genus_day7, sig_genus_day9)
+# 9 genera: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Proteus, Clostridium XVIII
 
 #Shared significant genera across D-1 to D1----
 shared_sig_genera_Dn1toD1 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1)
-#Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Clostridium XVIII, Enterococcus, Lachnospiraceae Unclassified
+# 11 genera: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Clostridium XVIII, Enterococcus, Lachnospiraceae Unclassified
 
 #Function to test at the otu level:
 kruskal_wallis_otu <- function(timepoint){
@@ -180,6 +220,53 @@ for (d in exp_days_seq){
   name <- paste("sig_otu_day", d, sep = "") 
   assign(name, pull_significant_taxa(stats, otu))
 }
+
+#Shared significant OTUs across all days except 2 and 8 (low number of samples sequenced that day)----
+shared_sig_otus <- intersect_all(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1, sig_otu_day3, sig_otu_day4, sig_otu_day5, sig_otu_day6, sig_otu_day7, sig_otu_day9)
+# 9 OTUs: [1] "Parasutterella (OTU 26)" "Burkholderiales (OTU 34)" "Betaproteobacteria (OTU 58)" "Lactobacillus (OTU 49)"     
+# "Parabacteroides (OTU 5)" "Lactobacillus (OTU 31)" "Bacteroides (OTU 2)" "Proteus (OTU 16)" "Ruminococcaceae (OTU 152)" 
+
+#Shared significant genera across D-1 to D1----
+shared_sig_otus_Dn1toD1 <- intersect_all(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1)
+# 12 OTUs: [1] "Parasutterella (OTU 26)" "Burkholderiales (OTU 34)" "Betaproteobacteria (OTU 58)" "Lactobacillus (OTU 49)"     
+# "Parabacteroides (OTU 5)" "Lactobacillus (OTU 31)" "Bacteroides (OTU 2)" "Lachnospiraceae (OTU 130)"  
+# "Proteus (OTU 16)" "Lactobacillus (OTU 6)" "Enterococcus (OTU 23)" "Ruminococcaceae (OTU 152)"   
+
+#Function to plot a list of OTUs across sources of mice at a specific timepoint:
+#Arguments: otus = list of otus to plot; timepoint = day of the experiment to plot
+plot_otus_dx <- function(otus, timepoint){
+  agg_otu_data %>% 
+    filter(otu %in% otus) %>% 
+    filter(day == timepoint) %>% 
+    mutate(otu=factor(otu, levels=otus)) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
+    ggplot(aes(x= otu, y=agg_rel_abund, color=vendor))+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    geom_boxplot(outlier.shape = NA, size = 1.2)+
+    #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) + #Too busy when indiv. mice are shown
+    labs(title=NULL, 
+         x=NULL,
+         y="Relative abundance (%)")+
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
+    coord_flip()+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5),
+          axis.text.y = element_text(face = "italic"), #Have the OTUs show up as italics
+          text = element_text(size = 16)) # Change font size for entire plot
+}
+
+#Plots of the relative abundances of OTUs that significantly vary across sources of mice from day -1 to day 1----
+Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1) 
+save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 6, base_width = 8)
+Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) 
+save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 6, base_width = 8)
+Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) 
+save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 6, base_width = 8)
+
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
 pairwise_day_otu <- function(timepoint, sig_otu_dayX){
   otu_stats <- agg_otu_data %>% 
