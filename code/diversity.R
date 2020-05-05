@@ -171,6 +171,7 @@ shannon_dx_plot <- function(timepoint){
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
     geom_boxplot(outlier.shape = NA, size = 1.2)+
     geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
     labs(title=NULL, 
@@ -225,6 +226,7 @@ sobs_dx_plot <- function(timepoint){
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_boxplot(outlier.shape = NA, size = 1.2)+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
   geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
   labs(title=NULL, 
        x="Source",
@@ -244,7 +246,7 @@ pairwise_sobs_dayn1_plot <- plot_format_richness %>%
 #No pairwise comparisons were significant at day -1.  
 # Plot of richness across sources of mice on day -1
 sobs_dn1 <- sobs_dx_plot(-1)
-save_plot("results/figures/richness_dn1.png", richness_dn1) #Use save_plot instead of ggsave because it works better with cowplot
+save_plot("results/figures/richness_dn1.png", sobs_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 0 p.values to add manually
 pairwise_sobs_day0_plot <- plot_format_richness %>% 
