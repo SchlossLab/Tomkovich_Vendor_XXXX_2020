@@ -8,7 +8,7 @@ e <- ggdraw() + draw_image("results/figures/pcoa_dn1_taconic.png")
 f <- ggdraw() + draw_image("results/figures/pcoa_dn1_envigo.png")
 
 plot_grid(a, b, c, d, e, f, labels = "AUTO", label_size = 12, ncol=2)+
-  ggsave("results/figures/figure_S2.pdf", width=3.875, height=5)+
-  ggsave("submission/figure_S2.pdf", width=3.875, height=5)
+  ggsave("results/figures/figure_S2.pdf", width=3.5, height=3.5)+
+  ggsave("submission/figure_S2.pdf", width=3.5, height=3.5)
 
 

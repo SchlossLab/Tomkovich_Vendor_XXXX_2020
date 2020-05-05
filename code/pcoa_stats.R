@@ -211,15 +211,18 @@ write_tsv("data/process/adonis_dn1-1.tsv")
 #Examine initial day -1 vendor communities separately----
 
 #Function to plot pcoa data for each source of mice at day -1, colored according to experiment with shapes to differentiate cage----
-pcoa_vendor <- function(df, source){
+pcoa_vendor <- function(df, source, label){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = experiment, shape = cage)) +
-    geom_point(size=2, alpha = 0.4) +
+    geom_point(size=4, alpha = 0.4) +
     coord_fixed() + 
-    labs(x="PCoA 1",
+    labs(title = label,
+         x="PCoA 1",
          y="PCoA 2",
          color= "Experiment",
          shape = "Cage") +
-    theme_classic()
+    theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5),
+          text = element_text(size = 16))
   save_plot(filename = paste0("results/figures/pcoa_dn1_", source,".png"), plot)
 }
 
@@ -245,7 +248,7 @@ s_dn1_pcoa <- read_tsv("data/mothur/d-1/schloss/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-s_dn1 <- pcoa_vendor(s_dn1_pcoa, "schloss")
+s_dn1 <- pcoa_vendor(s_dn1_pcoa, "schloss", "Schloss")
 
 # Read in thetayc distance matrix that represents Day -1 Young samples----
 y_dn1_dist <- read_dist("data/mothur/d-1/young/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -269,7 +272,7 @@ y_dn1_pcoa <- read_tsv("data/mothur/d-1/young/vendors.trim.contigs.good.unique.g
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-y_dn1 <- pcoa_vendor(y_dn1_pcoa, "young")
+y_dn1 <- pcoa_vendor(y_dn1_pcoa, "young", "Young")
 
 # Read in thetayc distance matrix that represents Day -1 Jackson samples----
 j_dn1_dist <- read_dist("data/mothur/d-1/jackson/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -293,7 +296,7 @@ j_dn1_pcoa <- read_tsv("data/mothur/d-1/jackson/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-j_dn1 <- pcoa_vendor(j_dn1_pcoa, "jackson")
+j_dn1 <- pcoa_vendor(j_dn1_pcoa, "jackson", "Jackson")
 
 # Read in thetayc distance matrix that represents Day -1 Charles River samples----
 c_dn1_dist <- read_dist("data/mothur/d-1/charles/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -317,7 +320,7 @@ c_dn1_pcoa <- read_tsv("data/mothur/d-1/charles/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-c_dn1 <- pcoa_vendor(c_dn1_pcoa, "charles_river")
+c_dn1 <- pcoa_vendor(c_dn1_pcoa, "charles_river", "Charles River")
 
 # Read in thetayc distance matrix that represents Day -1 Taconic samples----
 t_dn1_dist <- read_dist("data/mothur/d-1/taconic/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -341,7 +344,7 @@ t_dn1_pcoa <- read_tsv("data/mothur/d-1/taconic/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-t_dn1 <- pcoa_vendor(t_dn1_pcoa, "taconic")
+t_dn1 <- pcoa_vendor(t_dn1_pcoa, "taconic", "Taconic")
 
 # Read in thetayc distance matrix that represents Day -1 Envigo samples----
 e_dn1_dist <- read_dist("data/mothur/d-1/envigo/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -365,7 +368,7 @@ e_dn1_pcoa <- read_tsv("data/mothur/d-1/envigo/vendors.trim.contigs.good.unique.
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-e_dn1 <- pcoa_vendor(e_dn1_pcoa, "envigo")
+e_dn1 <- pcoa_vendor(e_dn1_pcoa, "envigo", "Envigo")
 
 #Merge adonis results for each source of mice together to create one final results table
 rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
