@@ -116,7 +116,7 @@ tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:
 #Function to plot pcoa data for all sources of mice at a specific timepoint----
 plot_pcoa <- function(df, timepoint){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = vendor)) +
-    geom_point(size=2, alpha = 0.4) +
+    geom_point(size=4, alpha = 0.4) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
@@ -124,9 +124,11 @@ plot_pcoa <- function(df, timepoint){
     coord_fixed() + 
     labs(x="PCoA 1",
          y="PCoA 2",
-         color= "Source",
-         alpha= "Day") +
-    theme_classic()
+         color= "Source") +
+    theme_classic()+
+    theme(plot.title = element_text(hjust = 0.5),
+          text = element_text(size = 16),
+          legend.position = "bottom")
   save_plot(filename = paste0("results/figures/pcoa_day", timepoint,".png"), plot)
 }
 
