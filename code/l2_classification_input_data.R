@@ -30,4 +30,26 @@ class_data_dn1 <- select_timepoint(-1)
 class_data_d1 <- select_timepoint(1)
 class_data_d0 <- select_timepoint(0)
 
+#Make a .csv of sample ids used for each set of input data to use in cfu_plot.R and visualize
+#balance of cleared versus colonized input data for each model
+input_ids <- function(timepoint){
+  data <- inner_join(metadata, shared, by=c("id"="Group")) %>% 
+    filter(day == timepoint) %>% 
+    drop_na() %>%
+    pull(id) 
+}
+input_ids_data_dn1 <- input_ids(-1)
+input_ids_data_d0 <- input_ids(0)
+input_ids_data_d1 <- input_ids(1)
+
+#Combine all ids into table labeled by which day they correspond to:
+classification_ids_dn1 <- tibble(day_n1 = input_ids(-1)) %>% 
+  write_csv(paste0("data/process/classification_input_ids_dn1.csv"))
+classification_ids_d0 <- tibble(day_0 = input_ids(0)) %>% 
+  write_csv(paste0("data/process/classification_input_ids_d0.csv"))
+classification_ids_d1 <- tibble(day_1 = input_ids(1)) %>% 
+  write_csv(paste0("data/process/classification_input_ids_d1.csv"))
+
 ###################################################################
+
+

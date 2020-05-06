@@ -237,3 +237,77 @@ d7_status <- cfu_data_final %>%
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) # Center title
 save_plot(filename = paste0("results/figures/c.diff_status_d7.png"), plot = d7_status, base_aspect_ratio = 2)
+
+#Plot of colonization status at day 7, separated by day 7 colonization status
+d7_title <- c(expression(paste(italic("C. difficile"), " status on Day 7"))) #Expression variable for the title so that bacteria name will be in italics
+d7_status_binary <- cfu_data_final %>% 
+  filter(day == 7) %>% 
+  mutate(clearance_status_d7 = case_when(clearance_status_d7 == "colonized" ~ "colonized", #Redo labeling so it makes sense on plot
+                                         clearance_status_d7 == "not_detectable" ~ "cleared")) %>% 
+  ggplot(aes(x=clearance_status_d7, group=vendor))+
+  geom_bar()+
+  ylim(0, 25)+
+  labs(title=d7_title,
+       x=NULL,
+       y="Number of mice")+ 
+  theme_classic()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) # Center title
+save_plot(filename = paste0("results/figures/c.diff_status_d7_binary.png"), plot = d7_status_binary, base_aspect_ratio = 2)
+
+#Plots of day 7 colonization status input data used to build the logistic regression classification models
+
+#For day -1 mice with sequence data
+dn1_classification_ids <- read_csv("data/process/classification_input_ids_dn1.csv") %>% pull(day_n1)
+d7_title <- c(expression(paste("Day 7 ", italic("C. difficile"), " status for day -1 input data"))) #Expression variable for the title so that bacteria name will be in italics
+d7_status_dn1_input <- metadata %>% #Use metadata because day-1 did not have any CFU data for it and is filtered out of cfu_data_final
+  filter(id %in% dn1_classification_ids) %>% 
+  mutate(clearance_status_d7 = case_when(clearance_status_d7 == "colonized" ~ "colonized", #Redo labeling so it makes sense on plot
+                                         clearance_status_d7 == "not_detectable" ~ "cleared")) %>% 
+  ggplot(aes(x=clearance_status_d7, group=vendor))+
+  geom_bar()+
+  ylim(0, 25)+
+  labs(title=d7_title,
+       x=NULL,
+       y="Number of mice")+ 
+  theme_classic()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) # Center title
+save_plot(filename = paste0("results/figures/d7_status_dn1_input.png"), plot = d7_status_dn1_input, base_aspect_ratio = 2)
+
+#For day 0 mice with sequence data
+d0_classification_ids <- read_csv("data/process/classification_input_ids_d0.csv") %>% pull(day_0)
+d7_title <- c(expression(paste("Day 7 ", italic("C. difficile"), " status for day 0 input data"))) #Expression variable for the title so that bacteria name will be in italics
+d7_status_d0_input <- metadata %>% #Use metadata because day-1 did not have any CFU data for it and is filtered out of cfu_data_final
+  filter(id %in% d0_classification_ids) %>% 
+  mutate(clearance_status_d7 = case_when(clearance_status_d7 == "colonized" ~ "colonized", #Redo labeling so it makes sense on plot
+                                         clearance_status_d7 == "not_detectable" ~ "cleared")) %>% 
+  ggplot(aes(x=clearance_status_d7, group=vendor))+
+  geom_bar()+
+  ylim(0, 25)+
+  labs(title=d7_title,
+       x=NULL,
+       y="Number of mice")+ 
+  theme_classic()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) # Center title
+save_plot(filename = paste0("results/figures/d7_status_d0_input.png"), plot = d7_status_d0_input, base_aspect_ratio = 2)
+
+#For day 1 mice with sequence data
+d1_classification_ids <- read_csv("data/process/classification_input_ids_d1.csv") %>% pull(day_1)
+d7_title <- c(expression(paste("Day 7 ", italic("C. difficile"), " status for day 1 input data"))) #Expression variable for the title so that bacteria name will be in italics
+d7_status_d1_input <- metadata %>% #Use metadata because day-1 did not have any CFU data for it and is filtered out of cfu_data_final
+  filter(id %in% d1_classification_ids) %>% 
+  mutate(clearance_status_d7 = case_when(clearance_status_d7 == "colonized" ~ "colonized", #Redo labeling so it makes sense on plot
+                                         clearance_status_d7 == "not_detectable" ~ "cleared")) %>% 
+  ggplot(aes(x=clearance_status_d7, group=vendor))+
+  geom_bar()+
+  ylim(0, 25)+
+  labs(title=d7_title,
+       x=NULL,
+       y="Number of mice")+ 
+  theme_classic()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) # Center title
+save_plot(filename = paste0("results/figures/d7_status_d1_input.png"), plot = d7_status_d1_input, base_aspect_ratio = 2)
+
