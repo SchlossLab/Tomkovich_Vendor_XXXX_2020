@@ -97,7 +97,7 @@ kruskal_wallis_f <- function(timepoint){
   mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
   unnest(c(model, mean)) %>% 
   ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple families
   family_stats_adjust <- family_stats %>% 
     select(family, statistic, p.value, parameter, method, Schloss, Young, Jackson, `Charles River`, Taconic, Envigo) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
@@ -157,6 +157,77 @@ save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_a
 Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) 
 save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_aspect_ratio = 2)
 
+# Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
+pairwise_day_family <- function(timepoint, sig_family_dayX){
+  family_stats <- agg_family_data %>% 
+    filter(day == timepoint) %>%
+    select(vendor, family, agg_rel_abund) %>% 
+    group_by(family) %>% 
+    nest() %>% 
+    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
+    mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
+    unnest(c(model, mean)) %>% 
+    ungroup()
+  pairwise_stats <- family_stats %>% 
+    filter(family %in% sig_family_dayX) %>% 
+    group_by(family) %>% 
+    mutate(model=map(data, ~pairwise.wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor), p.adjust.method="BH") %>% 
+                       tidy() %>% 
+                       mutate(compare=paste(group1, group2, sep="-")) %>% 
+                       select(-group1, -group2) %>% 
+                       pivot_wider(names_from=compare, values_from=p.value)
+    )
+    ) %>% 
+    unnest(model) %>% 
+    select(-data, -parameter, -statistic, -p.value) %>% #Get rid of p.value since it's the unadjusted version
+    write_tsv(path = paste0("data/process/family_stats_day_", timepoint, "_sig.tsv"))
+  #Format pairwise stats to use with ggpubr package
+  plot_format_stats <- pairwise_stats %>% 
+    select(-method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+    group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
+    lapply(tidy_pairwise_family) %>% 
+    bind_rows()
+  return(plot_format_stats)  
+}
+#Perform pairwise comparisons for day -1, 0, and 1. When mice are undergoing greatest perturbations (clindamycin administration, followed by C. difficile challenge)
+family_dayn1_stats <- pairwise_day_family(-1, `sig_family_day-1`)
+family_day0_stats <- pairwise_day_family(0, sig_family_day0)
+family_day1_stats <- pairwise_day_family(1, sig_family_day1)
+
+#Combine tables of Kruskal-Wallis and Wilcoxan rank sum pairwise comparisons between sources of mice for day -1 to day 0 (3 timepoints used as input data for logistic regression models----
+#Pull in day -1 tables:
+w_sig_dn1 <- read_tsv(file="data/process/family_stats_day_-1_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_dn1 <- read_tsv(file="data/process/family_stats_day_-1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_dn1, by = c("family")) %>% 
+  mutate(day = -1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Pull in day 0 tables:
+w_sig_d0 <- read_tsv(file="data/process/family_stats_day_0_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_d0 <- read_tsv(file="data/process/family_stats_day_0.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_d0, by = c("family")) %>% 
+  mutate(day = 0) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Pull in day 1 tables:
+w_sig_d1 <- read_tsv(file="data/process/family_stats_day_1_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_d1 <- read_tsv(file="data/process/family_stats_day_1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_d1, by = c("family")) %>% 
+  mutate(day = 1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
+family_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
+  write_tsv(path = paste0("data/process/family_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
 
 #Function to test at the genus level:
 kruskal_wallis_g <- function(timepoint){
@@ -169,7 +240,7 @@ kruskal_wallis_g <- function(timepoint){
     mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple genera
   genus_stats_adjust <- genus_stats %>% 
     select(genus, statistic, p.value, parameter, method, Schloss, Young, Jackson, `Charles River`, Taconic, Envigo) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
@@ -204,7 +275,7 @@ kruskal_wallis_otu <- function(timepoint){
     mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple OTUs
   otu_stats_adjust <- otu_stats %>% 
     select(otu, statistic, p.value, parameter, method, Schloss, Young, Jackson, `Charles River`, Taconic, Envigo) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
@@ -289,11 +360,11 @@ pairwise_day_otu <- function(timepoint, sig_otu_dayX){
     )
     ) %>% 
     unnest(model) %>% 
-    select(-data, -parameter, -statistic) %>% 
+    select(-data, -parameter, -statistic, -p.value) %>% #Get rid of p.value since it's the unadjusted version
     write_tsv(path = paste0("data/process/otu_stats_day_", timepoint, "_sig.tsv"))
   #Format pairwise stats to use with ggpubr package
   plot_format_stats <- pairwise_stats %>% 
-    select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+    select(-method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
     group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
     lapply(tidy_pairwise_otu) %>% 
     bind_rows()
@@ -304,10 +375,45 @@ otu_dayn1_stats <- pairwise_day_otu(-1, `sig_otu_day-1`)
 otu_day0_stats <- pairwise_day_otu(0, sig_otu_day0)
 otu_day1_stats <- pairwise_day_otu(1, sig_otu_day1)
 
-# Plot Otus of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
-#Function to plot 1 significant genus relative abundances across vendors at a specific timepoint----
+#Combine tables of Kruskal-Wallis and Wilcoxan rank sum pairwise comparisons between sources of mice for day -1 to day 0 (3 timepoints used as input data for logistic regression models----
+#Pull in day -1 tables:
+w_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_dn1, by = c("otu")) %>% 
+  mutate(day = -1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Pull in day 0 tables:
+w_sig_d0 <- read_tsv(file="data/process/otu_stats_day_0_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_d0 <- read_tsv(file="data/process/otu_stats_day_0.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_d0, by = c("otu")) %>% 
+  mutate(day = 0) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Pull in day 1 tables:
+w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1_sig.tsv") %>%
+  select(-method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) #Remove duplicate columns
+#Combine Kruskal-Wallis and Wilcoxan rank sum pairwise for each day
+kw_w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  inner_join(w_sig_d1, by = c("otu")) %>% 
+  mutate(day = 1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+
+#Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
+otu_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
+  write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
+
+# Plot OTUs of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
+#Function to plot 1 significant OTU relative abundance across sources of mice at a specific timepoint----
 #Arguments:
-# name = name of genus to plot. Example: Otu
+# name = name of OTU to plot.
 # timepoint = timepoint to be analyzed
 plot_otu_timepoint <- function(name, timepoint, stats){
   plot_otu <- agg_otu_data %>% 
@@ -395,252 +501,97 @@ Otu16_d0_stats <- otu_day0_stats %>%
   filter(otu == "Proteus (OTU 16)" & p.adj <= 0.05) %>% 
   mutate(p.adj=round(p.adj, digits = 4)) %>% 
   mutate(y.position = c(1.4, 1.1, .8, .5, .2)) #5 pairwise sig.
-  mutate(y.position = c(.2, .5, .8, 1.1, 1.4)) 
 #Otu 16 plot----
 plot_otu_timepoint("Proteus (OTU 16)", 0, Otu16_d0_stats)
 
 
-#Kruskal_wallis test for differences within a single source of mice across time at different taxonomic levels with Benjamini-Hochburg correction
+#Wilcoxan Rank Sum test for relative abundance differences within a single source of mice after clindamycin treatment (day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
 mouse_sources <- levels(metadata$vendor)
 #Function to test at the family level:
-kw_day_f <- function(source){
+w_day_f <- function(source){
   family_stats <- agg_family_data %>% 
     filter(vendor == source) %>%
+    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
     select(day, family, agg_rel_abund) %>% 
     group_by(family) %>% 
     nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple families
   family_stats_adjust <- family_stats %>% 
-    select(family, statistic, p.value, parameter, method, `-1`, `0`, `1`,`2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`) %>% 
+    select(family, statistic, p.value, method, alternative, `-1`, `0`) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/family_stats_time_", source, ".tsv"))
+    write_tsv(path = paste0("data/process/family_stats_dn1to0_", source, ".tsv"))
 }
 
-# Perform kruskal wallis tests at the genus level for all days of the experiment that were sequenced----
+# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the family level within each source of mice----
 for (s in mouse_sources){
-  kw_day_f(s)
+  w_day_f(s)
   #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/family_stats_time_", s, ".tsv"))
+  stats <- read_tsv(file = paste0("data/process/family_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_family_", s, sep = "") 
   assign(name, pull_significant_taxa(stats, family))
 }
-#Shared significant families (identified by comparing across timepoints within a specific source of mice) across groups of mice----
+
+#Combine stats for each individual source for families that varied from day -1 to 1 with adjusted p.values < 0.05----
+#Read in individual tables:
+for (s in mouse_sources){
+  name <- paste("w_sig_family_", s, sep = "") 
+  assign(name, read_tsv(file = paste0("data/process/family_stats_dn1to0_", s, ".tsv")))
+}
+#Filter tables so that only significant taxa are shown and make a new column to note source
+w_sig_family_Schloss <- w_sig_family_Schloss %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Schloss")
+w_sig_family_Young <- w_sig_family_Young %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Young")
+w_sig_family_Jackson <- w_sig_family_Jackson %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Jackson")
+`w_sig_family_Charles River` <- `w_sig_family_Charles River` %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Charles River")
+w_sig_family_Taconic <- w_sig_family_Taconic %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Taconic")
+w_sig_family_Envigo <- w_sig_family_Envigo %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Envigo")
+#Combine tables for all sources of mice
+family_stats_sources_combined <- rbind(w_sig_family_Schloss, w_sig_family_Young, w_sig_family_Jackson, 
+                                    `w_sig_family_Charles River`, w_sig_family_Taconic, w_sig_family_Envigo) %>% 
+  arrange(family) %>% 
+  write_tsv(path = paste0("data/process/family_dn1to0_stats_all_sources.tsv")) #Save combined dataframe as a .tsv
+
+#Families with relative abundances significantly altered by clindamycin treatment that are shared across sources of mice----
 #Shared families across all sources of mice:
 shared_all_sources_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_all_sources_families) # 0 familes that significantly changed over time our shared between all sources of mice
+summary(shared_all_sources_families) # 6 familes 
+#"Lactobacillaceae", "Bacteroidaceae", "Enterobacteriaceae", "Lachnospiraceae", "Ruminococcaceae", "Porphyromonadaceae"
+
+#Compare to the list of families with relative abundances that significantly vary across sources of mice on day -1, 0, and 1 from above:
+families_shared <- intersect_all(`shared_all_sources_families`, `shared_sig_families_Dn1toD1`)
+# "Bacteroidaceae", "Lachnospiraceae", "Porphyromonadaceae"
 
 #Shared families across Schloss and Young lab mice:
 shared_Schloss_Young_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`)
-summary(shared_Schloss_Young_families) #16 families that significantly change over time are shared between Schloss & Young mice
+summary(shared_Schloss_Young_families) #14 families 
 
 #Shared families across Schloss, Young and Charles River mice:
 shared_Schloss_Young_CR_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Charles River`)
-summary(shared_Schloss_Young_CR_families) #8 families that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Enterobacteriaceae, Clostridiales Unclassified, Lachnospiraceae, Ruminococcaceae, Firmicutes Unclassified, Coriobacteriaceae, Clostridia Unclassified, Unclassified
+summary(shared_Schloss_Young_CR_families) #8 families 
 
 # Shared families across Jackson, Taconic and Envigo mice:
 shared_JAX_Tac_Env_families <- intersect_all(`sig_family_Jackson`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_JAX_Tac_Env_families) #1 family that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Peptostreptococcaceae
+summary(shared_JAX_Tac_Env_families) #6 families 
 
 #Shared families across mice purchased from 4 vendors:
 shared_4_vendors_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_4_vendors_families) #0 families 
-
-#Shared families across Jackson and Charles River mice:
-shared_JAX_CR_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`)
-summary(shared_JAX_CR_families) #9 families
-
-#Shared families across Taconic and Envigo mice:
-shared_Tac_Env_families <- intersect_all(`sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_Tac_Env_families) #1 family: Peptostreptococcaceae
-
-#Function to test at the genus level:
-kw_day_g <- function(source){
-  genus_stats <- agg_genus_data %>% 
-    filter(vendor == source) %>%
-    select(day, genus, agg_rel_abund) %>% 
-    group_by(genus) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-  #Adjust p-values for testing multiple days
-  genus_stats_adjust <- genus_stats %>% 
-    select(genus, statistic, p.value, parameter, method, `-1`, `0`, `1`,`2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/genus_stats_time_", source, ".tsv"))
-}
-
-# Perform kruskal wallis tests at the genus level for all days of the experiment that were sequenced----
-for (s in mouse_sources){
-  kw_day_g(s)
-  #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/genus_stats_time_", s, ".tsv"))
-  name <- paste("sig_genus_", s, sep = "") 
-  assign(name, pull_significant_taxa(stats, genus))
-}
-
-# Number of significant genera for each source of mice:
-summary(`sig_genus_Schloss`) # 25 significant genera
-summary(`sig_genus_Young`) # 29 significant genera
-summary(`sig_genus_Jackson`) # 28 significant genera
-summary(`sig_genus_Charles River`) # 17 significant genera
-summary(`sig_genus_Taconic`) # 3 significant genera
-summary(`sig_genus_Envigo`) # 18 significant genera
-
-#Shared significant genera (identified by comparing across timepoints within a specific source of mice) across groups of mice----
-#Shared genera across all sources of mice:
-shared_all_sources <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_all_sources) # 1 genus that significantly change over time and shared by all sources of mice
-#Peptostreptococcaceae Unclassified is the 1 genus that is significantly changing over time and shared across all sources of mice. This probably includes the OTU for C. difficile so this makes sense
-
-#Shared genera across Schloss and Young lab mice:
-shared_Schloss_Young <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`)
-summary(shared_Schloss_Young) #22 genera that significantly change over time are shared between Schloss & Young mice
-
-#Shared genera across Schloss, Young and Charles River mice:
-shared_Schloss_Young_CR <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Charles River`)
-summary(shared_Schloss_Young_CR) #12 genera that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Acetatifactor, Enterobacteriaceae Unclassified, Lachnospiraceae Unclassified, Clostridiales Unclassified, Oscillibacter, Peptostreptococcaceae Unclassified, Ruminococcaceae Unclassified, Firmicutes Unclassified, Pseudoflavonifractor, Clostridium XIVb, Clostridia Unclassified, Unclassified  
-
-#Shared genera across Jackson, Taconic and Envigo mice:
-shared_JAX_Tac_Env <- intersect_all(`sig_genus_Jackson`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_JAX_Tac_Env) #1 genus that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Peptostreptococcaceae Unclassified
-
-#Shared genera across mice purchased from 4 vendors:
-shared_4_vendors <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_4_vendors) #1 genus Peptostreptococcaceae Unclassified
-
-#Shared genera across Jackson and Charles River mice:
-shared_JAX_CR <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`)
-summary(shared_JAX_CR) #13 genera
-
-#Shared genera across Taconic and Envigo mice:
-shared_Tac_Env <- intersect_all(`sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_Tac_Env) #1 genus Peptostreptococcaceae Unclassified
-
-#Function to test at the otu level:
-kw_day_otu <- function(source){
-  otu_stats <- agg_otu_data %>% 
-    filter(vendor == source) %>%
-    select(day, otu, agg_rel_abund) %>% 
-    group_by(otu) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-  #Adjust p-values for testing multiple days
-  otu_stats_adjust <- otu_stats %>% 
-    select(otu, statistic, p.value, parameter, method, `-1`, `0`, `1`,`2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/otu_stats_time_", source, ".tsv"))
-}
-
-# Perform kruskal wallis tests at the otu level for all days of the experiment that were sequenced----
-for (s in mouse_sources){
-  kw_day_otu(s)
-  #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/otu_stats_time_", s, ".tsv"))
-  name <- paste("sig_otu_", s, sep = "") 
-  assign(name, pull_significant_taxa(stats, otu))
-}
-
-#Shared significant otus (identified by comparing across timepoints within a specific source of mice) across groups of mice----
-#Shared otus across all sources of mice:
-shared_all_sources <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`, `sig_otu_Jackson`, `sig_otu_Charles River`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_all_sources) # 0 otus that significantly change over time and shared by all sources of mice
-
-#Shared otus across Schloss and Young lab mice:
-shared_Schloss_Young <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`)
-summary(shared_Schloss_Young) #86 otus that significantly change over time are shared between Schloss & Young mice
-
-#Shared otus across Schloss, Young and Charles River mice:
-shared_Schloss_Young_CR <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`, `sig_otu_Charles River`)
-summary(shared_Schloss_Young_CR) #23 otus that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Acetatifactor, Enterobacteriaceae Unclassified, Lachnospiraceae Unclassified, Clostridiales Unclassified, Oscillibacter, Peptostreptococcaceae Unclassified, Ruminococcaceae Unclassified, Firmicutes Unclassified, Pseudoflavonifractor, Clostridium XIVb, Clostridia Unclassified, Unclassified  
-
-#Shared otus across Jackson, Taconic and Envigo mice:
-shared_JAX_Tac_Env <- intersect_all(`sig_otu_Jackson`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_JAX_Tac_Env) #1 otu that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Otu0165 Lachnospiraceae unclassified
-
-#Shared otus across mice purchased from 4 vendors:
-shared_4_vendors <- intersect_all(`sig_otu_Jackson`, `sig_otu_Charles River`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_4_vendors) #0 otus
-
-#Shared otus across Jackson and Charles River mice:
-shared_JAX_CR <- intersect_all(`sig_otu_Jackson`, `sig_otu_Charles River`)
-summary(shared_JAX_CR) #21 otus
-
-#Shared otus across Taconic and Envigo mice:
-shared_Tac_Env <- intersect_all(`sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_Tac_Env) #1 otu #Otu0165 Lachnospiraceae unclassified
-
-#Kruskal_wallis test for differences within a single source of mice across initial timepoints (-1,0,1) at different taxonomic levels with Benjamini-Hochburg correction----
-
-#Function to test at the family level:
-kw_day_f <- function(source){
-  family_stats <- agg_family_data %>% 
-    filter(day %in% c(-1, 0, 1)) %>% #Limit time to just the days where the greatest perturbations were occuring
-    filter(vendor == source) %>%
-    select(day, family, agg_rel_abund) %>% 
-    group_by(family) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-  #Adjust p-values for testing multiple days
-  family_stats_adjust <- family_stats %>% 
-    select(family, statistic, p.value, parameter, method, `-1`, `0`, `1`) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/family_stats_lim.time_", source, ".tsv"))
-}
-
-# Perform kruskal wallis tests at the family level for the days of the experiment the days where the greatest perturbations were occuring----
-for (s in mouse_sources){
-  kw_day_f(s)
-  #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/family_stats_lim.time_", s, ".tsv"))
-  name <- paste("sig_family_", s, sep = "") 
-  assign(name, pull_significant_taxa(stats, family))
-}
-#Shared significant families (identified by comparing across timepoints within a specific source of mice) across groups of mice----
-#Shared families across all sources of mice:
-shared_all_sources_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_all_sources_families) # Clostridia unclassified is the only family that significantly changed over time our shared between all sources of mice
-
-#Shared families across Schloss and Young lab mice:
-shared_Schloss_Young_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`)
-summary(shared_Schloss_Young_families) #12 families that significantly change over time are shared between Schloss & Young mice
-#Includes Enterobacteriaceae, Peptostreptococcaceae, Clostridiales unclassified, Firmicutes unclassified, Lactobacillaceae, Bifidobacteriaceae, Coriobacteriacea
-#Clostridia unclassified, Porphyromonadaceae, Lachnospiraceae, Verrucomicrobiaceae, Anaeroplasmataceae
-
-#Shared families across Schloss, Young and Charles River mice:
-shared_Schloss_Young_CR_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Charles River`)
-summary(shared_Schloss_Young_CR_families) #6 families that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes 
-
-# Shared families across Jackson, Taconic and Envigo mice:
-shared_JAX_Tac_Env_families <- intersect_all(`sig_family_Jackson`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_JAX_Tac_Env_families) #4 families that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Peptostreptococcaceae, Coriobacteriaceae, Clostridia unclassified, Enterococcaceae
-
-#Shared families across mice purchased from 4 vendors:
-shared_4_vendors_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_4_vendors_families) #2 families: Clostridia unclassified, Enterococcaceae 
+summary(shared_4_vendors_families) #6 families 
 
 #Shared families across Jackson and Charles River mice:
 shared_JAX_CR_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`)
@@ -648,134 +599,200 @@ summary(shared_JAX_CR_families) #8 families
 
 #Shared families across Taconic and Envigo mice:
 shared_Tac_Env_families <- intersect_all(`sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_Tac_Env_families) #5 families: Peptostreptococcaceae, Clostridia unclassified, Enterococcaceae, Coriobacteriaceae, Deferribacteriaceae
+summary(shared_Tac_Env_families) #7 families
+
+#Plot of the families with significantly different relative abundances post clindamycin treatment across all sources of mice:----
+clind_impacted_families_plot <- agg_family_data %>% 
+    filter(family %in% shared_all_sources_families) %>% 
+    filter(day == -1 | day == 0) %>% 
+    mutate(family=factor(family, levels=shared_all_sources_families)) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
+    ggplot(aes(x= family, y=agg_rel_abund, color=vendor))+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    geom_boxplot(outlier.shape = NA, size = 1.2)+
+    #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+    labs(title=NULL, 
+         x=NULL,
+         y="Relative abundance (%)")+
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
+    coord_flip()+
+    theme_classic()+
+    facet_wrap(~day, dir = "v")+
+    theme(plot.title=element_text(hjust=0.5),
+          axis.text.y = element_text(face = "italic"), #Have the families show up as italics
+          text = element_text(size = 16),# Change font size for entire plot
+          strip.background = element_blank(),
+          legend.position = "bottom") 
+save_plot(filename = paste0("results/figures/clind_impacted_families_plot.png"), clind_impacted_families_plot, base_height = 8, base_width = 5)
+  
 
 #Function to test at the genus level:
-kw_day_g <- function(source){
+w_day_g <- function(source){
   genus_stats <- agg_genus_data %>% 
-    filter(day %in% c(-1, 0, 1)) %>% #Limit time to just the days where the greatest perturbations were occuring
     filter(vendor == source) %>%
+    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
     select(day, genus, agg_rel_abund) %>% 
     group_by(genus) %>% 
     nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple genera
   genus_stats_adjust <- genus_stats %>% 
-    select(genus, statistic, p.value, parameter, method, `-1`, `0`, `1`) %>% 
+    select(genus, statistic, p.value, method, alternative, `-1`, `0`) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/genus_stats_lim.time_", source, ".tsv"))
+    write_tsv(path = paste0("data/process/genus_stats_dn1to0_", source, ".tsv"))
 }
 
-# Perform kruskal wallis tests at the genus level for the days of the experiment the days where the greatest perturbations were occuring----
+# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the genus level within each source of mice----
 for (s in mouse_sources){
-  kw_day_g(s)
+  w_day_g(s)
   #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/genus_stats_lim.time_", s, ".tsv"))
+  stats <- read_tsv(file = paste0("data/process/genus_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_genus_", s, sep = "") 
   assign(name, pull_significant_taxa(stats, genus))
 }
 
 # Number of significant genera for each source of mice:
-summary(`sig_genus_Schloss`) # 21 significant genera
-summary(`sig_genus_Young`) # 25 significant genera
-summary(`sig_genus_Jackson`) # 22 significant genera
-summary(`sig_genus_Charles River`) # 23 significant genera
-summary(`sig_genus_Taconic`) # 10 significant genera
-summary(`sig_genus_Envigo`) # 19 significant genera
+summary(`sig_genus_Schloss`) # 9 significant genera
+summary(`sig_genus_Young`) # 22 significant genera
+summary(`sig_genus_Jackson`) # 7 significant genera
+summary(`sig_genus_Charles River`) # 12 significant genera
+summary(`sig_genus_Taconic`) # 25 significant genera
+summary(`sig_genus_Envigo`) # 12 significant genera
 
-#Shared significant genera (identified by comparing across timepoints within a specific source of mice) across groups of mice----
+#Genera with relative abundances significantly altered by clindamycin treatment that are shared across sources of mice----
 #Shared genera across all sources of mice:
 shared_all_sources <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
 summary(shared_all_sources) # 3 genera that significantly change over time and shared by all sources of mice
-# Peptostreptococcaceae unclassified, Oscillibacter, Clostridia unclassified
+#"Lactobacillus", "Bacteroides", "Lachnospiraceae unclassified"
 
 #Shared genera across Schloss and Young lab mice:
 shared_Schloss_Young <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`)
-summary(shared_Schloss_Young) #20 genera that significantly change over time are shared between Schloss & Young mice
+summary(shared_Schloss_Young) #9 genera 
 
 #Shared genera across Schloss, Young and Charles River mice:
 shared_Schloss_Young_CR <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Charles River`)
-summary(shared_Schloss_Young_CR) #10 genera that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes   
+summary(shared_Schloss_Young_CR) #6 genera 
 
 #Shared genera across Jackson, Taconic and Envigo mice:
 shared_JAX_Tac_Env <- intersect_all(`sig_genus_Jackson`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_JAX_Tac_Env) #8 genera that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
-#Includes Peptostreptococcaceae Unclassified, Enterococcus, Porphyromonadaceae unclassified
+summary(shared_JAX_Tac_Env) #4 genera
 
 #Shared genera across mice purchased from 4 vendors:
 shared_4_vendors <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_4_vendors) #4 genera: # Peptostreptococcaceae unclassified, Oscillibacter, Clostridia unclassified, Enterococcus
+summary(shared_4_vendors) #3 genera
 
 #Shared genera across Jackson and Charles River mice:
 shared_JAX_CR <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`)
-summary(shared_JAX_CR) #13 genera
+summary(shared_JAX_CR) #4 genera
 
 #Shared genera across Taconic and Envigo mice:
 shared_Tac_Env <- intersect_all(`sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_Tac_Env) #8 genera
+summary(shared_Tac_Env) #9 genera
 
-#Function to test at the otu level:
-kw_day_otu <- function(source){
+#Function to test at the OTU level:
+w_day_o <- function(source){
   otu_stats <- agg_otu_data %>% 
-    filter(day %in% c(-1, 0, 1)) %>% #Limit time to just the days where the greatest perturbations were occuring
     filter(vendor == source) %>%
+    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
     select(day, otu, agg_rel_abund) %>% 
     group_by(otu) %>% 
     nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
-  #Adjust p-values for testing multiple days
+  #Adjust p-values for testing multiple OTUs
   otu_stats_adjust <- otu_stats %>% 
-    select(otu, statistic, p.value, parameter, method, `-1`, `0`, `1`) %>% 
+    select(otu, statistic, p.value, method, alternative, `-1`, `0`) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/otu_stats_lim.time_", source, ".tsv"))
+    write_tsv(path = paste0("data/process/otu_stats_dn1to0_", source, ".tsv"))
 }
 
-# Perform kruskal wallis tests at the otu level for the days of the experiment the days where the greatest perturbations were occuring----
+# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the OTU level within each source of mice----
 for (s in mouse_sources){
-  kw_day_otu(s)
-  #Make a list of significant genera across time for a specific source of mice  
-  stats <- read_tsv(file = paste0("data/process/otu_stats_lim.time_", s, ".tsv"))
+  w_day_o(s)
+  #Make a list of significant OTUs across time for a specific source of mice  
+  stats <- read_tsv(file = paste0("data/process/otu_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_otu_", s, sep = "") 
   assign(name, pull_significant_taxa(stats, otu))
 }
 
-#Shared significant otus (identified by comparing across timepoints within a specific source of mice) across groups of mice----
-#Shared otus across all sources of mice:
+# Number of significant genera for each source of mice:
+summary(`sig_otu_Schloss`) # 2 significant OTUs
+summary(`sig_otu_Young`) # 2 significant OTUs
+summary(`sig_otu_Jackson`) # 0 significant OTUs
+summary(`sig_otu_Charles River`) # 0 significant OTUs
+summary(`sig_otu_Taconic`) # 0 significant OTUs
+summary(`sig_otu_Envigo`) # 0 significant OTUs
+
+#Combine stats for each individual source for OTUs that varied from day -1 to 1 with adjusted p.values < 0.05----
+#Read in individual tables:
+for (s in mouse_sources){
+  name <- paste("w_sig_otu_", s, sep = "") 
+  assign(name, read_tsv(file = paste0("data/process/otu_stats_dn1to0_", s, ".tsv")))
+}
+#Filter tables so that only significant taxa are shown and make a new column to note source
+w_sig_otu_Schloss <- w_sig_otu_Schloss %>% 
+filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Schloss")
+w_sig_otu_Young <- w_sig_otu_Young %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Young")
+w_sig_otu_Jackson <- w_sig_otu_Jackson %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Jackson")
+`w_sig_otu_Charles River` <- `w_sig_otu_Charles River` %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Charles River")
+w_sig_otu_Taconic <- w_sig_otu_Taconic %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Taconic")
+w_sig_otu_Envigo <- w_sig_otu_Envigo %>% 
+  filter(p.value.adj < 0.05) %>% 
+  mutate(source = "Envigo")
+#Combine tables for all sources of mice
+otu_stats_sources_combined <- rbind(w_sig_otu_Schloss, w_sig_otu_Young, w_sig_otu_Jackson, 
+                                    `w_sig_otu_Charles River`, w_sig_otu_Taconic, w_sig_otu_Envigo) %>% 
+  write_tsv(path = paste0("data/process/otu_dn1to0_stats_all_sources.tsv")) #Save combined dataframe as a .tsv
+
+#OTUs with relative abundances significantly altered by clindamycin treatment that are shared across sources of mice----
+#Shared OTUs across all sources of mice:
 shared_all_sources <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`, `sig_otu_Jackson`, `sig_otu_Charles River`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_all_sources) # 0 otus that significantly change over time and shared by all sources of mice
+summary(shared_all_sources) # 0 OTUs 
 
-#Shared otus across Schloss and Young lab mice:
+#Shared OTUs across Schloss and Young lab mice:
 shared_Schloss_Young <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`)
-summary(shared_Schloss_Young) #68 otus that significantly change over time are shared between Schloss & Young mice
+summary(shared_Schloss_Young) #2 OTUs 
+#"Lactobacillus (OTU 6)", "Lactobacillus (OTU 18)"
 
-#Shared otus across Schloss, Young and Charles River mice:
+#Shared OTUs across Schloss, Young and Charles River mice:
 shared_Schloss_Young_CR <- intersect_all(`sig_otu_Schloss`, `sig_otu_Young`, `sig_otu_Charles River`)
-summary(shared_Schloss_Young_CR) #18 otus that significantly change over time are shared between Schloss, Young, and Charles River mice. These 3 sources grouped together (cleared faster, less weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+summary(shared_Schloss_Young_CR) #0 OTUs 
 
-#Shared otus across Jackson, Taconic and Envigo mice:
+#Shared OTUs across Jackson, Taconic and Envigo mice:
 shared_JAX_Tac_Env <- intersect_all(`sig_otu_Jackson`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_JAX_Tac_Env) #0 otu that significantly change over time are shared between Jackson, Taconic, and Envigo mice. These 3 sources grouped together (slower clearance, more weight loss) on C. diff CFU & Weight loss plots that combined the 2 experiments
+summary(shared_JAX_Tac_Env) #0 OTUs
 
-#Shared otus across mice purchased from 4 vendors:
+#Shared OTUs across mice purchased from 4 vendors:
 shared_4_vendors <- intersect_all(`sig_otu_Jackson`, `sig_otu_Charles River`, `sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_4_vendors) #0 otus
+summary(shared_4_vendors) #0 OTUss
 
 #Shared otus across Jackson and Charles River mice:
 shared_JAX_CR <- intersect_all(`sig_otu_Jackson`, `sig_otu_Charles River`)
-summary(shared_JAX_CR) #32 otus
+summary(shared_JAX_CR) #0 OTUs
 
 #Shared otus across Taconic and Envigo mice:
 shared_Tac_Env <- intersect_all(`sig_otu_Taconic`, `sig_otu_Envigo`)
-summary(shared_Tac_Env) #0 Otus
+summary(shared_Tac_Env) #0 OTUs
 
 #Function to plot OTUS of interest that overlap with top 20 OTUS in 3 logistic regression models 
 #and/or were significantly different across sources of mice at day -1, 0, or 1
