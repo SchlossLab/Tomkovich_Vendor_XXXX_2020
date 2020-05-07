@@ -205,6 +205,14 @@ get_rel_abund_mean_day <- function(x){
     spread(key=day, value=mean)
 }
 
+#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by day 7 C. diff colonization status
+get_rel_abund_mean_d7status <- function(x){
+  x %>%
+    group_by(clearance_status_d7) %>%
+    summarize(mean=mean(agg_rel_abund)) %>%
+    spread(key=clearance_status_d7, value=mean)
+}
+
 #Function to tidy pairwise comparisons to use for adding stats to plots----
 tidy_pairwise <- function(spread_pairwise){
   spread_pairwise %>% 
