@@ -162,7 +162,11 @@ get_taxa_info_as_labels <- function(data){
     select(-OTU)
   
   taxa_families <- inner_join(families, taxa_info, by="key") %>% 
-    mutate(taxa=Taxonomy) %>% 
+    mutate(taxa=Taxonomy,
+           taxa = str_replace_all(taxa, c('Bacteria_unclassified' = 'Unclassified',
+                                                  "_" = " ", #Removes all other underscores
+                                                  "Clostridium_" = "Clostridium ", #Remove underscores after Clostridium,
+                                                  "unclassified" = "Unclassified"))) %>% 
     select(taxa, imp)
   
   return(taxa_families$taxa)
@@ -245,3 +249,4 @@ tibble(day0_interp_families = d0_taxa ) %>%
   write_csv(paste0("data/process/interp_families_d0.csv"))
 tibble(day1_interp_families = d1_taxa ) %>% 
   write_csv(paste0("data/process/interp_families_d1.csv"))
+
