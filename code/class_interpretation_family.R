@@ -236,7 +236,12 @@ d1_0_shared <- intersect_all(d0_taxa, d1_taxa)
 # "Ruminococcaceae"              "Bacteroidaceae"
 #Shared between -1 & 1:
 dn1_1_shared <- intersect_all(dn1_taxa, d1_taxa)
-#5 families: 
-# "Bacteroidaceae"              "Coriobacteriaceae"          
-# "Peptostreptococcaceae"       "Ruminococcaceae"            
-# "Proteobacteria_unclassified" "Clostridiaceae_1" 
+#5 families: "Bacteroidaceae", "Coriobacteriaceae", "Peptostreptococcaceae", "Ruminococcaceae", "Proteobacteria_unclassified" "Clostridiaceae_1" 
+
+#Write list of important families from the 3 models to .csvs to use in plotting taxa
+tibble(dayn1_interp_families = dn1_taxa ) %>% 
+  write_csv(paste0("data/process/interp_families_dn1.csv"))
+tibble(day0_interp_families = d0_taxa ) %>% 
+  write_csv(paste0("data/process/interp_families_d0.csv"))
+tibble(day1_interp_families = d1_taxa ) %>% 
+  write_csv(paste0("data/process/interp_families_d1.csv"))
