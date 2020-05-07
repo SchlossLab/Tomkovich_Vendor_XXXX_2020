@@ -1,31 +1,31 @@
 family	statistic	p.value	method	alternative	-1	0	p.value.adj
-Lactobacillaceae	136	3.0517578125000014e-5	Wilcoxon signed rank test	two.sided	0.056970755931579915	0.23025105756851205	8.239746093750003e-4
-Bacteroidaceae	105	0.0010662077272281302	Wilcoxon signed rank test with continuity correction	two.sided	0.02600239102446202	8.276623137759794e-4	0.004231480830646257
-Enterobacteriaceae	105	0.0010815560245814417	Wilcoxon signed rank test with continuity correction	two.sided	4.368217767151002e-4	0.756667279749862	0.004231480830646257
-Erysipelotrichaceae	120	7.265138800579516e-4	Wilcoxon signed rank test with continuity correction	two.sided	0.034279014162221816	0.0016783152473790694	0.004231480830646257
-Lachnospiraceae	136	4.782039016687107e-4	Wilcoxon signed rank test with continuity correction	two.sided	0.1795567408497333	7.356998344675372e-4	0.004231480830646257
-Porphyromonadaceae	120	7.122060164529489e-4	Wilcoxon signed rank test with continuity correction	two.sided	0.37357458157071916	7.586904542946477e-4	0.004231480830646257
-Ruminococcaceae	105	0.0010970505857231035	Wilcoxon signed rank test with continuity correction	two.sided	0.029405002758874376	0.0080697075593158	0.004231480830646257
-Coriobacteriaceae	66	0.0038398001324249967	Wilcoxon signed rank test with continuity correction	two.sided	0.0027588743792532648	1.839249586168843e-4	0.012959325446934363
-Firmicutes Unclassified	55	0.005857099085284128	Wilcoxon signed rank test with continuity correction	two.sided	0.0018162589663417326	4.5981239654221075e-5	0.013250857594089333
-Rikenellaceae	55	0.005889270041817481	Wilcoxon signed rank test with continuity correction	two.sided	0.13403531359205445	4.5981239654221075e-5	0.013250857594089333
-Unclassified	55	0.005857099085284128	Wilcoxon signed rank test with continuity correction	two.sided	0.01285175648335479	1.3794371896266324e-4	0.013250857594089333
-Verrucomicrobiaceae	55	0.005889270041817481	Wilcoxon signed rank test with continuity correction	two.sided	0.10952731285635461	1.6093433878977377e-4	0.013250857594089333
-Clostridiales Unclassified	45	0.009151688852650072	Wilcoxon signed rank test with continuity correction	two.sided	0.021634173257311016	4.5981239654221075e-5	0.01900735377088861
-Anaeroplasmataceae	36	0.014029060898300376	Wilcoxon signed rank test with continuity correction	two.sided	0.0010345778922199742	0	0.027056046018150728
-Bifidobacteriaceae	28	0.022494271222449663	Wilcoxon signed rank test with continuity correction	two.sided	0.007494942063638036	0	0.037959082687883804
-Clostridia Unclassified	28	0.021539452429296765	Wilcoxon signed rank test with continuity correction	two.sided	5.747654956777635e-4	0	0.037959082687883804
-Bacteroidales Unclassified	15	0.059058229090536735	Wilcoxon signed rank test with continuity correction	two.sided	0.007793820121390472	2.2990619827110538e-5	0.09379836384967598
-Bacteroidetes Unclassified	10	0.0718606382258516	Wilcoxon signed rank test with continuity correction	two.sided	9.196247930844215e-5	0	0.10211774905778913
-Enterococcaceae	10	0.0718606382258516	Wilcoxon signed rank test with continuity correction	two.sided	2.2990619827110538e-5	6.897185948133162e-5	0.10211774905778913
-Prevotellaceae	6	0.1814492077214203	Wilcoxon signed rank test with continuity correction	two.sided	6.897185948133162e-5	6.897185948133162e-5	0.24495643042391743
-Pseudomonadaceae	3	0.34577858615116025	Wilcoxon signed rank test with continuity correction	two.sided	2.2990619827110538e-5	2.2990619827110538e-5	0.44457246790863464
-Lactobacillales Unclassified	3	0.37109336952269756	Wilcoxon signed rank test with continuity correction	two.sided	0	1.149530991355527e-4	0.455432771686947
-Clostridiaceae 1	1	1	Wilcoxon signed rank test with continuity correction	two.sided	2.2990619827110538e-5	0	1
-Deferribacteraceae	1	1	Wilcoxon signed rank test with continuity correction	two.sided	0	4.5981239654221075e-5	1
-Peptostreptococcaceae	1	1	Wilcoxon signed rank test with continuity correction	two.sided	2.2990619827110538e-5	0	1
-Staphylococcaceae	1	1	Wilcoxon signed rank test with continuity correction	two.sided	0	2.2990619827110538e-5	1
-Sutterellaceae	1	1	Wilcoxon signed rank test with continuity correction	two.sided	0	2.2990619827110538e-5	1
+Clostridiales Unclassified	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.02448829449013374	0	0.046875000000000014
+Coriobacteriaceae	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.0028902493496938964	2.101999527050106e-4	0.046875000000000014
+Enterobacteriaceae	0	0.015625000000000003	Wilcoxon signed rank test	two.sided	4.992248876744003e-4	0.7467353319845503	0.046875000000000014
+Erysipelotrichaceae	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.03331669250374419	0.0016290496334638324	0.046875000000000014
+Firmicutes Unclassified	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.0018655245802569693	2.627499408812633e-5	0.046875000000000014
+Lachnospiraceae	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.17346751096981003	8.145248167319162e-4	0.046875000000000014
+Lactobacillaceae	0	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.0631650857878557	0.24196642055755538	0.046875000000000014
+Rikenellaceae	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.1425943929162616	2.627499408812633e-5	0.046875000000000014
+Verrucomicrobiaceae	28	0.015625000000000003	Wilcoxon signed rank test	two.sided	0.10646627604508789	1.8392495861688433e-4	0.046875000000000014
+Anaeroplasmataceae	28	0.02201493444367288	Wilcoxon signed rank test with continuity correction	two.sided	0.0011560997398775586	0	0.05944032299791678
+Bifidobacteriaceae	21	0.036031686218233556	Wilcoxon signed rank test with continuity correction	two.sided	0.007961323208702279	0	0.0810712939910255
+Clostridia Unclassified	21	0.034006402864386984	Wilcoxon signed rank test with continuity correction	two.sided	4.992248876744003e-4	0	0.0810712939910255
+Unclassified	26.5	0.042153450235705485	Wilcoxon signed rank test with continuity correction	two.sided	0.014661446701174493	1.0509997635250532e-4	0.08754947356646524
+Porphyromonadaceae	26	0.046875000000000014	Wilcoxon signed rank test	two.sided	0.3572348196221656	7.882498226437899e-4	0.09040178571428574
+Bacteroidetes Unclassified	10	0.0718606382258516	Wilcoxon signed rank test with continuity correction	two.sided	1.0509997635250532e-4	0	0.1293491488065329
+Bacteroidaceae	25	0.07812500000000003	Wilcoxon signed rank test	two.sided	0.02971701831367088	9.458997871725479e-4	0.13183593750000006
+Bacteroidales Unclassified	14	0.10564542920187692	Wilcoxon signed rank test with continuity correction	two.sided	0.008907222995874826	2.627499408812633e-5	0.16778979932062804
+Ruminococcaceae	23	0.15625000000000006	Wilcoxon signed rank test	two.sided	0.030899393047636562	0.006174623610709687	0.23437500000000008
+Prevotellaceae	0	0.37109336952269756	Wilcoxon signed rank test with continuity correction	two.sided	0	7.882498226437898e-5	0.5273432093217281
+Enterococcaceae	2.5	0.42371079716679333	Wilcoxon signed rank test with continuity correction	two.sided	2.627499408812633e-5	7.882498226437898e-5	0.572009576175171
+Clostridiaceae 1	1	1	Wilcoxon signed rank test with continuity correction	two.sided	2.627499408812633e-5	0	1
+Deferribacteraceae	0	1	Wilcoxon signed rank test with continuity correction	two.sided	0	5.254998817625266e-5	1
+Lactobacillales Unclassified	0	1	Wilcoxon signed rank test with continuity correction	two.sided	0	7.8824982264379e-5	1
+Peptostreptococcaceae	1	1	Wilcoxon signed rank test with continuity correction	two.sided	2.627499408812633e-5	0	1
+Pseudomonadaceae	1.5	1	Wilcoxon signed rank test with continuity correction	two.sided	2.627499408812633e-5	2.627499408812633e-5	1
+Staphylococcaceae	0	1	Wilcoxon signed rank test with continuity correction	two.sided	0	2.627499408812633e-5	1
+Sutterellaceae	0	1	Wilcoxon signed rank test with continuity correction	two.sided	0	2.627499408812633e-5	1
 Acetobacteraceae	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN
 Acidaminococcaceae	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN
 Actinomycetales Unclassified	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN

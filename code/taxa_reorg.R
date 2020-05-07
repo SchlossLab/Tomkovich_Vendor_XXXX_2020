@@ -504,18 +504,14 @@ Otu16_d0_stats <- otu_day0_stats %>%
 #Otu 16 plot----
 plot_otu_timepoint("Proteus (OTU 16)", 0, Otu16_d0_stats)
 
-
-#Wilcoxan Rank Sum test for relative abundance differences within a single source of mice after clindamycin treatment (day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
+#Wilcoxan Signed rank test for relative abundance differences within a single source of mice after clindamycin treatment (day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
 mouse_sources <- levels(metadata$vendor)
 #Function to test at the family level:
-w_day_f <- function(source){
-  family_stats <- agg_family_data %>% 
-    filter(vendor == source) %>%
-    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
-    select(day, family, agg_rel_abund) %>% 
+w_day_f <- function(source_df, source){
+  family_stats <- source_df %>% 
     group_by(family) %>% 
     nest() %>% 
-    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
@@ -526,10 +522,118 @@ w_day_f <- function(source){
     arrange(p.value.adj) %>% 
     write_tsv(path = paste0("data/process/family_stats_dn1to0_", source, ".tsv"))
 }
+#For each source test pairs that have sequence data for day -1 and day 0
+#Create data_frames for each source that fulfill these conditions. Then use function listed above to perform statistical test
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+schloss_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Schloss") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
 
-# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the family level within each source of mice----
+#Dataframe for statistical test
+Schloss_f <- agg_family_data %>% 
+  filter(mouse_id %in% schloss_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Schloss") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund) 
+
+w_day_f(Schloss_f, "Schloss")
+
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+young_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Young") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
+
+#Dataframe for statistical test
+Young_f <- agg_family_data %>% 
+  filter(mouse_id %in% young_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Young") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund) 
+
+w_day_f(Young_f, "Young")
+
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+jackson_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Jackson") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
+
+#Dataframe for statistical test
+Jackson_f <- agg_family_data %>% 
+  filter(mouse_id %in% jackson_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Jackson") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund)
+
+w_day_f(Jackson_f, "Jackson")
+
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+charles_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Charles River") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
+
+#Dataframe for statistical test
+CR_f <- agg_family_data %>% 
+  filter(mouse_id %in% charles_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Charles River") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund)
+
+w_day_f(CR_f, "Charles River")
+
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+taconic_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Taconic") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
+
+#Dataframe for statistical test
+Taconic_f <- agg_family_data %>% 
+  filter(mouse_id %in% taconic_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Taconic") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund)
+
+w_day_f(Taconic_f, "Taconic")
+
+#Pull mice ids for each source that have sequence data for day -1 and day 0:
+envigo_seq_dn1_0 <- agg_family_data %>% 
+  filter(family == "Porphyromonadaceae") %>% #Random pick just to figure out what mice have sequence data
+  filter(vendor == "Envigo") %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% #Pull mouse ids with sequence data for both day -1 and day 0
+  pull(mouse_id) 
+
+#Dataframe for statistical test
+Envigo_f <- agg_family_data %>% 
+  filter(mouse_id %in% envigo_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Envigo") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, family, agg_rel_abund)
+
+w_day_f(Envigo_f, "Envigo")
+
+# Pull families where relative abundances were significantly impacted by clindamycin within each source of mice----
 for (s in mouse_sources){
-  w_day_f(s)
   #Make a list of significant families across time for a specific source of mice  
   stats <- read_tsv(file = paste0("data/process/family_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_family_", s, sep = "") 
@@ -570,36 +674,10 @@ family_stats_sources_combined <- rbind(w_sig_family_Schloss, w_sig_family_Young,
 #Families with relative abundances significantly altered by clindamycin treatment that are shared across sources of mice----
 #Shared families across all sources of mice:
 shared_all_sources_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_all_sources_families) # 6 familes 
+summary(shared_all_sources_families) # 0 familes
+#Previous results
 #"Lactobacillaceae", "Bacteroidaceae", "Enterobacteriaceae", "Lachnospiraceae", "Ruminococcaceae", "Porphyromonadaceae"
 
-#Compare to the list of families with relative abundances that significantly vary across sources of mice on day -1, 0, and 1 from above:
-families_shared <- intersect_all(`shared_all_sources_families`, `shared_sig_families_Dn1toD1`)
-# "Bacteroidaceae", "Lachnospiraceae", "Porphyromonadaceae"
-
-#Shared families across Schloss and Young lab mice:
-shared_Schloss_Young_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`)
-summary(shared_Schloss_Young_families) #14 families 
-
-#Shared families across Schloss, Young and Charles River mice:
-shared_Schloss_Young_CR_families <- intersect_all(`sig_family_Schloss`, `sig_family_Young`, `sig_family_Charles River`)
-summary(shared_Schloss_Young_CR_families) #8 families 
-
-# Shared families across Jackson, Taconic and Envigo mice:
-shared_JAX_Tac_Env_families <- intersect_all(`sig_family_Jackson`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_JAX_Tac_Env_families) #6 families 
-
-#Shared families across mice purchased from 4 vendors:
-shared_4_vendors_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`, `sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_4_vendors_families) #6 families 
-
-#Shared families across Jackson and Charles River mice:
-shared_JAX_CR_families <- intersect_all(`sig_family_Jackson`, `sig_family_Charles River`)
-summary(shared_JAX_CR_families) #8 families
-
-#Shared families across Taconic and Envigo mice:
-shared_Tac_Env_families <- intersect_all(`sig_family_Taconic`, `sig_family_Envigo`)
-summary(shared_Tac_Env_families) #7 families
 
 #Plot of the families with significantly different relative abundances post clindamycin treatment across all sources of mice:----
 clind_impacted_families_plot <- agg_family_data %>% 
@@ -629,16 +707,12 @@ clind_impacted_families_plot <- agg_family_data %>%
           legend.position = "bottom") 
 save_plot(filename = paste0("results/figures/clind_impacted_families_plot.png"), clind_impacted_families_plot, base_height = 8, base_width = 5)
   
-
 #Function to test at the genus level:
-w_day_g <- function(source){
-  genus_stats <- agg_genus_data %>% 
-    filter(vendor == source) %>%
-    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
-    select(day, genus, agg_rel_abund) %>% 
+w_day_g <- function(source_df, source){
+  genus_stats <- source_df %>% 
     group_by(genus) %>% 
     nest() %>% 
-    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
@@ -650,9 +724,70 @@ w_day_g <- function(source){
     write_tsv(path = paste0("data/process/genus_stats_dn1to0_", source, ".tsv"))
 }
 
-# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the genus level within each source of mice----
+#For each source test pairs that have sequence data for day -1 and day 0
+#Create data_frames for each source that fulfill these conditions. Then use function listed above to perform statistical test
+#Dataframe for statistical test
+Schloss_g <- agg_genus_data %>% 
+  filter(mouse_id %in% schloss_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Schloss") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund) 
+
+w_day_g(Schloss_g, "Schloss")
+
+#Dataframe for statistical test
+Young_g <- agg_genus_data %>% 
+  filter(mouse_id %in% young_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Young") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund) 
+
+w_day_g(Young_g, "Young")
+
+#Dataframe for statistical test
+Jackson_g <- agg_genus_data %>% 
+  filter(mouse_id %in% jackson_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Jackson") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund)
+
+w_day_g(Jackson_g, "Jackson")
+
+#Dataframe for statistical test
+CR_g <- agg_genus_data %>% 
+  filter(mouse_id %in% charles_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Charles River") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund)
+
+w_day_g(CR_g, "Charles River")
+
+#Dataframe for statistical test
+Taconic_g <- agg_genus_data %>% 
+  filter(mouse_id %in% taconic_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Taconic") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund)
+
+w_day_g(Taconic_g, "Taconic")
+
+#Dataframe for statistical test
+Envigo_g <- agg_genus_data %>% 
+  filter(mouse_id %in% envigo_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Envigo") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, genus, agg_rel_abund)
+
+w_day_g(Envigo_g, "Envigo")
+
+# Pull genera where relative abundances were significantly impacted by clindamycin within each source of mice----
 for (s in mouse_sources){
-  w_day_g(s)
   #Make a list of significant genera across time for a specific source of mice  
   stats <- read_tsv(file = paste0("data/process/genus_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_genus_", s, sep = "") 
@@ -660,52 +795,24 @@ for (s in mouse_sources){
 }
 
 # Number of significant genera for each source of mice:
-summary(`sig_genus_Schloss`) # 9 significant genera
-summary(`sig_genus_Young`) # 22 significant genera
-summary(`sig_genus_Jackson`) # 7 significant genera
-summary(`sig_genus_Charles River`) # 12 significant genera
-summary(`sig_genus_Taconic`) # 25 significant genera
-summary(`sig_genus_Envigo`) # 12 significant genera
+summary(`sig_genus_Schloss`) # 0 significant genera
+summary(`sig_genus_Young`) # 0 significant genera
+summary(`sig_genus_Jackson`) # 0 significant genera
+summary(`sig_genus_Charles River`) # 0 significant genera
+summary(`sig_genus_Taconic`) # 0 significant genera
+summary(`sig_genus_Envigo`) # 0 significant genera
 
 #Genera with relative abundances significantly altered by clindamycin treatment that are shared across sources of mice----
 #Shared genera across all sources of mice:
 shared_all_sources <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_all_sources) # 3 genera that significantly change over time and shared by all sources of mice
-#"Lactobacillus", "Bacteroides", "Lachnospiraceae unclassified"
-
-#Shared genera across Schloss and Young lab mice:
-shared_Schloss_Young <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`)
-summary(shared_Schloss_Young) #9 genera 
-
-#Shared genera across Schloss, Young and Charles River mice:
-shared_Schloss_Young_CR <- intersect_all(`sig_genus_Schloss`, `sig_genus_Young`, `sig_genus_Charles River`)
-summary(shared_Schloss_Young_CR) #6 genera 
-
-#Shared genera across Jackson, Taconic and Envigo mice:
-shared_JAX_Tac_Env <- intersect_all(`sig_genus_Jackson`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_JAX_Tac_Env) #4 genera
-
-#Shared genera across mice purchased from 4 vendors:
-shared_4_vendors <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`, `sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_4_vendors) #3 genera
-
-#Shared genera across Jackson and Charles River mice:
-shared_JAX_CR <- intersect_all(`sig_genus_Jackson`, `sig_genus_Charles River`)
-summary(shared_JAX_CR) #4 genera
-
-#Shared genera across Taconic and Envigo mice:
-shared_Tac_Env <- intersect_all(`sig_genus_Taconic`, `sig_genus_Envigo`)
-summary(shared_Tac_Env) #9 genera
+summary(shared_all_sources) # 0 genera that significantly change over time and shared by all sources of mice
 
 #Function to test at the OTU level:
-w_day_o <- function(source){
-  otu_stats <- agg_otu_data %>% 
-    filter(vendor == source) %>%
-    filter (day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
-    select(day, otu, agg_rel_abund) %>% 
+w_day_o <- function(source_df, source){
+  otu_stats <- source_df %>% 
     group_by(otu) %>% 
     nest() %>% 
-    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$day)) %>% tidy())) %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
     mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
@@ -717,9 +824,70 @@ w_day_o <- function(source){
     write_tsv(path = paste0("data/process/otu_stats_dn1to0_", source, ".tsv"))
 }
 
-# Perform wilcoxan rank sum tests to test impact of clindamycin on relative abundances at the OTU level within each source of mice----
+#For each source test pairs that have sequence data for day -1 and day 0
+#Create data_frames for each source that fulfill these conditions. Then use function listed above to perform statistical test
+#Dataframe for statistical test
+Schloss_o <- agg_otu_data %>% 
+  filter(mouse_id %in% schloss_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Schloss") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund) 
+
+w_day_o(Schloss_o, "Schloss")
+
+#Dataframe for statistical test
+Young_o <- agg_otu_data %>% 
+  filter(mouse_id %in% young_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Young") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund) 
+
+w_day_o(Young_o, "Young")
+
+#Dataframe for statistical test
+Jackson_o <- agg_otu_data %>% 
+  filter(mouse_id %in% jackson_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Jackson") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund)
+
+w_day_o(Jackson_o, "Jackson")
+
+#Dataframe for statistical test
+CR_o <- agg_otu_data %>% 
+  filter(mouse_id %in% charles_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Charles River") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund)
+
+w_day_o(CR_o, "Charles River")
+
+#Dataframe for statistical test
+Taconic_o <- agg_otu_data %>% 
+  filter(mouse_id %in% taconic_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Taconic") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund)
+
+w_day_o(Taconic_o, "Taconic")
+
+#Dataframe for statistical test
+Envigo_o <- agg_otu_data %>% 
+  filter(mouse_id %in% envigo_seq_dn1_0) %>% #Only select Schloss pairs with data for day -1 & day 0
+  filter(vendor == "Envigo") %>%
+  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
+  mutate(day = as.factor(day)) %>% 
+  select(day, otu, agg_rel_abund)
+
+w_day_o(Envigo_o, "Envigo")
+
+# Pull OTUs where relative abundances were significantly impacted by clindamycin within each source of mice----
 for (s in mouse_sources){
-  w_day_o(s)
   #Make a list of significant OTUs across time for a specific source of mice  
   stats <- read_tsv(file = paste0("data/process/otu_stats_dn1to0_", s, ".tsv"))
   name <- paste("sig_otu_", s, sep = "") 
@@ -727,8 +895,8 @@ for (s in mouse_sources){
 }
 
 # Number of significant genera for each source of mice:
-summary(`sig_otu_Schloss`) # 2 significant OTUs
-summary(`sig_otu_Young`) # 2 significant OTUs
+summary(`sig_otu_Schloss`) # 0 significant OTUs
+summary(`sig_otu_Young`) # 0 significant OTUs
 summary(`sig_otu_Jackson`) # 0 significant OTUs
 summary(`sig_otu_Charles River`) # 0 significant OTUs
 summary(`sig_otu_Taconic`) # 0 significant OTUs
