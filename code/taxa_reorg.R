@@ -9,7 +9,7 @@ taxonomy <- read_tsv(file="data/process/vendors.taxonomy") %>%
                                               'Bacteria_unclassified' = 'Unclassified',
                                               "Clostridium_" = "Clostridium ", #Remove underscores after Clostridium
                                               "_" = " ", #Removes all other underscores
-                                              "_unclassified" = " Unclassified"))) %>% 
+                                              "unclassified" = "Unclassified"))) %>% 
   # Separate taxonomic levels into separate columns according to semi-colon.
   separate(taxonomy, into=c("kingdom", "phylum", "class", "order", "family", "genus"), sep=';')
 
@@ -955,29 +955,31 @@ source_and_interp_d0_f <- intersect_all(`shared_all_sources_families`, `interp_f
 
 #Overlap between families that differed across sources of mice on d-1, d0, and d1 and the important taxa that came out of the logistic regression models for the corresponding input day:
 dayn1_and_interp_dn1_f <- intersect_all(`sig_family_day-1`, `interp_families_dn1`)
-#7 families: "Sutterellaceae", "Deferribacteraceae", "Bacteroidaceae", "Rikenellaceae",
-#"Rhodospirillaceae", "Peptostreptococcaceae", "Coriobacteriaceae"
+#10 families: "Burkholderiales Unclassified", "Sutterellaceae", "Deferribacteraceae", "Bacteroidaceae", "Rikenellaceae",
+#"Rhodospirillaceae", "Peptostreptococcaceae", "Coriobacteriaceae", "Clostridiaceae 1", "Clostridia Unclassified"
 day0_and_interp_d0_f <- intersect_all(`sig_family_day0`, `interp_families_d0`)
 # 5 families: "Deferribacteraceae", "Enterococcaceae", "Enterobacteriaceae", "Bacteroidaceae", "Lachnospiraceae"
 day1_and_interp_d1_f <- intersect_all(`sig_family_day1`, `interp_families_d1`)
-#7 families: "Bifidobacteriaceae", "Enterococcaceae", "Bacteroidaceae",       
-"Peptostreptococcaceae", "Lachnospiraceae", "Eubacteriaceae", "Verrucomicrobiaceae" 
+#9 families: "Bifidobacteriaceae", "Enterococcaceae", "Bacteroidaceae", "Deltaproteobacteria Unclassified"       
+#"Peptostreptococcaceae", "Lachnospiraceae", "Eubacteriaceae", "Verrucomicrobiaceae", "Proteobacteria Unclassified" 
 
 #Do shared taxa associated with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the family level according to day 7 colonization status:
 w_d7status_f <- function(timepoint){
   family_stats <- agg_family_data %>% 
-    filter (day == timepoint) %>% 
-    select(day, family, agg_rel_abund) %>% 
+    filter(day == timepoint) %>% 
+    filter(!is.na(clearance_status_d7)) %>% #Remove mice where clearance status day 7 was NA
+    mutate(clearance_status_d7 = as.factor(clearance_status_d7)) %>% 
+    select(clearance_status_d7, family, agg_rel_abund) %>% 
     group_by(family) %>% 
     nest() %>% 
-    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$clearance_status_d7)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$clearance_status_d7, paired = FALSE) %>% tidy())) %>% 
+    mutate(mean = map(data, get_rel_abund_mean_d7status)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
   #Adjust p-values for testing multiple families
   family_stats_adjust <- family_stats %>% 
-    select(family, statistic, p.value, method, alternative) %>% 
+    select(family, statistic, p.value, method, alternative, colonized, not_detectable) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
     write_tsv(path = paste0("data/process/family_stats_d7status_d", timepoint, ".tsv"))
@@ -993,23 +995,9 @@ for (d in model_input_days){
   assign(name, pull_significant_taxa(stats, family))
 }
 
-dn1_status_shared <- intersect_all(`sig_family_status_-1`, `interp_families_dn1`)
-# 7 families
-dn1_multi_shared <- intersect_all(`sig_family_status_-1`, `dayn1_and_interp_dn1_f`)
-# 6 families
-d0_status_shared <- intersect_all(`sig_family_status_0`, `interp_families_d0`)
-# 7 families
-d0_multi_shared <- intersect_all(`sig_family_status_0`, `day0_and_interp_d0_f`)
-# 5 families
-d1_status_shared <- intersect_all(`sig_family_status_1`, `interp_families_d1`)
-# 9 families
-d1_multi_shared <- intersect_all(`sig_family_status_1`, `day1_and_interp_d1_f`)
-# 6 families
-
-dn1to1_status_shared <- intersect_all(dn1_status_shared, d0_status_shared, d1_status_shared)
-#2 overlap: Ruminococcaceae and Bacteroidaceae
-dn1to1_multi_shared <- intersect_all(dn1_multi_shared, d0_multi_shared, d1_multi_shared)
-#1 overlap: Bacteroidaceae
+`sig_family_status_-1` # 0 families
+sig_family_status_0 # 0 families
+sig_family_status_1 # 0 families
 
 #OTUs identified in logistic regression classification models
 interp_otus_dn1 <- read_csv("data/process/interp_otus_dn1.csv") %>% pull(dayn1_interp_otus)
@@ -1032,16 +1020,18 @@ day1_and_interp_d1_o <- intersect_all(`sig_otu_day1`, `interp_otus_d1`)
 w_d7status_o <- function(timepoint){
   otu_stats <- agg_otu_data %>% 
     filter (day == timepoint) %>% 
-    select(day, otu, agg_rel_abund) %>% 
+    filter(!is.na(clearance_status_d7)) %>% #Remove mice where clearance status day 7 was NA
+    mutate(clearance_status_d7 = as.factor(clearance_status_d7)) %>% 
+    select(clearance_status_d7, otu, agg_rel_abund) %>% 
     group_by(otu) %>% 
     nest() %>% 
-    mutate(model=map(data, ~wilcox.test(x=.x$agg_rel_abund, g=as.factor(.x$clearance_status_d7)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$clearance_status_d7, paired = FALSE) %>% tidy())) %>% 
+    mutate(mean = map(data,  get_rel_abund_mean_d7status)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
   #Adjust p-values for testing multiple OTus
   otu_stats_adjust <- otu_stats %>% 
-    select(otu, statistic, p.value, method, alternative) %>% 
+    select(otu, statistic, p.value, method, alternative, colonized, not_detectable) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
     write_tsv(path = paste0("data/process/otu_stats_d7status_d", timepoint, ".tsv"))
@@ -1057,20 +1047,11 @@ for (d in model_input_days){
   assign(name, pull_significant_taxa(stats, otu))
 }
 
-dn1_status_shared <- intersect_all(`sig_otu_status_-1`, `interp_otus_dn1`)
-# 10 OTUs
-dn1_multi_shared <- intersect_all(`sig_otu_status_-1`, `dayn1_and_interp_dn1_o`)
-# 3 OTUs
-d0_status_shared <- intersect_all(`sig_otu_status_0`, `interp_otus_d0`)
-# 6 OTUs
-d0_multi_shared <- intersect_all(`sig_otu_status_0`, `day0_and_interp_d0_o`)
-# 2 OTUs
-d1_status_shared <- intersect_all(`sig_otu_status_1`, `interp_otus_d1`)
-# 8 OTUs
-d1_multi_shared <- intersect_all(`sig_otu_status_1`, `day1_and_interp_d1_o`)
-# 6 OTUs
+`sig_otu_status_-1` # 1 OTU "Ruminococcaceae (OTU 467)"
+sig_otu_status_0 # 0 OTUs
+sig_otu_status_1 # 0 OTUs
 
-dn1to1_status_shared <- intersect_all(dn1_status_shared, d0_status_shared, d1_status_shared)
-#O overlap
-dn1to1_multi_shared <- intersect_all(dn1_multi_shared, d0_multi_shared, d1_multi_shared)
-#O overlap  
+dn1_status_shared <- intersect_all(`sig_otu_status_-1`, `interp_otus_dn1`)
+# 1 OTU "Ruminococcaceae (OTU 467)"
+dn1_multi_shared <- intersect_all(`sig_otu_status_-1`, `dayn1_and_interp_dn1_o`)
+# 0 OTUs

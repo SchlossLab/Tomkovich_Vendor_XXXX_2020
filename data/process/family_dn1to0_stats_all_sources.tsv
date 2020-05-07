@@ -7,17 +7,17 @@ Bacteroidaceae	91	2.4414062500000016e-4	Wilcoxon signed rank test	two.sided	0.30
 Bacteroidaceae	55	0.0059215370241487075	Wilcoxon signed rank test with continuity correction	two.sided	0.3955306235056097	0.39889645024829873	0.025906724480650595	Charles River
 Bacteroidaceae	78	0.002183201879588264	Wilcoxon signed rank test with continuity correction	two.sided	2.299061982711054e-4	0.001066764759977929	0.007859208835340083	Taconic
 Bacteroidaceae	55	0.005857099085284128	Wilcoxon signed rank test with continuity correction	two.sided	0.025749494206363802	6.130831953896144e-4	0.026682340277405472	Envigo
-Bacteroidetes unclassified	36	0.014266186701446927	Wilcoxon signed rank test with continuity correction	two.sided	0.021703145116792347	1.4713996689350744e-4	0.04539241223187658	Charles River
-Betaproteobacteria unclassified	91	0.0016562478038332142	Wilcoxon signed rank test with continuity correction	two.sided	0.0062534485929740665	0.03454723806020477	0.01473947987392882	Envigo
+Bacteroidetes Unclassified	36	0.014266186701446927	Wilcoxon signed rank test with continuity correction	two.sided	0.021703145116792347	1.4713996689350744e-4	0.04539241223187658	Charles River
+Betaproteobacteria Unclassified	91	0.0016562478038332142	Wilcoxon signed rank test with continuity correction	two.sided	0.0062534485929740665	0.03454723806020477	0.01473947987392882	Envigo
 Bifidobacteriaceae	28	0.022254124823099145	Wilcoxon signed rank test with continuity correction	two.sided	0.0016859787873214397	1.57649964528758e-4	0.04338180878615292	Schloss
 Bifidobacteriaceae	28	0.022494271222449663	Wilcoxon signed rank test with continuity correction	two.sided	0.007494942063638036	0	0.037959082687883804	Young
-Burkholderiales unclassified	91	2.4414062500000016e-4	Wilcoxon signed rank test	two.sided	0.00916997293675609	0.014805959168659188	0.0050048828125000035	Envigo
-Clostridia unclassified	28	0.021539452429296765	Wilcoxon signed rank test with continuity correction	two.sided	5.747654956777635e-4	0	0.037959082687883804	Young
-Clostridia unclassified	36	0.014147403886021537	Wilcoxon signed rank test with continuity correction	two.sided	0.0026209306602906013	0	0.028294807772043074	Taconic
-Clostridiales unclassified	28	0.022494271222449663	Wilcoxon signed rank test with continuity correction	two.sided	0.015081846606584513	2.627499408812633e-5	0.04338180878615292	Schloss
-Clostridiales unclassified	45	0.009151688852650072	Wilcoxon signed rank test with continuity correction	two.sided	0.021634173257311016	4.5981239654221075e-5	0.01900735377088861	Young
-Clostridiales unclassified	78	0.0024876002233617774	Wilcoxon signed rank test with continuity correction	two.sided	0.025749494206363802	0.0030899393047636565	0.007859208835340083	Taconic
-Clostridiales unclassified	45	0.009090698015925056	Wilcoxon signed rank test with continuity correction	two.sided	0.007698573267821015	9.196247930844214e-4	0.03727186186529272	Envigo
+Burkholderiales Unclassified	91	2.4414062500000016e-4	Wilcoxon signed rank test	two.sided	0.00916997293675609	0.014805959168659188	0.0050048828125000035	Envigo
+Clostridia Unclassified	28	0.021539452429296765	Wilcoxon signed rank test with continuity correction	two.sided	5.747654956777635e-4	0	0.037959082687883804	Young
+Clostridia Unclassified	36	0.014147403886021537	Wilcoxon signed rank test with continuity correction	two.sided	0.0026209306602906013	0	0.028294807772043074	Taconic
+Clostridiales Unclassified	28	0.022494271222449663	Wilcoxon signed rank test with continuity correction	two.sided	0.015081846606584513	2.627499408812633e-5	0.04338180878615292	Schloss
+Clostridiales Unclassified	45	0.009151688852650072	Wilcoxon signed rank test with continuity correction	two.sided	0.021634173257311016	4.5981239654221075e-5	0.01900735377088861	Young
+Clostridiales Unclassified	78	0.0024876002233617774	Wilcoxon signed rank test with continuity correction	two.sided	0.025749494206363802	0.0030899393047636565	0.007859208835340083	Taconic
+Clostridiales Unclassified	45	0.009090698015925056	Wilcoxon signed rank test with continuity correction	two.sided	0.007698573267821015	9.196247930844214e-4	0.03727186186529272	Envigo
 Coriobacteriaceae	36	0.014147403886021537	Wilcoxon signed rank test with continuity correction	two.sided	0.001961866225246766	1.3137497044063165e-4	0.03819799049225815	Schloss
 Coriobacteriaceae	66	0.0038398001324249967	Wilcoxon signed rank test with continuity correction	two.sided	0.0027588743792532648	1.839249586168843e-4	0.012959325446934363	Young
 Coriobacteriaceae	36	0.014029060898300376	Wilcoxon signed rank test with continuity correction	two.sided	0.0011265403715284164	0	0.028294807772043074	Taconic
@@ -36,10 +36,10 @@ Erysipelotrichaceae	120	7.265138800579516e-4	Wilcoxon signed rank test with cont
 Erysipelotrichaceae	66	0.0038572928299425344	Wilcoxon signed rank test with continuity correction	two.sided	0.039212801177119734	0.011288394335111276	0.015429171319770138	Jackson
 Erysipelotrichaceae	66	0.003822353727134719	Wilcoxon signed rank test with continuity correction	two.sided	0.002513641101097419	0.02700018392495862	0.019199000662124984	Charles River
 Erysipelotrichaceae	66	0.0037875997707152373	Wilcoxon signed rank test with continuity correction	two.sided	0.002207099503402612	0.0016921096192753357	0.010605279358002664	Taconic
-Firmicutes unclassified	28	0.021539452429296765	Wilcoxon signed rank test with continuity correction	two.sided	0.001410091349396113	2.627499408812633e-5	0.04338180878615292	Schloss
-Firmicutes unclassified	55	0.005857099085284128	Wilcoxon signed rank test with continuity correction	two.sided	0.0018162589663417326	4.5981239654221075e-5	0.013250857594089333	Young
-Firmicutes unclassified	45	0.009090698015925056	Wilcoxon signed rank test with continuity correction	two.sided	0.011035497517013059	2.2070995034026116e-4	0.03535271450637522	Charles River
-Firmicutes unclassified	45	0.009151688852650072	Wilcoxon signed rank test with continuity correction	two.sided	0.007173073386058488	0.002538164428913003	0.0213539406561835	Taconic
+Firmicutes Unclassified	28	0.021539452429296765	Wilcoxon signed rank test with continuity correction	two.sided	0.001410091349396113	2.627499408812633e-5	0.04338180878615292	Schloss
+Firmicutes Unclassified	55	0.005857099085284128	Wilcoxon signed rank test with continuity correction	two.sided	0.0018162589663417326	4.5981239654221075e-5	0.013250857594089333	Young
+Firmicutes Unclassified	45	0.009090698015925056	Wilcoxon signed rank test with continuity correction	two.sided	0.011035497517013059	2.2070995034026116e-4	0.03535271450637522	Charles River
+Firmicutes Unclassified	45	0.009151688852650072	Wilcoxon signed rank test with continuity correction	two.sided	0.007173073386058488	0.002538164428913003	0.0213539406561835	Taconic
 Lachnospiraceae	91	0.0016345757202903396	Wilcoxon signed rank test with continuity correction	two.sided	0.1042854515357734	0.0011823747339656848	0.013641341049911715	Schloss
 Lachnospiraceae	136	4.782039016687107e-4	Wilcoxon signed rank test with continuity correction	two.sided	0.1795567408497333	7.356998344675372e-4	0.004231480830646257	Young
 Lachnospiraceae	78	0.002516496563841506	Wilcoxon signed rank test with continuity correction	two.sided	0.17517013058672062	0.0011265403715284164	0.013472929432011569	Jackson
