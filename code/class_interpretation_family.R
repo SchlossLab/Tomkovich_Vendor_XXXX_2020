@@ -119,7 +119,7 @@ get_feature_ranked_files <- function(file_name, model_name){
 #     2. Returns a plot. Each datapoint is the rank of the family at one datasplit.
 
 plot_feature_ranks <- function(data){
-  # Plot from highest median ranked family to least (only top 5) and thir ranks that lay between 1-100
+  # Plot from highest median ranked family to least (only top 20) and thir ranks that lay between 1-100
   # Rank 1 is the highest rank
   plot <- ggplot(data, aes(reorder(data$key, -data$rank, FUN = median), data$rank)) +
     geom_point(aes(colour= factor(data$sign)), size=1.5) + # datapoints lighter color
@@ -250,3 +250,44 @@ tibble(day0_interp_families = d0_taxa ) %>%
 tibble(day1_interp_families = d1_taxa ) %>% 
   write_csv(paste0("data/process/interp_families_d1.csv"))
 
+#Alternative to distribution plots of ranks:
+get_table_of_top_20_familes <- function(data){
+  
+  # Grab the names of the top 20 families in the order of their median rank  
+  families <- data %>% 
+    mutate(sign = as.factor(sign)) %>% 
+    group_by(key) %>% 
+    summarise(median_rank = median(rank),
+              median_feature_weight = median(value)) %>% # Sign of feature weight is preserved
+    arrange(desc(-median_rank))
+  # Names of the y-axis labels
+  taxa_info <- read.delim('data/process/vendors.family.taxonomy', header=T, sep='\t') %>% 
+    select(-Size) %>% 
+    mutate(key=OTU) %>% 
+    select(-OTU)
+  
+  taxa_families <- inner_join(families, taxa_info, by="key") %>% 
+    mutate(taxa=Taxonomy,
+           family = str_replace_all(taxa, c('Bacteria_unclassified' = 'Unclassified',
+                                          "_" = " ", #Removes all other underscores
+                                          "Clostridium_" = "Clostridium ", #Remove underscores after Clostridium,
+                                          "unclassified" = "Unclassified"))) %>% 
+    select(family, median_rank, median_feature_weight)
+  
+  return(taxa_families)
+}
+
+dayn1_model_top20 <- get_table_of_top_20_familes(interp_Dn1_60) %>% 
+  mutate(model_input_day = -1)
+day0_model_top20 <- get_table_of_top_20_familes(interp_D0_60) %>% 
+  mutate(model_input_day = 0)
+day1_model_top20 <- get_table_of_top_20_familes(interp_D1_60) %>% 
+  mutate(model_input_day = 1)
+
+combined_top20_all_models <- rbind(dayn1_model_top20, day0_model_top20, day1_model_top20)
+write_tsv(combined_top20_all_models, path = "data/process/combined_top20_families_all_models.tsv")
+
+#OTUs important across models (found within at least 2 models):
+overlapping_across_models <- combined_top20_all_models %>% 
+  filter(duplicated(family)) %>% pull(family)
+#16 OTUs

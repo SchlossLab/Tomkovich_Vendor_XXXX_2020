@@ -119,7 +119,7 @@ get_feature_ranked_files <- function(file_name, model_name){
 #     2. Returns a plot. Each datapoint is the rank of the OTU at one datasplit.
 
 plot_feature_ranks <- function(data){
-  # Plot from highest median ranked OTU to least (only top 5) and thir ranks that lay between 1-100
+  # Plot from highest median ranked OTU to least (only top 20) and thir ranks that lay between 1-100
   # Rank 1 is the highest rank
   plot <- ggplot(data, aes(reorder(data$key, -data$rank, FUN = median), data$rank)) +
     geom_point(aes(colour= factor(data$sign)), size=1.5) + # datapoints lighter color
@@ -252,3 +252,53 @@ tibble(day0_interp_otus = d0_taxa ) %>%
 tibble(day1_interp_otus = d1_taxa ) %>% 
   write_csv(paste0("data/process/interp_otus_d1.csv"))
 
+#Alternative to distribution plots of ranks:
+get_table_of_top_20 <- function(data){
+  
+  # Grab the names of the top 20 OTUs in the order of their median rank  
+  otus <- data %>% 
+    mutate(sign = as.factor(sign)) %>% 
+    group_by(key) %>% 
+    summarise(median_rank = median(rank),
+              median_feature_weight = median(value)) %>% # Sign of feature weight is preserved
+    arrange(desc(-median_rank))
+  # Names of the y-axis labels
+  taxa_info <- read.delim('data/process/vendors.taxonomy', header=T, sep='\t') %>% 
+    select(-Size) %>% 
+    mutate(key=OTU) %>% 
+    select(-OTU)
+  
+  taxa_otus <- inner_join(otus, taxa_info, by="key") %>% 
+    mutate_if(is.character, str_to_upper) %>%
+    mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
+    mutate(taxa=gsub("(.*)_.*","\\1",Taxonomy)) %>% 
+    mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
+    mutate(taxa=gsub(".*;","",taxa)) %>% 
+    mutate(taxa=gsub("(.*)_.*","\\1",taxa)) %>% 
+    mutate(taxa=gsub('[0-9]+', '', taxa)) %>% 
+    mutate(taxa=str_remove_all(taxa, "[(100)]")) %>% 
+    select(key, taxa, median_rank, median_feature_weight) %>% 
+    unite(key, taxa, key, sep=" (") %>% 
+    mutate(key = paste(key,")", sep="")) %>% 
+    mutate(key=paste0(gsub('TU0*', 'TU ', key))) %>% 
+    rename(OTU=key)
+  
+  
+  return(taxa_otus)
+}
+
+dayn1_model_top20 <- get_table_of_top_20(interp_Dn1_60) %>% 
+  mutate(model_input_day = -1)
+day0_model_top20 <- get_table_of_top_20(interp_D0_60) %>% 
+  mutate(model_input_day = 0)
+day1_model_top20 <- get_table_of_top_20(interp_D1_60) %>% 
+  mutate(model_input_day = 1)
+
+combined_top20_all_models <- rbind(dayn1_model_top20, day0_model_top20, day1_model_top20) 
+write_tsv(combined_top20_all_models, path = "data/process/combined_top20_otus_all_models.tsv")
+
+
+#OTUs important across models (found within at least 2 models):
+overlapping_across_models <- combined_top20_all_models %>% 
+  filter(duplicated(OTU)) %>% pull(OTU)
+#7 OTUs
