@@ -245,7 +245,7 @@ dn1_1_shared <- intersect_all(dn1_taxa, d1_taxa)
 #"Enterococcus (OTU 23)"
 
 #Write list of important OTUs from the 3 models to .csvs to use in plotting taxa
-tibble(dayn1_interp_otus = dn1_taxa ) %>% 
+tibble(dayn1_interp_otus = dn1_taxa) %>% 
   write_csv(paste0("data/process/interp_otus_dn1.csv"))
 tibble(day0_interp_otus = d0_taxa ) %>% 
   write_csv(paste0("data/process/interp_otus_d0.csv"))
