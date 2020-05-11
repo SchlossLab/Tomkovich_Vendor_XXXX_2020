@@ -891,7 +891,6 @@ Enterobacteriaceae (OTU 3313)	0	1	Wilcoxon signed rank test with continuity corr
 Veillonella (OTU 3393)	1	1	Wilcoxon signed rank test with continuity correction	two.sided	5.933063181189816e-6	0	1
 Clostridia (OTU 3431)	1	1	Wilcoxon signed rank test with continuity correction	two.sided	5.933063181189816e-6	0	1
 Adhaeribacter (OTU 3457)	1	1	Wilcoxon signed rank test with continuity correction	two.sided	5.933063181189816e-6	0	1
-Peptostreptococcaceae (OTU 20)	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN
 Bilophila (OTU 137)	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN
 Bacteroides (OTU 253)	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN
 Lachnospiraceae (OTU 318)	0	NaN	Wilcoxon signed rank test with continuity correction	two.sided	0	0	NaN

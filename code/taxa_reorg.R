@@ -18,6 +18,7 @@ otu_data <- read_tsv("data/process/vendors.subsample.shared", col_types=cols(Gro
   select(-label, -numOtus) %>% 
   rename(id=Group) %>% 
   gather(-id, key="otu", value="count") %>% 
+  filter(!otu== "Otu0020") %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is more accurately quantified via plating 
   mutate(rel_abund=count/5437) #Use 5437, because this is the subsampling parameter chosen.)
 
 #Merge otu_data to taxonomy data frame
@@ -817,7 +818,7 @@ dayn1to1_and_interp_combined_f <- unique(c(`dayn1_and_interp_dn1_f`, `day0_and_i
 #See which source families show up as significant over multiple days
 source_families_w_duplicates <- c(`dayn1_and_interp_dn1_f`, `day0_and_interp_d0_f`, day1_and_interp_d1_f)
 key_source_families <- sort(source_families_w_duplicates[duplicated(source_families_w_duplicates)])
-#Key source families: "Bacteroidaceae" -seen across 3 days, "Deferribacteraceae", "Enterococcaceae", "Lachnospiraceae", "Peptostreptococcaceae"
+#Key source families: "Bacteroidaceae" -seen across 3 days, "Deferribacteraceae", "Enterococcaceae", "Lachnospiraceae"
 #Combined overlapping families that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
 paired_and_interp_combined_f <- unique(c(`paired_and_interp_dn1_f`,`paired_and_interp_d0_f`, paired_and_interp_d1_f))
 #See which clindamycin-associated families show up as significant over multiple days
@@ -1165,7 +1166,6 @@ family_over_time("Bacteroidaceae")
 family_over_time("Deferribacteraceae")
 family_over_time("Enterococcaceae")
 family_over_time("Lachnospiraceae")
-family_over_time("Peptostreptococcaceae")
 
 #Families impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models 
 family_over_time("Bifidobacteriaceae")
