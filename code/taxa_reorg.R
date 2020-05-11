@@ -893,10 +893,19 @@ d1_families_venn_plot <- ggplot(df.venn) +
 save_plot("results/figures/venn_d1_families.png", d1_families_venn_plot, base_aspect_ratio = 1.8)
 
 #Combined overlapping families based on day -1, 0, and 1 comparisons----
-#Combined overlapping families that varied by source and were in the top 20 taxa from at least one logistic regression model
+#Combined overlapping families that varied by source and were in the top 20 taxa from at least one logistic regression model & remove any duplicates
 dayn1to1_and_interp_combined_f <- unique(c(`dayn1_and_interp_dn1_f`, `day0_and_interp_d0_f`, day1_and_interp_d1_f))
+#See which source families show up as significant over multiple days
+source_families_w_duplicates <- c(`dayn1_and_interp_dn1_f`, `day0_and_interp_d0_f`, day1_and_interp_d1_f)
+key_source_families <- sort(source_families_w_duplicates[duplicated(source_families_w_duplicates)])
+#Key source families: "Bacteroidaceae" -seen across 3 days, "Deferribacteraceae", "Enterococcaceae", "Lachnospiraceae", "Peptostreptococcaceae"
 #Combined overlapping families that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
 paired_and_interp_combined_f <- unique(c(`paired_and_interp_dn1_f`,`paired_and_interp_d0_f`, paired_and_interp_d1_f))
+#See which clindamycin-associated families show up as significant over multiple days
+clind_familes_w_duplicates <- c(`paired_and_interp_dn1_f`,`paired_and_interp_d0_f`, paired_and_interp_d1_f)
+key_clind_families <- sort(clind_familes_w_duplicates[duplicated(clind_familes_w_duplicates)])
+#Key clindamycin families: "Bifidobacteriaceae"  "Coriobacteriaceae - seen across 3 days, "Enterococcaceae",    
+#"Lachnospiraceae", "Ruminococcaceae", "Ruminococcaceae", "Verrucomicrobiaceae"
 
 # Venn diagram of overlapping families for all days combined----
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
@@ -1047,10 +1056,18 @@ d1_otus_venn_plot <- ggplot(df.venn) +
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 #Combined overlapping OTUs based on day -1, 0, and 1 comparisons----
-#Combined overlapping OTUs that varied by source and were in the top 20 taxa from at least one logistic regression model
-dayn1to1_and_interp_combined <- unique(c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`))
+#Combined overlapping OTUs that varied by source and were in the top 20 taxa from at least one logistic regression model & remove any duplicates
+dayn1to1_and_interp_combined <- unique(c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`)
+#See which source OTUs show up as significant over multiple days
+source_otus_w_duplicates <- c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`))
+key_source_otus <- sort(source_otus_w_duplicates[duplicated(source_otus_w_duplicates)])
+#Key source OTUs: "Bacteroides (OTU 2)", "Enterococcus (OTU 23)"
 #Combined overlapping OTUs that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
 paired_and_interp_combined <- unique(c(`paired_and_interp_dn1_o`, `paired_and_interp_d0_o`, `paired_and_interp_d1_o`))
+#See which clindamycin-associated OTUs show up as significant over multiple days
+clind_otus_w_duplicates <- c(`paired_and_interp_dn1_o`, `paired_and_interp_d0_o`, `paired_and_interp_d1_o`)
+key_clind_otus <- sort(clind_otus_w_duplicates[duplicated(clind_otus_w_duplicates)])
+#Key clindamycin OTUs: "Enterobacteriaceae (OTU 1)", "Enterococcus (OTU 23)", "Porphyromonadaceae (OTU 7)"
 
 # Venn diagram of combined overlapping OTUs
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
