@@ -615,9 +615,38 @@ o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>%
     arrange(p.value.adj) %>% 
   write_tsv(path = "data/process/otu_stats_dn1to0.tsv")
 
-#Make a list of significant OTUs impacted by clindamycin treatment  
+#Make a list of significant OTUs impacted by clindamycin treatment----  
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
 # 153 OTUs
+sig_otu_pairs_top10 <- sig_otu_pairs[1:10]
+
+#Plot of the otus with significantly different relative abundances post clindamycin treatment across all sources of mice:----
+clind_impacted_otus_plot <- agg_otu_data %>% 
+  filter(otu %in% sig_otu_pairs_top10) %>% 
+  filter(day == -1 | day == 0) %>% 
+  mutate(otu=factor(otu, levels=sig_otu_pairs_top10)) %>% 
+  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
+  ggplot(aes(x= otu, y=agg_rel_abund, color=vendor))+
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  geom_boxplot(outlier.shape = NA, size = 1.2)+
+  #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+  labs(title=NULL, 
+       x=NULL,
+       y="Relative abundance (%)")+
+  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
+  coord_flip()+
+  theme_classic()+
+  facet_wrap(~day, dir = "v")+
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.y = element_text(face = "italic"), #Have the families show up as italics
+        text = element_text(size = 16),# Change font size for entire plot
+        strip.background = element_blank(),
+        legend.position = "bottom") 
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot, base_height = 8, base_width = 5)
 
 #Table combining stats testing for differences across sources of mice for all timepoints
 otu_sig_dn1 <- tibble(`sig_otu_day-1`) %>% 
