@@ -794,14 +794,14 @@ families <- c(length(setdiff(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f)),
               length(setdiff(paired_and_interp_dn1_f, dayn1_and_interp_dn1_f)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_families_dn1 <- as.data.frame(families) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f), collapse="\n")  
+source_unique <- paste(sort(setdiff(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_dn1_f, dayn1_and_interp_dn1_f), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_dn1_f, dayn1_and_interp_dn1_f)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f), collapse="\n")
+overlap <- paste(sort(intersect(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f)), collapse="\n")
 
 dn1_families_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -813,9 +813,9 @@ dn1_families_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_families_dn1$x, y = df_venn_families_dn1$y, label = df_venn_families_dn1[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_dn1_families.png", dn1_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 0 overlapping families----
@@ -831,14 +831,14 @@ families <- c(length(setdiff(day0_and_interp_d0_f, paired_and_interp_d0_f)),
               length(setdiff(paired_and_interp_d0_f, day0_and_interp_d0_f)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_families_d0 <- as.data.frame(families) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(day0_and_interp_d0_f, paired_and_interp_d0_f), collapse="\n")  
+source_unique <- paste(sort(setdiff(day0_and_interp_d0_f, paired_and_interp_d0_f)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_d0_f, day0_and_interp_d0_f), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_d0_f, day0_and_interp_d0_f)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(day0_and_interp_d0_f, paired_and_interp_d0_f), collapse="\n")
+overlap <- paste(sort(intersect(day0_and_interp_d0_f, paired_and_interp_d0_f)), collapse="\n")
 
 d0_families_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -850,9 +850,9 @@ d0_families_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_families_d0$x, y = df_venn_families_d0$y, label = df_venn_families_d0[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d0_families.png", d0_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 1 overlapping families----
@@ -868,14 +868,14 @@ families <- c(length(setdiff(day1_and_interp_d1_f, paired_and_interp_d1_f)),
               length(setdiff(paired_and_interp_d1_f, day1_and_interp_d1_f)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_families_d1 <- as.data.frame(families) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(day1_and_interp_d1_f, paired_and_interp_d1_f), collapse="\n")  
+source_unique <- paste(sort(setdiff(day1_and_interp_d1_f, paired_and_interp_d1_f)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_d1_f, day1_and_interp_d1_f), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_d1_f, day1_and_interp_d1_f)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(day1_and_interp_d1_f, paired_and_interp_d1_f), collapse="\n")
+overlap <- paste(sort(intersect(day1_and_interp_d1_f, paired_and_interp_d1_f)), collapse="\n")
 
 d1_families_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -887,18 +887,16 @@ d1_families_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_families_d1$x, y = df_venn_families_d1$y, label = df_venn_families_d1[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d1_families.png", d1_families_venn_plot, base_aspect_ratio = 1.8)
 
-#Combined overlapping families----
-#Combined significant families that varied across source for day -1, 0, and 1
-sig_family_dayn1to1 <- c(`sig_family_day-1`, `sig_family_day0`, `sig_family_day1`)
+#Combined overlapping families based on day -1, 0, and 1 comparisons----
 #Combined overlapping families that varied by source and were in the top 20 taxa from at least one logistic regression model
-dayn1to1_and_interp_combined_f <- intersect_all(`sig_family_dayn1to1`, `interp_families_combined`)
+dayn1to1_and_interp_combined_f <- unique(c(`dayn1_and_interp_dn1_f`, `day0_and_interp_d0_f`, day1_and_interp_d1_f))
 #Combined overlapping families that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
-paired_and_interp_combined_f <- intersect_all(`sig_family_pairs`,`interp_families_combined`)
+paired_and_interp_combined_f <- unique(c(`paired_and_interp_dn1_f`,`paired_and_interp_d0_f`, paired_and_interp_d1_f))
 
 # Venn diagram of overlapping families for all days combined----
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
@@ -907,14 +905,14 @@ families <- c(length(setdiff(dayn1to1_and_interp_combined_f, paired_and_interp_c
               length(setdiff(paired_and_interp_combined_f, dayn1to1_and_interp_combined_f)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_families <- as.data.frame(families) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f), collapse="\n")  
+source_unique <- paste(sort(setdiff(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_combined_f, dayn1to1_and_interp_combined_f), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_combined_f, dayn1to1_and_interp_combined_f)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f), collapse="\n")
+overlap <- paste(sort(intersect(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f)), collapse="\n")
 
 families_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -926,9 +924,9 @@ families_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_families$x, y = df_venn_families$y, label = df_venn_families[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_overall_families.png", families_venn_plot, base_aspect_ratio = 1.8)
 
 #OTUs identified in logistic regression classification models (20 OTUs with the highest ranking for each model)
@@ -950,14 +948,14 @@ otus <- c(length(setdiff(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)),
               length(setdiff(paired_and_interp_dn1_o, dayn1_and_interp_dn1_o)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_otus_dn1 <- as.data.frame(otus) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o), collapse="\n")  
+source_unique <- paste(sort(setdiff(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_dn1_o, dayn1_and_interp_dn1_o), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_dn1_o, dayn1_and_interp_dn1_o)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o), collapse="\n")
+overlap <- paste(sort(intersect(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)), collapse="\n")
 
 dn1_otus_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -969,9 +967,9 @@ dn1_otus_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_otus_dn1$x, y = df_venn_otus_dn1$y, label = df_venn_otus_dn1[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 0 overlapping OTUs----
@@ -987,14 +985,14 @@ otus <- c(length(setdiff(day0_and_interp_d0_o, paired_and_interp_d0_o)),
           length(setdiff(paired_and_interp_d0_o, day0_and_interp_d0_o)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_otus_d0 <- as.data.frame(otus) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(day0_and_interp_d0_o, paired_and_interp_d0_o), collapse="\n")  
+source_unique <- paste(sort(setdiff(day0_and_interp_d0_o, paired_and_interp_d0_o)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_d0_o, day0_and_interp_d0_o), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_d0_o, day0_and_interp_d0_o)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(day0_and_interp_d0_o, paired_and_interp_d0_o), collapse="\n")
+overlap <- paste(sort(intersect(day0_and_interp_d0_o, paired_and_interp_d0_o)), collapse="\n")
 
 d0_otus_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -1006,9 +1004,9 @@ d0_otus_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_otus_d0$x, y = df_venn_otus_d0$y, label = df_venn_otus_d0[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 1 overlapping OTUs----
@@ -1021,17 +1019,17 @@ paired_and_interp_d1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d1`)
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
 otus <- c(length(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
           length(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
-          length(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o)))
+          length(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_otus_d1 <- as.data.frame(otus) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2, 2, 2))
+  mutate(x = c(-15, 0, 15),
+         y = c(3, 3, 3))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o), collapse="\n")  
+source_unique <- paste(sort(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o)), collapse="\n")  
 # intersection
-clind_unique <- paste(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o), collapse="\n")
+overlap <- paste(sort(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o)), collapse="\n")
 
 d1_otus_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -1043,18 +1041,16 @@ d1_otus_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_otus_d1$x, y = df_venn_otus_d1$y, label = df_venn_otus_d1[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
-#Combined overlapping OTUs----
-#Combined significant OTUs that vary across source for day -1, 0, and 1
-sig_otu_dayn1to1 <- c(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1)
+#Combined overlapping OTUs based on day -1, 0, and 1 comparisons----
 #Combined overlapping OTUs that varied by source and were in the top 20 taxa from at least one logistic regression model
-dayn1to1_and_interp_combined <- intersect_all(`sig_otu_dayn1to1`, `interp_combined`)
+dayn1to1_and_interp_combined <- unique(c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`))
 #Combined overlapping OTUs that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
-paired_and_interp_combined <- intersect_all(`sig_otu_pairs`, `interp_combined`)
+paired_and_interp_combined <- unique(c(`paired_and_interp_dn1_o`, `paired_and_interp_d0_o`, `paired_and_interp_d1_o`))
 
 # Venn diagram of combined overlapping OTUs
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
@@ -1063,13 +1059,13 @@ OTUs <- c(length(setdiff(dayn1to1_and_interp_combined, paired_and_interp_combine
           length(setdiff(paired_and_interp_combined, dayn1to1_and_interp_combined)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_otus <- as.data.frame(OTUs) %>%
-  mutate(x = c(-19, 0, 19),
-         y = c(2.4, 2.4, 2.4))
+  mutate(x = c(-15, 0, 15),
+         y = c(3.5, 3.5, 3.5))
 #Annotations of list of OTUs that are unique to each group or overlap to add to the plot
-source_unique <- paste(setdiff(dayn1to1_and_interp_combined, paired_and_interp_combined), collapse="\n")  
-clind_unique <- paste(setdiff(paired_and_interp_combined, dayn1to1_and_interp_combined), collapse="\n")  
+source_unique <- paste(sort(setdiff(dayn1to1_and_interp_combined, paired_and_interp_combined)), collapse="\n")  
+clind_unique <- paste(sort(setdiff(paired_and_interp_combined, dayn1to1_and_interp_combined)), collapse="\n")  
 # intersection
-overlap <- paste(intersect(paired_and_interp_combined, dayn1to1_and_interp_combined), collapse="\n")
+overlap <- paste(sort(intersect(paired_and_interp_combined, dayn1to1_and_interp_combined)), collapse="\n")
 
 OTUs_venn_plot <- ggplot(df.venn) +
   geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
@@ -1081,9 +1077,9 @@ OTUs_venn_plot <- ggplot(df.venn) +
   labs(fill = NULL) +
   annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-  geom_text(label = source_unique, x = -18, y = -10, size = 2.8)+
-  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8) 
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
+  geom_text(label = clind_unique, x = 17, y = -10, size = 2.8, aes(fontface=3))+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
 
 #Do shared taxa associated with d7 cleared/colonized status?
