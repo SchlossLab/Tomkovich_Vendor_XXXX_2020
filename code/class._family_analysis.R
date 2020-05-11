@@ -69,6 +69,5 @@ performance <- ggplot(best_performance, aes(x = fct_reorder(input_data, AUC), y 
 #-----------------------Save figure as .pdf ------------------------ #
 ######################################################################
 
-ggsave("results/figures/class._logistic_regression_60_family.pdf", plot = performance)
-
+save_plot("results/figures/class._logistic_regression_60_family.pdf", plot = performance, base_aspect_ratio = 1.8)
 
