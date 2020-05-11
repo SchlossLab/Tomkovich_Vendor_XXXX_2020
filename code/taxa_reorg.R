@@ -619,116 +619,6 @@ o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>%
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
 # 153 OTUs
 
-#Function to plot OTUS of interest that overlap with top 20 OTUS in 3 logistic regression models 
-#and/or were significantly different across sources of mice at day -1, 0, or 1
-#Function to plot specific Otus over time
-otu_over_time <- function(otu_plot){
-  otu_mean <- agg_otu_data %>% 
-    filter(otu == otu_plot) %>% 
-    group_by(vendor, day) %>% 
-    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
-    ungroup
-  otu_mice <-  agg_otu_data %>% 
-    filter(otu == otu_plot) %>% 
-    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
-    select(vendor, day, agg_rel_abund, otu)
-  otu_time <- ggplot(NULL)+
-    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
-    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=otu_plot,
-         x="Day",
-         y="Relative abundance (%)") +
-    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-                       limits = c(-1.5, 9.5)) +
-    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-    theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.title=element_blank())+
-    theme(text = element_text(size = 16))  # Change font size for entire plot
-  save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
-}
-
-#Taxa that differ across mouse sources at multiple timepoints and are important features in 2/3 logistic regresssion models 
-otu_over_time("Bacteroides (OTU 2)")
-otu_over_time("Enterobacteriaceae (OTU 1)")
-otu_over_time("Enterococcus (OTU 23)")
-
-#Taxa that are associated with C. difficile colonization (important to 2/3 logistic regresion models)
-otu_over_time("Ruminococcaceae (OTU 520)")
-otu_over_time("Erysipelotrichaceae (OTU 234)")
-otu_over_time("Porphyromonadaceae (OTU 7)")
-otu_over_time("Lactobacillus (OTU 18)")
-
-#Taxa that are different across vendors and are in the top 20 features for the classification model at that particular timepoint
-#Day 0 taxa (OTU 1 & 2, which were already plotted above since they appear in multiple models)
-otu_over_time("Proteus (OTU 16)")
-#Day -1 taxa
-otu_over_time("Erysipelotrichaceae (OTU 189)")
-otu_over_time("Betaproteobacteria (OTU 58)")
-otu_over_time("Burkholderiales (OTU 34)")
-otu_over_time("Coriobacteriaceae (OTU 293)")
-#Day 1 taxa
-otu_over_time("Turicibacter (OTU 14)")
-otu_over_time("Bifidobacterium (OTU 46)")
-otu_over_time("Bacteroides (OTU 3)")
-otu_over_time("Lactobacillus (OTU 31)")
-otu_over_time("Bacteroides (OTU 32)")
-otu_over_time("Anaerofustis (OTU 475)")
-
-#Additional taxa important to Day 0 logistic regression models 
-# but these taxa were not sig. at that timepoint and/or didn't overlap with important taxa from the other models 
-otu_over_time("Escherichia/Shigella (OTU 610)") #Error so made without using plot function below
-otu_over_time("Lachnospiraceae (OTU 56)")
-otu_over_time("Porphyromonadaceae (OTU 54)")
-otu_over_time("Lachnospiraceae (OTU 38)")
-otu_over_time("Porphyromonadaceae (OTU 22)")
-otu_over_time("Lachnospiraceae (OTU 33)")
-otu_over_time("Ruminococcaceae (OTU 60)")
-otu_over_time("Alishewanella (OTU 776)")
-otu_over_time("Lachnospiraceae (OTU 9)")
-otu_over_time("Eisenbergiella (OTU 164)")
-otu_over_time("Clostridium (OTU 226)")
-otu_over_time("Clostridium (OTU 99)")
-otu_over_time("Lactobacillus (OTU 834)")
-
-#Need to do separate plot of Escherichia Shigella because the slashes mess up the file name
-Escherichia_shigella_over_time <- function(otu_plot){
-  otu_mean <- agg_otu_data %>% 
-    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
-    group_by(vendor, day) %>% 
-    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
-    ungroup
-  otu_mice <-  agg_otu_data %>% 
-    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
-    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
-    select(vendor, day, agg_rel_abund, otu)
-  otu_time <- ggplot(NULL)+
-    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
-    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=otu_plot,
-         x="Day",
-         y="Relative abundance (%)") +
-    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-                       limits = c(-1.5, 9.5)) +
-    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-    theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.title=element_blank())+
-    theme(text = element_text(size = 16))  # Change font size for entire plot
-  save_plot(filename = paste0("results/figures/Escherichia_time.png"), otu_time, base_aspect_ratio = 2)
-}
-Escherichia_shigella_over_time("Escherichia/Shigella (OTU 610)")
-
 #Table combining stats testing for differences across sources of mice for all timepoints
 otu_sig_dn1 <- tibble(`sig_otu_day-1`) %>% 
   mutate(day = -1) %>% 
@@ -1098,6 +988,163 @@ OTUs_venn_plot <- ggplot(df.venn) +
   geom_text(label = clind_unique, x = 17, y = -10, size = 2.8, aes(fontface=3))+ 
   geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
+
+#Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models 
+#Function to plot specific OTUs over time
+otu_over_time <- function(otu_plot){
+  otu_mean <- agg_otu_data %>% 
+    filter(otu == otu_plot) %>% 
+    group_by(vendor, day) %>% 
+    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    ungroup
+  otu_mice <-  agg_otu_data %>% 
+    filter(otu == otu_plot) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
+    select(vendor, day, agg_rel_abund, otu)
+  otu_time <- ggplot(NULL)+
+    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
+    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    labs(title=otu_plot,
+         x="Day",
+         y="Relative abundance (%)") +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                       limits = c(-1.5, 9.5)) +
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
+    theme(legend.title=element_blank())+
+    theme(text = element_text(size = 16))  # Change font size for entire plot
+  save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
+}
+
+#OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models 
+otu_over_time("Bacteroides (OTU 2)")
+otu_over_time("Enterococcus (OTU 23)")
+
+#OTUs impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models 
+otu_over_time("Enterobacteriaceae (OTU 1)")
+otu_over_time("Enterococcus (OTU 23)") #Also varies across mouse sources
+otu_over_time("Porphyromonadaceae (OTU 7)")
+
+#Previously plotted taxa for lab meeting presentations:
+otu_over_time("Ruminococcaceae (OTU 520)")
+otu_over_time("Erysipelotrichaceae (OTU 234)")
+otu_over_time("Lactobacillus (OTU 18)")
+#Taxa that are different across vendors and are in the top 20 features for the classification model at that particular timepoint
+#Day 0 taxa (OTU 1 & 2, which were already plotted above since they appear in multiple models)
+otu_over_time("Proteus (OTU 16)")
+#Day -1 taxa
+otu_over_time("Erysipelotrichaceae (OTU 189)")
+otu_over_time("Betaproteobacteria (OTU 58)")
+otu_over_time("Burkholderiales (OTU 34)")
+otu_over_time("Coriobacteriaceae (OTU 293)")
+#Day 1 taxa
+otu_over_time("Turicibacter (OTU 14)")
+otu_over_time("Bifidobacterium (OTU 46)")
+otu_over_time("Bacteroides (OTU 3)")
+otu_over_time("Lactobacillus (OTU 31)")
+otu_over_time("Bacteroides (OTU 32)")
+otu_over_time("Anaerofustis (OTU 475)")
+#Additional taxa important to Day 0 logistic regression models 
+# but these taxa were not sig. at that timepoint and/or didn't overlap with important taxa from the other models 
+otu_over_time("Escherichia/Shigella (OTU 610)") #Error so made without using plot function below
+otu_over_time("Lachnospiraceae (OTU 56)")
+otu_over_time("Porphyromonadaceae (OTU 54)")
+otu_over_time("Lachnospiraceae (OTU 38)")
+otu_over_time("Porphyromonadaceae (OTU 22)")
+otu_over_time("Lachnospiraceae (OTU 33)")
+otu_over_time("Ruminococcaceae (OTU 60)")
+otu_over_time("Alishewanella (OTU 776)")
+otu_over_time("Lachnospiraceae (OTU 9)")
+otu_over_time("Eisenbergiella (OTU 164)")
+otu_over_time("Clostridium (OTU 226)")
+otu_over_time("Clostridium (OTU 99)")
+otu_over_time("Lactobacillus (OTU 834)")
+#Need to do separate plot of Escherichia Shigella because the slashes mess up the file name
+Escherichia_shigella_over_time <- function(otu_plot){
+  otu_mean <- agg_otu_data %>% 
+    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
+    group_by(vendor, day) %>% 
+    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    ungroup
+  otu_mice <-  agg_otu_data %>% 
+    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
+    select(vendor, day, agg_rel_abund, otu)
+  otu_time <- ggplot(NULL)+
+    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
+    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    labs(title=otu_plot,
+         x="Day",
+         y="Relative abundance (%)") +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                       limits = c(-1.5, 9.5)) +
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
+    theme(legend.title=element_blank())+
+    theme(text = element_text(size = 16))  # Change font size for entire plot
+  save_plot(filename = paste0("results/figures/Escherichia_time.png"), otu_time, base_aspect_ratio = 2)
+}
+Escherichia_shigella_over_time("Escherichia/Shigella (OTU 610)")
+
+#Function to plot families of interest that overlap with top 20 OTUs in 3 logistic regression models 
+#Function to plot specific families over time
+family_over_time <- function(family_plot){
+  family_mean <- agg_family_data %>% 
+    filter(family == family_plot) %>% 
+    group_by(vendor, day) %>% 
+    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    ungroup
+  family_mice <-  agg_family_data %>% 
+    filter(family == family_plot) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
+    select(vendor, day, agg_rel_abund, family)
+  family_time <- ggplot(NULL)+
+    geom_point(family_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
+    geom_line(family_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    labs(title=family_plot,
+         x="Day",
+         y="Relative abundance (%)") +
+    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                       limits = c(-1.5, 9.5)) +
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
+    theme(legend.title=element_blank())+
+    theme(text = element_text(size = 16))  # Change font size for entire plot
+  save_plot(filename = paste0("results/figures/", family_plot,"_time.png"), family_time, base_aspect_ratio = 2)
+}
+
+#Families that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models 
+family_over_time("Bacteroidaceae")
+family_over_time("Deferribacteraceae")
+family_over_time("Enterococcaceae")
+family_over_time("Lachnospiraceae")
+family_over_time("Peptostreptococcaceae")
+
+#Families impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models 
+family_over_time("Bifidobacteriaceae")
+family_over_time("Coriobacteriaceae")
+family_over_time("Enterococcaceae")
+family_over_time("Lachnospiraceae")
+family_over_time("Ruminococcaceae")
+family_over_time("Verrucomicrobiaceae")
 
 #Do shared taxa associated with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the family level according to day 7 colonization status:
