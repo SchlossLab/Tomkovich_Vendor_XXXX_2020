@@ -149,7 +149,7 @@ plot_families_dx <- function(families, timepoint){
         text = element_text(size = 16)) # Change font size for entire plot
 }
 
-#Plots of the relative abundances of families that significantly vary across sources of mice from day -1 to day 1----
+#Plots of the relative abundances of families that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) 
 save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_aspect_ratio = 2)
 Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) 
@@ -330,7 +330,7 @@ plot_otus_dx <- function(otus, timepoint){
           text = element_text(size = 16)) # Change font size for entire plot
 }
 
-#Plots of the relative abundances of OTUs that significantly vary across sources of mice from day -1 to day 1----
+#Plots of the relative abundances of OTUs that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1) 
 save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 6, base_width = 8)
 Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) 
@@ -765,40 +765,326 @@ otu_sig_d9 <- tibble(`sig_otu_day9`) %>%
   rename(otu = `sig_otu_day9`)
 sig_otus_across_days <- rbind(otu_sig_dn1, otu_sig_d0, otu_sig_d1, otu_sig_d2, otu_sig_d3, otu_sig_d4, otu_sig_d5, otu_sig_d6, otu_sig_d7, otu_sig_d8, otu_sig_d9)
 
-#Comparing taxa identified via statistical analysis to taxa that showed up as important in logistic regression models----
+#Comparing taxa identified via statistical analysis (differences across sources and changes due to clindamycin treatment) to taxa that showed up as important in logistic regression models----
+#Make basic venn diagram without labels to fill with taxa overlap data
+df.venn <- data.frame(x = c(10, -10),
+                      y = c(-10, -10),
+                      labels = c('Source', 'Clindamycin'))
+ggplot(df.venn, aes(x0 = x, y0 = y, r = 19, fill = labels)) +
+  geom_circle(alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void()
 
-#Families identified in logistic regression classification models
+#Families identified in logistic regression classification models (20 families with the highest ranking for each model)
 interp_families_dn1 <- read_csv("data/process/interp_families_dn1.csv") %>% pull(dayn1_interp_families)
 interp_families_d0 <- read_csv("data/process/interp_families_d0.csv") %>% pull(day0_interp_families)
 interp_families_d1 <- read_csv("data/process/interp_families_d1.csv") %>% pull(day1_interp_families)
+interp_families_combined <- c(interp_families_dn1, interp_families_d0, interp_families_d1)
 
-#Overlap between families that shifted after clindamycin treatment & the important taxa that came out of day -1 and day 0 based models
-paired_and_interp_dn1_f <- intersect_all(`sig_family_pairs`, `interp_families_dn1`)
-# 4 families: "Coriobacteriaceae", "Clostridia Unclassified", "Ruminococcaceae", "Rikenellaceae" 
-paired_and_interp_d0_f <- intersect_all(`sig_family_pairs`, `interp_families_d0`)
-# 11 families: "Lachnospiraceae", "Coriobacteriaceae", "Enterobacteriaceae", "Verrucomicrobiaceae", "Clostridiales Unclassified" 
-# "Firmicutes Unclassified", "Ruminococcaceae", "Enterococcaceae", "Unclassified", "Anaeroplasmataceae", "Bifidobacteriaceae"
-paired_and_interp_d1_f <- intersect_all(`sig_family_pairs`, `interp_families_d1`)
-# 7 families <- "Lachnospiraceae", "Coriobacteriaceae", "Verrucomicrobiaceae", "Ruminococcaceae"    
-# "Enterococcaceae", "Erysipelotrichaceae", "Bifidobacteriaceae"
-
-#Overlap between families that differed across sources of mice on d-1, d0, and d1 and the important taxa that came out of the logistic regression models for the corresponding input day:
+# Day -1 overlapping families----
+# Overlap between families that varied across sources of mice on day -1 and top 20 taxa from logistic regression model based on day -1 community:
 dayn1_and_interp_dn1_f <- intersect_all(`sig_family_day-1`, `interp_families_dn1`)
-#10 families: "Burkholderiales Unclassified", "Sutterellaceae", "Deferribacteraceae", "Bacteroidaceae", "Rikenellaceae",
-#"Rhodospirillaceae", "Peptostreptococcaceae", "Coriobacteriaceae", "Clostridiaceae 1", "Clostridia Unclassified"
-day0_and_interp_d0_f <- intersect_all(`sig_family_day0`, `interp_families_d0`)
-# 5 families: "Deferribacteraceae", "Enterococcaceae", "Enterobacteriaceae", "Bacteroidaceae", "Lachnospiraceae"
-day1_and_interp_d1_f <- intersect_all(`sig_family_day1`, `interp_families_d1`)
-#9 families: "Bifidobacteriaceae", "Enterococcaceae", "Bacteroidaceae", "Deltaproteobacteria Unclassified"       
-#"Peptostreptococcaceae", "Lachnospiraceae", "Eubacteriaceae", "Verrucomicrobiaceae", "Proteobacteria Unclassified" 
+# Overlap between families that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day -1 community:
+paired_and_interp_dn1_f <- intersect_all(`sig_family_pairs`, `interp_families_dn1`)
 
-#Overlap between families impacted by clindamycin, mouse source, and that were important in classification model
-overlap_dayn1_f <- intersect_all(`paired_and_interp_dn1_f`,`dayn1_and_interp_dn1_f`)
-# 3 families: "Coriobacteriaceae", "Clostridia Unclassified", "Rikenellaceae" 
-overlap_day0_f <- intersect_all(`paired_and_interp_d0_f`,`day0_and_interp_d0_f`)
-# 3 families: "Lachnospiraceae"    "Enterobacteriaceae" "Enterococcaceae"
-overlap_day1_f <- intersect_all(`paired_and_interp_d1_f`,`day1_and_interp_d1_f`)
-# 4 families: "Lachnospiraceae", "Verrucomicrobiaceae", "Enterococcaceae", "Bifidobacteriaceae" 
+# Venn diagram of Day -1 overlapping families
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+families <- c(length(setdiff(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f)), 
+              length(intersect(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f)), 
+              length(setdiff(paired_and_interp_dn1_f, dayn1_and_interp_dn1_f)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_families_dn1 <- as.data.frame(families) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_dn1_f, dayn1_and_interp_dn1_f), collapse="\n")  
+# intersection
+overlap <- paste(intersect(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f), collapse="\n")
+
+dn1_families_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_families_dn1$x, y = df_venn_families_dn1$y, label = df_venn_families_dn1[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_dn1_families.png", dn1_families_venn_plot, base_aspect_ratio = 1.8)
+
+# Day 0 overlapping families----
+# Overlap between families that varied across sources of mice on day 0 and top 20 taxa from logistic regression model based on day 0 community:
+day0_and_interp_d0_f <- intersect_all(`sig_family_day0`, `interp_families_d0`)
+# Overlap between families that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day 0 community:
+paired_and_interp_d0_f <- intersect_all(`sig_family_pairs`, `interp_families_d0`)
+
+# Venn diagram of Day 0 overlapping families
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+families <- c(length(setdiff(day0_and_interp_d0_f, paired_and_interp_d0_f)), 
+              length(intersect(day0_and_interp_d0_f, paired_and_interp_d0_f)), 
+              length(setdiff(paired_and_interp_d0_f, day0_and_interp_d0_f)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_families_d0 <- as.data.frame(families) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(day0_and_interp_d0_f, paired_and_interp_d0_f), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_d0_f, day0_and_interp_d0_f), collapse="\n")  
+# intersection
+overlap <- paste(intersect(day0_and_interp_d0_f, paired_and_interp_d0_f), collapse="\n")
+
+d0_families_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_families_d0$x, y = df_venn_families_d0$y, label = df_venn_families_d0[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_d0_families.png", d0_families_venn_plot, base_aspect_ratio = 1.8)
+
+# Day 1 overlapping families----
+# Overlap between families that varied across sources of mice on day 1 and top 20 taxa from logistic regression model based on day 1 community:
+day1_and_interp_d1_f <- intersect_all(`sig_family_day1`, `interp_families_d1`)
+# Overlap between families that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day 1 community:
+paired_and_interp_d1_f <- intersect_all(`sig_family_pairs`, `interp_families_d1`)
+
+# Venn diagram of Day 1 overlapping families
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+families <- c(length(setdiff(day1_and_interp_d1_f, paired_and_interp_d1_f)), 
+              length(intersect(day1_and_interp_d1_f, paired_and_interp_d1_f)), 
+              length(setdiff(paired_and_interp_d1_f, day1_and_interp_d1_f)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_families_d1 <- as.data.frame(families) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(day1_and_interp_d1_f, paired_and_interp_d1_f), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_d1_f, day1_and_interp_d1_f), collapse="\n")  
+# intersection
+overlap <- paste(intersect(day1_and_interp_d1_f, paired_and_interp_d1_f), collapse="\n")
+
+d1_families_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_families_d1$x, y = df_venn_families_d1$y, label = df_venn_families_d1[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_d1_families.png", d1_families_venn_plot, base_aspect_ratio = 1.8)
+
+#Combined overlapping families----
+#Combined significant families that varied across source for day -1, 0, and 1
+sig_family_dayn1to1 <- c(`sig_family_day-1`, `sig_family_day0`, `sig_family_day1`)
+#Combined overlapping families that varied by source and were in the top 20 taxa from at least one logistic regression model
+dayn1to1_and_interp_combined_f <- intersect_all(`sig_family_dayn1to1`, `interp_families_combined`)
+#Combined overlapping families that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
+paired_and_interp_combined_f <- intersect_all(`sig_family_pairs`,`interp_families_combined`)
+
+# Venn diagram of overlapping families for all days combined----
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+families <- c(length(setdiff(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f)), 
+              length(intersect(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f)), 
+              length(setdiff(paired_and_interp_combined_f, dayn1to1_and_interp_combined_f)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_families <- as.data.frame(families) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_combined_f, dayn1to1_and_interp_combined_f), collapse="\n")  
+# intersection
+overlap <- paste(intersect(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f), collapse="\n")
+
+families_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_families$x, y = df_venn_families$y, label = df_venn_families[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_overall_families.png", families_venn_plot, base_aspect_ratio = 1.8)
+
+#OTUs identified in logistic regression classification models (20 OTUs with the highest ranking for each model)
+interp_otus_dn1 <- read_csv("data/process/interp_otus_dn1.csv") %>% pull(dayn1_interp_otus)
+interp_otus_d0 <- read_csv("data/process/interp_otus_d0.csv") %>% pull(day0_interp_otus)
+interp_otus_d1 <- read_csv("data/process/interp_otus_d1.csv") %>% pull(day1_interp_otus)
+interp_combined <- c(interp_otus_dn1, interp_otus_d0, interp_otus_d1)
+
+# Day -1 overlapping OTUs----
+# Overlap between OTUs that varied across sources of mice on day -1 and top 20 taxa from logistic regression model based on day -1 community:
+dayn1_and_interp_dn1_o <- intersect_all(`sig_otu_day-1`, `interp_otus_dn1`)
+# Overlap between OTUs that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day -1 community:
+paired_and_interp_dn1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_dn1`)
+
+# Venn diagram of Day -1 overlapping OTUs
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+otus <- c(length(setdiff(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)), 
+              length(intersect(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)), 
+              length(setdiff(paired_and_interp_dn1_o, dayn1_and_interp_dn1_o)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_otus_dn1 <- as.data.frame(otus) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_dn1_o, dayn1_and_interp_dn1_o), collapse="\n")  
+# intersection
+overlap <- paste(intersect(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o), collapse="\n")
+
+dn1_otus_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_otus_dn1$x, y = df_venn_otus_dn1$y, label = df_venn_otus_dn1[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
+
+# Day 0 overlapping OTUs----
+# Overlap between OTUs that varied across sources of mice on day 0 and top 20 taxa from logistic regression model based on day 0 community:
+day0_and_interp_d0_o <- intersect_all(`sig_otu_day0`, `interp_otus_d0`)
+# Overlap between OTUs that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day 0 community:
+paired_and_interp_d0_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d0`)
+
+# Venn diagram of Day 0 overlapping OTUs
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+otus <- c(length(setdiff(day0_and_interp_d0_o, paired_and_interp_d0_o)), 
+          length(intersect(day0_and_interp_d0_o, paired_and_interp_d0_o)), 
+          length(setdiff(paired_and_interp_d0_o, day0_and_interp_d0_o)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_otus_d0 <- as.data.frame(otus) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(day0_and_interp_d0_o, paired_and_interp_d0_o), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_d0_o, day0_and_interp_d0_o), collapse="\n")  
+# intersection
+overlap <- paste(intersect(day0_and_interp_d0_o, paired_and_interp_d0_o), collapse="\n")
+
+d0_otus_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_otus_d0$x, y = df_venn_otus_d0$y, label = df_venn_otus_d0[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
+
+# Day 1 overlapping OTUs----
+# Overlap between OTUs that varied across sources of mice on day 1 and top 20 taxa from logistic regression model based on day 1 community:
+day1_and_interp_d1_o <- intersect_all(`sig_otu_day1`, `interp_otus_d1`)
+# Overlap between OTUs that were altered by clindamycin treatment and top 20 taxa from logistic regression model based on day 1 community:
+paired_and_interp_d1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d1`)
+
+# Venn diagram of Day -1 overlapping OTUs
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+otus <- c(length(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
+          length(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
+          length(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_otus_d1 <- as.data.frame(otus) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2, 2, 2))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o), collapse="\n")  
+# intersection
+clind_unique <- paste(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o), collapse="\n")  
+# intersection
+overlap <- paste(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o), collapse="\n")
+
+d1_otus_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_otus_d1$x, y = df_venn_otus_d1$y, label = df_venn_otus_d1[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -19, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8)
+save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
+
+#Combined overlapping OTUs----
+#Combined significant OTUs that vary across source for day -1, 0, and 1
+sig_otu_dayn1to1 <- c(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1)
+#Combined overlapping OTUs that varied by source and were in the top 20 taxa from at least one logistic regression model
+dayn1to1_and_interp_combined <- intersect_all(`sig_otu_dayn1to1`, `interp_combined`)
+#Combined overlapping OTUs that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
+paired_and_interp_combined <- intersect_all(`sig_otu_pairs`, `interp_combined`)
+
+# Venn diagram of combined overlapping OTUs
+#Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
+OTUs <- c(length(setdiff(dayn1to1_and_interp_combined, paired_and_interp_combined)), 
+          length(intersect(paired_and_interp_combined, dayn1to1_and_interp_combined)), 
+          length(setdiff(paired_and_interp_combined, dayn1to1_and_interp_combined)))
+#Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
+df_venn_otus <- as.data.frame(OTUs) %>%
+  mutate(x = c(-19, 0, 19),
+         y = c(2.4, 2.4, 2.4))
+#Annotations of list of OTUs that are unique to each group or overlap to add to the plot
+source_unique <- paste(setdiff(dayn1to1_and_interp_combined, paired_and_interp_combined), collapse="\n")  
+clind_unique <- paste(setdiff(paired_and_interp_combined, dayn1to1_and_interp_combined), collapse="\n")  
+# intersection
+overlap <- paste(intersect(paired_and_interp_combined, dayn1to1_and_interp_combined), collapse="\n")
+
+OTUs_venn_plot <- ggplot(df.venn) +
+  geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = 'none') +
+  scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
+  scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
+  labs(fill = NULL) +
+  annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  geom_text(label = source_unique, x = -18, y = -10, size = 2.8)+
+  geom_text(label = clind_unique, x = 19, y = -10, size = 2.8)+ 
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8) 
+save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
 
 #Do shared taxa associated with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the family level according to day 7 colonization status:
@@ -836,36 +1122,6 @@ for (d in model_input_days){
 sig_family_status_0 # 0 families
 sig_family_status_1 # 0 families
 
-#OTUs identified in logistic regression classification models
-interp_otus_dn1 <- read_csv("data/process/interp_otus_dn1.csv") %>% pull(dayn1_interp_otus)
-interp_otus_d0 <- read_csv("data/process/interp_otus_d0.csv") %>% pull(day0_interp_otus)
-interp_otus_d1 <- read_csv("data/process/interp_otus_d1.csv") %>% pull(day1_interp_otus)
-
-#Overlap between OTus that shifted after clindamycin treatment & the important taxa that came out of day -1 and day 0 based models
-paired_and_interp_dn1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_dn1`)
-# 9 OTUs overlap
-paired_and_interp_d0_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d0`)
-# 7 OTUs overlap
-paired_and_interp_d1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d1`)
-# 7 OTUs overlap
-
-#Overlap between OTUs that differed across sources of mice on d-1, d0, and d1 and the important taxa that came out of the logistic regression models for the corresponding input day:
-dayn1_and_interp_dn1_o <- intersect_all(`sig_otu_day-1`, `interp_otus_dn1`)
-# 5 OTUs
-day0_and_interp_d0_o <- intersect_all(`sig_otu_day0`, `interp_otus_d0`)
-# 3 OTUs
-day1_and_interp_d1_o <- intersect_all(`sig_otu_day1`, `interp_otus_d1`)
-#8 OTUs
-
-#Overlap between OTUs impacted by clindamycin, mouse source, and that were important in classification model
-overlap_dayn1_o <- intersect_all(`paired_and_interp_dn1_o`,`dayn1_and_interp_dn1_o`)
-# 2 OTUs
-overlap_day0_o <- intersect_all(`paired_and_interp_d0_o`,`day0_and_interp_d0_o`)
-# 1 OTU
-overlap_day1_o <- intersect_all(`paired_and_interp_d1_o`,`day1_and_interp_d1_o`)
-# 4 OTUs
-
-#Do shared taxa associate with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the OTU level according to day 7 colonization status:
 w_d7status_o <- function(timepoint){
   otu_stats <- agg_otu_data %>% 
@@ -901,7 +1157,3 @@ for (d in model_input_days){
 sig_otu_status_0 # 0 OTUs
 sig_otu_status_1 # 0 OTUs
 
-dn1_status_shared <- intersect_all(`sig_otu_status_-1`, `interp_otus_dn1`)
-# 1 OTU "Ruminococcaceae (OTU 467)"
-dn1_multi_shared <- intersect_all(`sig_otu_status_-1`, `dayn1_and_interp_dn1_o`)
-# 0 OTUs

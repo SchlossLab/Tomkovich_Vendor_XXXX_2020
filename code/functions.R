@@ -8,7 +8,7 @@ library(knitr)
 library(rmarkdown) 
 library(gtools)
 library(ggpubr)
-library(ggforce)
+library(ggforce) #Use geom_circle to make venn diagrams
 
 ### Load in metadata and make sure experiment and vendor columns are treated as factors
 metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
