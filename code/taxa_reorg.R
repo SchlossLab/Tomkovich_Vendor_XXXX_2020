@@ -745,7 +745,8 @@ dn1_families_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = 14, label = "Day -1 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_dn1_families.png", dn1_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 0 overlapping families----
@@ -782,7 +783,8 @@ d0_families_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = 14, label = "Day 0 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_d0_families.png", d0_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 1 overlapping families----
@@ -819,7 +821,8 @@ d1_families_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = 14, label = "Day 1 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_d1_families.png", d1_families_venn_plot, base_aspect_ratio = 1.8)
 
 #Combined overlapping families based on day -1, 0, and 1 comparisons----
@@ -865,7 +868,8 @@ families_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = 14, label = "Key taxa comparisons for day -1, 0, and 1 models", size = 5)
 save_plot("results/figures/venn_overall_families.png", families_venn_plot, base_aspect_ratio = 1.8)
 
 #OTUs identified in logistic regression classification models (20 OTUs with the highest ranking for each model)
@@ -908,8 +912,7 @@ dn1_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
-  annotate("text", x = 0, y = -35, label = "Day -1 model key taxa comparisons", size = 5)
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 0 overlapping OTUs----
@@ -946,8 +949,7 @@ d0_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
-  annotate("text", x = 0, y = -35, label = "Day 0 model key taxa comparisons", size = 5)
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 1 overlapping OTUs----
@@ -984,8 +986,7 @@ d1_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
-  annotate("text", x = 0, y = -35, label = "Day 1 model key taxa comparisons", size = 5)
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 #Combined overlapping OTUs based on day -1, 0, and 1 comparisons----
@@ -1029,8 +1030,7 @@ OTUs_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 17, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
-  annotate("text", x = 0, y = -35, label = "Combined key taxa comparisons for day -1, 0, and 1 models", size = 5)
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
 
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models 
