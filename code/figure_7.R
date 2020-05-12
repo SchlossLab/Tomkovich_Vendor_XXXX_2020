@@ -1,11 +1,9 @@
 source("code/functions.R")
 
-a <- ggdraw() + draw_image("results/figures/Enterococcus (OTU 23)_time.png")
-b <- ggdraw() + draw_image("results/figures/Bacteroides (OTU 2)_time.png")
-c <- ggdraw() + draw_image("results/figures/Enterobacteriaceae (OTU 1)_time.png")
-d <- ggdraw() + draw_image("results/figures/Porphyromonadaceae (OTU 7)_time.png")
+a <- ggdraw() + draw_image("results/figures/venn_overall_otus.png")
+b <- ggdraw() + draw_image("results/figures/venn_overall_families.png")
 
+plot_grid(a, b, labels = "AUTO", label_size = 12, ncol=1)+
+  ggsave("results/figures/figure_7.pdf", width=6, height=8)+
+  ggsave("submission/figure_7.pdf", width=6, height=8)
 
-plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=1)+
-  ggsave("results/figures/figure_7.pdf", width=3, height=7)+
-  ggsave("submission/figure_7.pdf", width=3, height=7)

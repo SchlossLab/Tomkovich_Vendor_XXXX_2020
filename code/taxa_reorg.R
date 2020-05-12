@@ -151,12 +151,15 @@ plot_families_dx <- function(families, timepoint){
 }
 
 #Plots of the relative abundances of families that significantly varied across sources of mice from day -1 to day 1----
-Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) 
-save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_aspect_ratio = 2)
-Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) 
-save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_aspect_ratio = 2)
-Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) 
-save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_aspect_ratio = 2)
+Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) +
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_height = 6, base_width = 8)
+Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) +
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_height = 6, base_width = 8)
+Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) +
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_height = 6, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
 pairwise_day_family <- function(timepoint, sig_family_dayX){
@@ -332,12 +335,15 @@ plot_otus_dx <- function(otus, timepoint){
 }
 
 #Plots of the relative abundances of OTUs that significantly varied across sources of mice from day -1 to day 1----
-Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1) 
-save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 6, base_width = 8)
-Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) 
-save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 6, base_width = 8)
-Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) 
-save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 6, base_width = 8)
+Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1)+
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 7, base_width = 8)
+Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) +
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 7, base_width = 8)
+Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
+  theme(legend.position = "bottom")
+save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
 pairwise_day_otu <- function(timepoint, sig_otu_dayX){
@@ -541,7 +547,10 @@ sig_family_pairs <- pull_significant_taxa(f_dn1to0_pairs_stats_adjust, family)
 sig_family_pairs_top10 <- sig_family_pairs[1:10]
 
 #Plot of the families with significantly different relative abundances post clindamycin treatment across all sources of mice:----
-clind_impacted_families_plot <- agg_family_data %>% 
+day.labels <- c("Before clindamycin", "After clindamycin") #Label for plots
+names(day.labels) <- c("-1", "0")
+clind_impacted_families_plot <- agg_family_data %>%
+    filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
     filter(family %in% sig_family_pairs_top10) %>% 
     filter(day == -1 | day == 0) %>% 
     mutate(family=factor(family, levels=sig_family_pairs_top10)) %>% 
@@ -560,13 +569,13 @@ clind_impacted_families_plot <- agg_family_data %>%
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
     coord_flip()+
     theme_classic()+
-    facet_wrap(~day, dir = "v")+
+    facet_wrap(~day, dir = "v", labeller = labeller(day=day.labels))+
     theme(plot.title=element_text(hjust=0.5),
           axis.text.y = element_text(face = "italic"), #Have the families show up as italics
           text = element_text(size = 16),# Change font size for entire plot
           strip.background = element_blank(),
           legend.position = "bottom") 
-save_plot(filename = paste0("results/figures/clind_impacted_families_plot.png"), clind_impacted_families_plot, base_height = 8, base_width = 5)
+save_plot(filename = paste0("results/figures/clind_impacted_families_plot.png"), clind_impacted_families_plot, base_height = 12, base_width = 7)
 
 #Dataframe for statistical test at the genus level
 paired_genus <- agg_genus_data %>% 
@@ -623,6 +632,7 @@ sig_otu_pairs_top10 <- sig_otu_pairs[1:10]
 
 #Plot of the otus with significantly different relative abundances post clindamycin treatment across all sources of mice:----
 clind_impacted_otus_plot <- agg_otu_data %>% 
+  filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
   filter(otu %in% sig_otu_pairs_top10) %>% 
   filter(day == -1 | day == 0) %>% 
   mutate(otu=factor(otu, levels=sig_otu_pairs_top10)) %>% 
@@ -641,13 +651,13 @@ clind_impacted_otus_plot <- agg_otu_data %>%
   scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
   coord_flip()+
   theme_classic()+
-  facet_wrap(~day, dir = "v")+
+  facet_wrap(~day, dir = "v", labeller = labeller(day=day.labels))+
   theme(plot.title=element_text(hjust=0.5),
         axis.text.y = element_text(face = "italic"), #Have the families show up as italics
         text = element_text(size = 16),# Change font size for entire plot
         strip.background = element_blank(),
         legend.position = "bottom") 
-save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot, base_height = 8, base_width = 5)
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot, base_height = 12, base_width = 7)
 
 #Table combining stats testing for differences across sources of mice for all timepoints
 otu_sig_dn1 <- tibble(`sig_otu_day-1`) %>% 
@@ -731,7 +741,7 @@ dn1_families_venn_plot <- ggplot(df.venn) +
   scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
   scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
   labs(fill = NULL) +
-  annotate("text", x = df_venn_families_dn1$x, y = df_venn_families_dn1$y, label = df_venn_families_dn1[,1], size = 5)+
+  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
@@ -898,7 +908,8 @@ dn1_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = -35, label = "Day -1 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 0 overlapping OTUs----
@@ -935,7 +946,8 @@ d0_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = -35, label = "Day 0 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Day 1 overlapping OTUs----
@@ -948,7 +960,7 @@ paired_and_interp_d1_o <- intersect_all(`sig_otu_pairs`, `interp_otus_d1`)
 #Vector of numbers that represent the comparisons between dayn1to1_and_interp_combined and paired_and_interp_combined OTUs
 otus <- c(length(setdiff(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
           length(intersect(day1_and_interp_d1_o, paired_and_interp_d1_o)), 
-          length(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o))
+          length(setdiff(paired_and_interp_d1_o, day1_and_interp_d1_o)))
 #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
 df_venn_otus_d1 <- as.data.frame(otus) %>%
   mutate(x = c(-15, 0, 15),
@@ -972,14 +984,15 @@ d1_otus_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = -35, label = "Day 1 model key taxa comparisons", size = 5)
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 #Combined overlapping OTUs based on day -1, 0, and 1 comparisons----
 #Combined overlapping OTUs that varied by source and were in the top 20 taxa from at least one logistic regression model & remove any duplicates
-dayn1to1_and_interp_combined <- unique(c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`)
+dayn1to1_and_interp_combined <- unique(c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`))
 #See which source OTUs show up as significant over multiple days
-source_otus_w_duplicates <- c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`))
+source_otus_w_duplicates <- c(`dayn1_and_interp_dn1_o`, `day0_and_interp_d0_o`, `day1_and_interp_d1_o`)
 key_source_otus <- sort(source_otus_w_duplicates[duplicated(source_otus_w_duplicates)])
 #Key source OTUs: "Bacteroides (OTU 2)", "Enterococcus (OTU 23)"
 #Combined overlapping OTUs that were altered by clindamycin treatment and were in the top 20 taxa from at least one logistic regression model
@@ -1016,7 +1029,8 @@ OTUs_venn_plot <- ggplot(df.venn) +
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 17, y = -10, size = 2.8, aes(fontface=3))+ 
-  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
+  geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))+
+  annotate("text", x = 0, y = -35, label = "Combined key taxa comparisons for day -1, 0, and 1 models", size = 5)
 save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
 
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models 

@@ -76,11 +76,15 @@ summarize_plot <- function(df){
 }
 
 #CFU plot for the 1st experiment----
-exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))
+exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))+
+  ggtitle("1st experiment")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/exp1_cfu_time.png"), plot = exp1_cfu, base_aspect_ratio = 2)
 
 #CFU plot for the 2nd experiment----
-exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))
+exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))+
+  ggtitle("2nd experiment")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/exp2_cfu_time.png"), plot = exp2_cfu, base_aspect_ratio = 2)
 
 # Boxplots of C. diff CFU data at timepoints where there are significant differences in CFU levels across the different sources of mice:
