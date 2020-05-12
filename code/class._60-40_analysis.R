@@ -43,7 +43,9 @@ performance <- ggplot(best_performance, aes(x = fct_reorder(input_data, AUC), y 
                   labels=c("Day 1",
                            "Day -1",
                            "Day 0")) +
-  theme_bw() #+
+  theme_bw()  +
+  ggtitle("OTU level")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
   # theme(plot.margin=unit(c(1.1,1.1,1.1,1.1),"cm"),
   #       legend.justification=c(1,0),
   #       legend.position=c(1,0),
@@ -66,8 +68,8 @@ performance <- ggplot(best_performance, aes(x = fct_reorder(input_data, AUC), y 
 
 
 ######################################################################
-#-----------------------Save figure as .pdf ------------------------ #
+#-----------------------Save figure as .png ------------------------ #
 ######################################################################
 
-save_plot("results/figures/class._logistic_regression_60.pdf", plot = performance, base_aspect_ratio = 1.8)
+save_plot("results/figures/class._logistic_regression_60.png", plot = performance, base_aspect_ratio = 1.8)
 
