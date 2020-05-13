@@ -119,7 +119,7 @@ for (d in exp_days_seq){
 shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day3, sig_family_day4, sig_family_day5, sig_family_day6, sig_family_day7, sig_family_day9)
 # 6 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae, Porphyromonadaceae
 
-#Shared significant genera across D-1 to D1----
+#Shared significant familes across D-1 to D1----
 shared_sig_families_Dn1toD1 <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1)
 # 8 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae
 
@@ -147,18 +147,22 @@ plot_families_dx <- function(families, timepoint){
   theme_classic()+
   theme(plot.title=element_text(hjust=0.5),
         axis.text.y = element_text(face = "italic"), #Have the families show up as italics
+        legend.position = "bottom",
         text = element_text(size = 16)) # Change font size for entire plot
 }
 
 #Plots of the relative abundances of families that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) +
-  theme(legend.position = "bottom")
+  ggtitle("Baseline")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_height = 6, base_width = 8)
 Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) +
-  theme(legend.position = "bottom")
+  ggtitle("Clindamycin")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_height = 6, base_width = 8)
 Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) +
-  theme(legend.position = "bottom")
+  ggtitle("Post-infection")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_height = 6, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
@@ -330,19 +334,23 @@ plot_otus_dx <- function(otus, timepoint){
     coord_flip()+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5),
+          legend.position = "bottom",
           axis.text.y = element_text(face = "italic"), #Have the OTUs show up as italics
           text = element_text(size = 16)) # Change font size for entire plot
 }
 
 #Plots of the relative abundances of OTUs that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1)+
-  theme(legend.position = "bottom")
+  ggtitle("Baseline")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 7, base_width = 8)
 Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) +
-  theme(legend.position = "bottom")
+  ggtitle("Clindamycin")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 7, base_width = 8)
 Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
-  theme(legend.position = "bottom")
+  ggtitle("Post-infection")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
@@ -547,12 +555,11 @@ sig_family_pairs <- pull_significant_taxa(f_dn1to0_pairs_stats_adjust, family)
 sig_family_pairs_top10 <- sig_family_pairs[1:10]
 
 #Plot of the families with significantly different relative abundances post clindamycin treatment across all sources of mice:----
-day.labels <- c("Before clindamycin", "After clindamycin") #Label for plots
-names(day.labels) <- c("-1", "0")
-clind_impacted_families_plot <- agg_family_data %>%
+clind_impacted_families_plot_dx <- function(timepoint){
+  agg_family_data %>%
     filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
     filter(family %in% sig_family_pairs_top10) %>% 
-    filter(day == -1 | day == 0) %>% 
+    filter(day == timepoint) %>% 
     mutate(family=factor(family, levels=sig_family_pairs_top10)) %>% 
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
     ggplot(aes(x= family, y=agg_rel_abund, color=vendor))+
@@ -569,13 +576,22 @@ clind_impacted_families_plot <- agg_family_data %>%
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
     coord_flip()+
     theme_classic()+
-    facet_wrap(~day, dir = "v", labeller = labeller(day=day.labels))+
     theme(plot.title=element_text(hjust=0.5),
-          axis.text.y = element_text(face = "italic"), #Have the families show up as italics
           text = element_text(size = 16),# Change font size for entire plot
+          axis.text.y = element_text(face = "italic", size = 18), #Have the families show up as italics
           strip.background = element_blank(),
           legend.position = "bottom") 
-save_plot(filename = paste0("results/figures/clind_impacted_families_plot.png"), clind_impacted_families_plot, base_height = 12, base_width = 7)
+}
+
+clind_impacted_families_plot_dn1 <- clind_impacted_families_plot_dx(-1)+
+  ggtitle("Baseline")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/clind_impacted_families_plot_dn1.png"), clind_impacted_families_plot_dn1, base_height = 12, base_width = 7)
+clind_impacted_families_plot_d0 <- clind_impacted_families_plot_dx(0)+
+  ggtitle("Clindamycin")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/clind_impacted_families_plot_d0.png"), clind_impacted_families_plot_d0, base_height = 12, base_width = 7)
+
 
 #Dataframe for statistical test at the genus level
 paired_genus <- agg_genus_data %>% 
@@ -631,10 +647,11 @@ sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
 sig_otu_pairs_top10 <- sig_otu_pairs[1:10]
 
 #Plot of the otus with significantly different relative abundances post clindamycin treatment across all sources of mice:----
-clind_impacted_otus_plot <- agg_otu_data %>% 
+clind_impacted_otus_plot_dx <- function(timepoint){ 
+  agg_otu_data %>% 
   filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
   filter(otu %in% sig_otu_pairs_top10) %>% 
-  filter(day == -1 | day == 0) %>% 
+  filter(day == timepoint) %>% 
   mutate(otu=factor(otu, levels=sig_otu_pairs_top10)) %>% 
   mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
   ggplot(aes(x= otu, y=agg_rel_abund, color=vendor))+
@@ -651,13 +668,22 @@ clind_impacted_otus_plot <- agg_otu_data %>%
   scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
   coord_flip()+
   theme_classic()+
-  facet_wrap(~day, dir = "v", labeller = labeller(day=day.labels))+
   theme(plot.title=element_text(hjust=0.5),
-        axis.text.y = element_text(face = "italic"), #Have the families show up as italics
         text = element_text(size = 16),# Change font size for entire plot
+        axis.text.y = element_text(face = "italic", size = 18), #Have the families show up as italics
         strip.background = element_blank(),
         legend.position = "bottom") 
-save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot, base_height = 12, base_width = 7)
+} 
+
+clind_impacted_otus_plot_dn1 <- clind_impacted_otus_plot_dx(-1)+
+  ggtitle("Baseline")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_dn1.png"), clind_impacted_otus_plot_dn1, base_height = 12, base_width = 7)
+clind_impacted_otus_plot_d0 <- clind_impacted_otus_plot_dx(0)+
+  ggtitle("Clindamycin")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_d0.png"), clind_impacted_otus_plot_d0, base_height = 12, base_width = 7)
+
 
 #Table combining stats testing for differences across sources of mice for all timepoints
 otu_sig_dn1 <- tibble(`sig_otu_day-1`) %>% 
@@ -1032,6 +1058,20 @@ OTUs_venn_plot <- ggplot(df.venn) +
   geom_text(label = clind_unique, x = 17, y = -10, size = 2.8, aes(fontface=3))+ 
   geom_text(label = overlap, x = 0, y = -11, size = 2.8, aes(fontface=3))
 save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_ratio = 1.8)
+
+#Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
+Fig4_v_5_otus <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs_top10`)
+#O OTUs overlap
+Fig4_v_5_families <- intersect_all(`shared_sig_families_Dn1toD1`, `sig_family_pairs_top10`)
+#3 OTUs overlap: "Porphyromonadaceae", "Enterococcaceae", "Lachnospiraceae"  
+
+#Comparison of combined Venn diagram OTUs to significant OTUs that varied by source on day -1, 0, and 1:
+intersect_all(`shared_sig_otus_Dn1toD1`, `dayn1to1_and_interp_combined`)
+intersect_all(`shared_sig_otus_Dn1toD1`, `paired_and_interp_combined`)
+
+#Comparison of combined Venn diagram families to significant families that varied by source on day -1, 0, and 1:
+intersect_all(`shared_sig_families_Dn1toD1`, `dayn1to1_and_interp_combined_f`)
+intersect_all(`shared_sig_families_Dn1toD1`, `paired_and_interp_combined_f`)
 
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models 
 #Function to plot specific OTUs over time

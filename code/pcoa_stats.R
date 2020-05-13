@@ -129,7 +129,6 @@ plot_pcoa <- function(df, timepoint){
     theme(plot.title = element_text(hjust = 0.5),
           text = element_text(size = 16),
           legend.position = "bottom")
-  save_plot(filename = paste0("results/figures/pcoa_day", timepoint,".png"), plot)
 }
 
 # Read in thetayc distance matrix that represents day -1 sequenced samples----
@@ -154,7 +153,10 @@ dn1_pcoa <- read_tsv("data/mothur/d-1/vendors.trim.contigs.good.unique.good.filt
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-dn1 <- plot_pcoa(dn1_pcoa, -1)
+dn1 <- plot_pcoa(dn1_pcoa, -1)+
+  ggtitle("Baseline")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/pcoa_day-1.png"), dn1)
 
 # Read in thetayc distance matrix that represents day 0 sequenced samples----
 d0_dist <- read_dist("data/mothur/d0/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -178,7 +180,11 @@ d0_pcoa <- read_tsv("data/mothur/d0/vendors.trim.contigs.good.unique.good.filter
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-d0 <- plot_pcoa(d0_pcoa, 0)
+d0 <- plot_pcoa(d0_pcoa, 0)+
+  ggtitle("Clindamycin")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/pcoa_day0.png"), d0)
+
 
 # Read in thetayc distance matrix that represents day 1 sequenced samples----
 d1_dist <- read_dist("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -202,7 +208,11 @@ d1_pcoa <- read_tsv("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-d1 <- plot_pcoa(d1_pcoa, 1)
+d1 <- plot_pcoa(d1_pcoa, 1) +
+  ggtitle("Post-infection")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
+
 
 #Make combined table of adonis results for D-1, 0, and 1
 rbind(dn1_results, d0_results, d1_results) %>% 
