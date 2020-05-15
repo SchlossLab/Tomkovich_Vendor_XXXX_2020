@@ -74,7 +74,7 @@ make write.paper
 ```
 Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_vendor_difs_XXX_2020/data/raw
 ```
-cd Tomkovich_PPI_mSphere_2019
+cd Tomkovich_vendor_difs_XXXX_2020
 ```
 Obtain the SILVA reference alignment from version 132 described at http://blog.mothur.org/2018/01/10/SILVA-v132-reference-files/. We will use the SEED v. 132, which contain 12,083 bacterial sequences. This also contains the reference taxonomy. We will limit the databases to only include bacterial sequences.
 ```
