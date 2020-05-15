@@ -115,10 +115,6 @@ for (d in exp_days_seq){
   assign(name, pull_significant_taxa(stats, family))
 }
 
-#Shared significant familes across days, but excluding day 2 and day 8 (low number of samples sequenced)----
-shared_sig_families <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1, sig_family_day3, sig_family_day4, sig_family_day5, sig_family_day6, sig_family_day7, sig_family_day9)
-# 6 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae, Porphyromonadaceae
-
 #Shared significant familes across D-1 to D1----
 shared_sig_families_Dn1toD1 <- intersect_all(`sig_family_day-1`, sig_family_day0, sig_family_day1)
 # 8 families: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Sutterellaceae, Deferribacteraceae, Bacteroidaceae
@@ -164,6 +160,13 @@ Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) +
   ggtitle("Post-infection")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_height = 6, base_width = 8)
+
+#Plots of the relative abundances of families that significantly varied across sources of mice on day 7----
+#and were important in the 3 logistic regression models
+sig_families_d7_model_overlap <- intersect_all(`sig_family_day7`, `interp_families_combined`)
+sig_families_d7_overlap <- plot_families_dx(sig_families_d7_model_overlap, 7) +
+  ggtitle("Day 7 Model Overlap")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 
 # Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
 pairwise_day_family <- function(timepoint, sig_family_dayX){
@@ -233,9 +236,60 @@ kw_w_sig_d1 <- read_tsv(file="data/process/family_stats_day_1.tsv") %>%
   mutate(day = 1) %>% #Add experiment day for statistics
   arrange(p.value.adj) #Arrange by adjusted p.values
 
-#Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
+#Combine family statistics for differences across souces of mice for days -1, 0 and 1:----
 family_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
   write_tsv(path = paste0("data/process/family_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
+
+#Read in just Kruskal Wallis results for the rest of the days:
+kw_sig_dn1 <- read_tsv(file="data/process/family_stats_day_-1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = -1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d0 <- read_tsv(file="data/process/family_stats_day_0.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 0) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d1 <- read_tsv(file="data/process/family_stats_day_1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d2 <- read_tsv(file="data/process/family_stats_day_2.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 2) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d3 <- read_tsv(file="data/process/family_stats_day_3.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 3) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d4 <- read_tsv(file="data/process/family_stats_day_4.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 4) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d5 <- read_tsv(file="data/process/family_stats_day_5.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 5) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d6 <- read_tsv(file="data/process/family_stats_day_6.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 6) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d7 <- read_tsv(file="data/process/family_stats_day_7.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 7) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d8 <- read_tsv(file="data/process/family_stats_day_8.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 8) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d9 <- read_tsv(file="data/process/family_stats_day_9.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 9) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+#Combine Kruskal-Wallis results at the family level for all days with sequence data:----
+family_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
+                                      kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
+  filter(p.value.adj <= 0.05) %>% 
+  write_tsv(path = paste0("data/process/family_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
 
 #Function to test at the genus level:
 kruskal_wallis_g <- function(timepoint){
@@ -263,10 +317,6 @@ for (d in exp_days_seq){
   name <- paste("sig_genus_day", d, sep = "") 
   assign(name, pull_significant_taxa(stats, genus))
 }
-
-#Shared significant genera across all days except 2 and 8 (low number of samples sequenced that day)----
-shared_sig_genera <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1, sig_genus_day3, sig_genus_day4, sig_genus_day5, sig_genus_day6, sig_genus_day7, sig_genus_day9)
-# 9 genera: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Proteus, Clostridium XVIII
 
 #Shared significant genera across D-1 to D1----
 shared_sig_genera_Dn1toD1 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1)
@@ -299,11 +349,6 @@ for (d in exp_days_seq){
   name <- paste("sig_otu_day", d, sep = "") 
   assign(name, pull_significant_taxa(stats, otu))
 }
-
-#Shared significant OTUs across all days except 2 and 8 (low number of samples sequenced that day)----
-shared_sig_otus <- intersect_all(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1, sig_otu_day3, sig_otu_day4, sig_otu_day5, sig_otu_day6, sig_otu_day7, sig_otu_day9)
-# 9 OTUs: [1] "Parasutterella (OTU 26)" "Burkholderiales (OTU 34)" "Betaproteobacteria (OTU 58)" "Lactobacillus (OTU 49)"     
-# "Parabacteroides (OTU 5)" "Lactobacillus (OTU 31)" "Bacteroides (OTU 2)" "Proteus (OTU 16)" "Ruminococcaceae (OTU 152)" 
 
 #Shared significant genera across D-1 to D1----
 shared_sig_otus_Dn1toD1 <- intersect_all(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1)
@@ -352,6 +397,13 @@ Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
   ggtitle("Post-infection")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
+
+#Plots of the relative abundances of OTUs that significantly varied across sources of mice on day 7----
+#and were important in the 3 logistic regression models
+sig_otus_d7_model_overlap <- intersect_all(`sig_otu_day7`, `interp_combined`)
+sig_otus_d7_overlap <- plot_otus_dx(sig_otus_d7_model_overlap, 7) +
+  ggtitle("Day 7")+ #Title plot
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
 pairwise_day_otu <- function(timepoint, sig_otu_dayX){
@@ -424,6 +476,57 @@ kw_w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%
 #Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
 otu_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
   write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
+
+#Read in just Kruskal Wallis results for the rest of the days:
+kw_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = -1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d0 <- read_tsv(file="data/process/otu_stats_day_0.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 0) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 1) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d2 <- read_tsv(file="data/process/otu_stats_day_2.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 2) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d3 <- read_tsv(file="data/process/otu_stats_day_3.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 3) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d4 <- read_tsv(file="data/process/otu_stats_day_4.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 4) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d5 <- read_tsv(file="data/process/otu_stats_day_5.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 5) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d6 <- read_tsv(file="data/process/otu_stats_day_6.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 6) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d7 <- read_tsv(file="data/process/otu_stats_day_7.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 7) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d8 <- read_tsv(file="data/process/otu_stats_day_8.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 8) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+kw_sig_d9 <- read_tsv(file="data/process/otu_stats_day_9.tsv") %>%  
+  select(-parameter) %>% #Don't need this column
+  mutate(day = 9) %>% #Add experiment day for statistics
+  arrange(p.value.adj) #Arrange by adjusted p.values
+#Combine Kruskal-Wallis results at the OTU level for all days with sequence data:----
+otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
+                                      kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
+  filter(p.value.adj <= 0.05) %>% #Select only significant rows
+  write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
 
 # Plot OTUs of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
 #Function to plot 1 significant OTU relative abundance across sources of mice at a specific timepoint----
@@ -684,43 +787,6 @@ clind_impacted_otus_plot_d0 <- clind_impacted_otus_plot_dx(0)+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_d0.png"), clind_impacted_otus_plot_d0, base_height = 12, base_width = 7)
 
-
-#Table combining stats testing for differences across sources of mice for all timepoints
-otu_sig_dn1 <- tibble(`sig_otu_day-1`) %>% 
-  mutate(day = -1) %>% 
-  rename(otu = `sig_otu_day-1`)
-otu_sig_d0 <- tibble(`sig_otu_day0`) %>% 
-  mutate(day = 0) %>% 
-  rename(otu = `sig_otu_day0`)
-otu_sig_d1 <- tibble(`sig_otu_day1`) %>% 
-  mutate(day = 1) %>% 
-  rename(otu = `sig_otu_day1`)
-otu_sig_d2 <- tibble(`sig_otu_day2`) %>% 
-  mutate(day = 2) %>% 
-  rename(otu = `sig_otu_day2`)
-otu_sig_d3 <- tibble(`sig_otu_day3`) %>% 
-  mutate(day = 3) %>% 
-  rename(otu = `sig_otu_day3`)
-otu_sig_d4 <- tibble(`sig_otu_day4`) %>% 
-  mutate(day = 4) %>% 
-  rename(otu = `sig_otu_day4`)
-otu_sig_d5 <- tibble(`sig_otu_day5`) %>% 
-  mutate(day = 5) %>% 
-  rename(otu = `sig_otu_day5`)
-otu_sig_d6 <- tibble(`sig_otu_day6`) %>% 
-  mutate(day = 6) %>% 
-  rename(otu = `sig_otu_day6`)
-otu_sig_d7 <- tibble(`sig_otu_day7`) %>% 
-  mutate(day = 7) %>% 
-  rename(otu = `sig_otu_day7`)
-otu_sig_d8 <- tibble(`sig_otu_day8`) %>% 
-  mutate(day = 8) %>% 
-  rename(otu = `sig_otu_day8`)
-otu_sig_d9 <- tibble(`sig_otu_day9`) %>% 
-  mutate(day = 9) %>% 
-  rename(otu = `sig_otu_day9`)
-sig_otus_across_days <- rbind(otu_sig_dn1, otu_sig_d0, otu_sig_d1, otu_sig_d2, otu_sig_d3, otu_sig_d4, otu_sig_d5, otu_sig_d6, otu_sig_d7, otu_sig_d8, otu_sig_d9)
-
 #Comparing taxa identified via statistical analysis (differences across sources and changes due to clindamycin treatment) to taxa that showed up as important in logistic regression models----
 #Make basic venn diagram without labels to fill with taxa overlap data
 df.venn <- data.frame(x = c(10, -10),
@@ -767,7 +833,7 @@ dn1_families_venn_plot <- ggplot(df.venn) +
   scale_fill_manual(values = c('cornflowerblue', 'firebrick',  'gold')) +
   scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
   labs(fill = NULL) +
-  annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+  annotate("text", x = df_venn_families_dn1$x, y = df_venn_families_dn1$y, label = df_venn_families_dn1[,1], size = 5)+
   annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
   geom_text(label = source_unique, x = -19, y = -10, size = 2.8, aes(fontface=3))+
   geom_text(label = clind_unique, x = 19, y = -10, size = 2.8, aes(fontface=3))+ 
@@ -1062,8 +1128,13 @@ save_plot("results/figures/venn_overall_otus.png", OTUs_venn_plot, base_aspect_r
 #Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
 Fig4_v_5_otus <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs_top10`)
 #O OTUs overlap
+Fig4_v_all_clind <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs`)
+# 3 OTUs Lachnospiraceae (OTU 130), Lactobacillus (OTU 6), Enterococcus (OTU 23)
 Fig4_v_5_families <- intersect_all(`shared_sig_families_Dn1toD1`, `sig_family_pairs_top10`)
-#3 OTUs overlap: "Porphyromonadaceae", "Enterococcaceae", "Lachnospiraceae"  
+#3 families overlap: "Porphyromonadaceae", "Enterococcaceae", "Lachnospiraceae"  
+Fig4_v_all_clind <- intersect_all(`shared_sig_families_Dn1toD1`, `sig_family_pairs`)
+#3 families overlap: "Porphyromonadaceae", "Enterococcaceae", "Lachnospiraceae"  
+
 
 #Comparison of combined Venn diagram OTUs to significant OTUs that varied by source on day -1, 0, and 1:
 intersect_all(`shared_sig_otus_Dn1toD1`, `dayn1to1_and_interp_combined`)
@@ -1074,8 +1145,8 @@ intersect_all(`shared_sig_families_Dn1toD1`, `dayn1to1_and_interp_combined_f`)
 intersect_all(`shared_sig_families_Dn1toD1`, `paired_and_interp_combined_f`)
 
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models 
-#Function to plot specific OTUs over time
-otu_over_time <- function(otu_plot){
+#Customize the x_annotation, y_position, and label argument values for each OTU prior to running the function
+otu_over_time <- function(otu_plot, x_annotation, y_position, label){
   otu_mean <- agg_otu_data %>% 
     filter(otu == otu_plot) %>% 
     group_by(vendor, day) %>% 
@@ -1099,21 +1170,57 @@ otu_over_time <- function(otu_plot){
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
                        limits = c(-1.5, 9.5)) +
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.title=element_blank())+
-    theme(text = element_text(size = 16))  # Change font size for entire plot
+    theme(plot.title=element_text(hjust=0.5, face = "italic"),
+          legend.title=element_blank(),
+          text = element_text(size = 16)) # Change font size for entire plot
   save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
 }
 
-#OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models 
-otu_over_time("Bacteroides (OTU 2)")
-otu_over_time("Enterococcus (OTU 23)")
+#OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models----
+#Create column with statistical significance symbols for all OTUs:
+plot_otu_stats_dn1to9 <- otu_stats_dn1to9_combined %>% 
+  mutate(p.value.adj=round(p.value.adj, digits = 4)) %>% 
+  filter(p.value.adj <= 0.05) %>%
+  mutate(p.signif = case_when(
+    p.value.adj <= 0.0001 ~ "****",
+    p.value.adj <= 0.001 ~ "***",
+    p.value.adj <= 0.01 ~ "**",
+    p.value.adj > 0.05 ~ "NS",
+    p.value.adj <= 0.05 ~ "*"
+  )) 
+#Set up statistical annotation arguments for Bacteroides (OTU 2):
+x_OTU2 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Bacteroides (OTU 2)") %>% pull(day)
+y_OTU2 <- 1.5
+label_OTU2 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Bacteroides (OTU 2)") %>% pull(p.signif)
+otu_over_time(otu_plot = "Bacteroides (OTU 2)", x_annotation = x_OTU2, y_position = y_OTU2, label = label_OTU2)
+#Set up statistical annotation arguments for Enterococcus (OTU 23):
+x_OTU23 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Enterococcus (OTU 23)") %>% pull(day)
+y_OTU23 <- .4
+label_OTU23 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Enterococcus (OTU 23)") %>% pull(p.signif)
+otu_over_time("Enterococcus (OTU 23)", x_annotation = x_OTU23, y_position = y_OTU23, label = label_OTU23)
 
-#OTUs impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models 
-otu_over_time("Enterobacteriaceae (OTU 1)")
-otu_over_time("Enterococcus (OTU 23)") #Also varies across mouse sources
-otu_over_time("Porphyromonadaceae (OTU 7)")
+#OTUs impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models---- 
+#Set up statistical annotation arguments for Enterobacteriaceae (OTU 1):
+x_OTU1 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Enterobacteriaceae (OTU 1)") %>% pull(day)
+y_OTU1 <- 1.5
+label_OTU1 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Enterobacteriaceae (OTU 1)") %>% pull(p.signif)
+otu_over_time("Enterobacteriaceae (OTU 1)", x_annotation = x_OTU1, y_position = y_OTU1, label = label_OTU1)
+otu_over_time("Enterococcus (OTU 23)", x_annotation = x_OTU23, y_position = y_OTU23, label = label_OTU23) #Also varies across mouse sources
+#Set up statistical annotation arguments for Porphyromonadaceae (OTU 7):
+x_OTU7 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(day)
+y_OTU7 <- .4
+label_OTU7 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(p.signif)
+otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)
 
 #Previously plotted taxa for lab meeting presentations:
 otu_over_time("Ruminococcaceae (OTU 520)")
@@ -1183,8 +1290,8 @@ Escherichia_shigella_over_time <- function(otu_plot){
 Escherichia_shigella_over_time("Escherichia/Shigella (OTU 610)")
 
 #Function to plot families of interest that overlap with top 20 OTUs in 3 logistic regression models 
-#Function to plot specific families over time
-family_over_time <- function(family_plot){
+#Customize the x_annoation, y_position, and label argument values for each family prior to running the function
+family_over_time <- function(family_plot, x_annotation, y_position, label){
   family_mean <- agg_family_data %>% 
     filter(family == family_plot) %>% 
     group_by(vendor, day) %>% 
@@ -1208,26 +1315,93 @@ family_over_time <- function(family_plot){
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
                        limits = c(-1.5, 9.5)) +
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.title=element_blank())+
-    theme(text = element_text(size = 16))  # Change font size for entire plot
+    theme(plot.title=element_text(hjust=0.5, face = "italic"),
+          legend.title=element_blank(),
+          text = element_text(size = 16)) # Change font size for entire plot
   save_plot(filename = paste0("results/figures/", family_plot,"_time.png"), family_time, base_aspect_ratio = 2)
 }
 
-#Families that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models 
-family_over_time("Bacteroidaceae")
-family_over_time("Deferribacteraceae")
-family_over_time("Enterococcaceae")
-family_over_time("Lachnospiraceae")
+#Create column with statistical significance symbols for all OTUs:
+plot_family_stats_dn1to9 <- family_stats_dn1to9_combined %>% 
+  mutate(p.value.adj=round(p.value.adj, digits = 4)) %>% 
+  filter(p.value.adj <= 0.05) %>%
+  mutate(p.signif = case_when(
+    p.value.adj <= 0.0001 ~ "****",
+    p.value.adj <= 0.001 ~ "***",
+    p.value.adj <= 0.01 ~ "**",
+    p.value.adj > 0.05 ~ "NS",
+    p.value.adj <= 0.05 ~ "*"
+  )) 
+#Families that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models---- 
+#Set up statistical annotation arguments for "Bacteroidaceae":
+x_Bacteroidaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bacteroidaceae") %>% pull(day)
+y_Bacteroidaceae <- 1.5
+label_Bacteroidaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bacteroidaceae") %>% pull(p.signif)
+family_over_time("Bacteroidaceae", x_annotation = x_Bacteroidaceae, y_position = y_Bacteroidaceae, label = label_Bacteroidaceae)
+#Set up statistical annotation arguments for "Bacteroidaceae":
+x_Bacteroidaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bacteroidaceae") %>% pull(day)
+y_Bacteroidaceae <- 1.5
+label_Bacteroidaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bacteroidaceae") %>% pull(p.signif)
+family_over_time("Bacteroidaceae", x_annotation = x_Bacteroidaceae, y_position = y_Bacteroidaceae, label = label_Bacteroidaceae)
+#Set up statistical annotation arguments for "Deferribacteraceae":
+x_Deferribacteraceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Deferribacteraceae") %>% pull(day)
+y_Deferribacteraceae <- c(.4, .2, .4, .2, .4, .2, .4, .2, .4, .2)
+label_Deferribacteraceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Deferribacteraceae") %>% pull(p.signif)
+family_over_time("Deferribacteraceae", x_annotation = x_Deferribacteraceae, y_position = y_Deferribacteraceae, label = label_Deferribacteraceae)
+#Set up statistical annotation arguments for "Enterococcaceae":
+x_Enterococcaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Enterococcaceae") %>% pull(day)
+y_Enterococcaceae <- c(.4, .4, .2, .4, .4, .4, .4, .4)
+label_Enterococcaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Enterococcaceae") %>% pull(p.signif)
+family_over_time("Enterococcaceae",  x_annotation = x_Enterococcaceae, y_position = y_Enterococcaceae, label = label_Enterococcaceae) 
+#Set up statistical annotation arguments for "Lachnospiraceae":
+x_Lachnospiraceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Lachnospiraceae") %>% pull(day)
+y_Lachnospiraceae <- 1.5
+label_Lachnospiraceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Lachnospiraceae") %>% pull(p.signif)
+family_over_time("Lachnospiraceae",  x_annotation = x_Lachnospiraceae, y_position = y_Lachnospiraceae, label = label_Lachnospiraceae)
 
-#Families impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models 
-family_over_time("Bifidobacteriaceae")
-family_over_time("Coriobacteriaceae")
-family_over_time("Enterococcaceae")
-family_over_time("Lachnospiraceae")
-family_over_time("Ruminococcaceae")
-family_over_time("Verrucomicrobiaceae")
+#Families impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models---- 
+#Set up statistical annotation arguments for "Bifidobacteriaceae":
+x_Bifidobacteriaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bifidobacteriaceae") %>% pull(day)
+y_Bifidobacteriaceae <- c(.4, .2, .4, .2, .4, .2, .4, .2, .4)
+label_Bifidobacteriaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Bifidobacteriaceae") %>% pull(p.signif)
+family_over_time("Bifidobacteriaceae", x_annotation = x_Bifidobacteriaceae, y_position = y_Bifidobacteriaceae, label = label_Bifidobacteriaceae)
+#Set up statistical annotation arguments for "Coriobacteriaceae":
+x_Coriobacteriaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Coriobacteriaceae") %>% pull(day)
+y_Coriobacteriaceae <- 0.01
+label_Coriobacteriaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Coriobacteriaceae") %>% pull(p.signif)
+family_over_time("Coriobacteriaceae", x_annotation = x_Coriobacteriaceae, y_position = y_Coriobacteriaceae, label = label_Coriobacteriaceae)
+family_over_time("Enterococcaceae",  x_annotation = x_Enterococcaceae, y_position = y_Enterococcaceae, label = label_Enterococcaceae) #Also varies across mouse sources
+family_over_time("Lachnospiraceae",  x_annotation = x_Lachnospiraceae, y_position = y_Lachnospiraceae, label = label_Lachnospiraceae) #Also varies across mouse sources
+#Set up statistical annotation arguments for "Ruminococcaceae":
+x_Ruminococcaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Ruminococcaceae") %>% pull(day)
+y_Ruminococcaceae <- .4
+label_Ruminococcaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Ruminococcaceae") %>% pull(p.signif)
+family_over_time("Ruminococcaceae", x_annotation = x_Ruminococcaceae, y_position = y_Ruminococcaceae, label = label_Ruminococcaceae)
+#Set up statistical annotation arguments for "Verrucomicrobiaceae":
+x_Verrucomicrobiaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Verrucomicrobiaceae") %>% pull(day)
+y_Verrucomicrobiaceae <- .6
+label_Verrucomicrobiaceae <- plot_family_stats_dn1to9 %>% 
+  filter(family == "Verrucomicrobiaceae") %>% pull(p.signif)
+family_over_time("Verrucomicrobiaceae", x_annotation = x_Verrucomicrobiaceae, y_position = y_Verrucomicrobiaceae, label = label_Verrucomicrobiaceae)
 
 #Do shared taxa associated with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the family level according to day 7 colonization status:
