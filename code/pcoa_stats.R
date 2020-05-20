@@ -111,13 +111,22 @@ plot_pcoa <- function(df){
     theme_classic()
 }
 
+#Read in .loadings file to add percent variation represented by PCoA axis
+all_axis_labels <- read_tsv("data/process/vendors.subsample.thetayc.ave.pcoa.loadings")
+all_axis1 <- all_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+all_axis2 <- all_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
 #PCoA plot that combines the 2 experiments and save the plot----  
-pcoa_plot_combined <- plot_pcoa(pcoa_data) 
+pcoa_plot_combined <- plot_pcoa(pcoa_data)+
+  labs(x = paste("PCoA 1 (", all_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", all_axis2,"%)", sep = ""))
 save_plot(filename = paste0("results/figures/pcoa.png"), pcoa_plot_combined)
 
 #Animation of PCoA plot over time for all sequenced samples ----
 #Source: Will Close's Code Club from 4/12/2020 on plot animation
 pcoa_animated <- plot_pcoa(pcoa_data)+
+  labs(x = paste("PCoA 1 (", all_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", all_axis2,"%)", sep = ""))+
   labs(title = 'Day: {frame_time}') + #Adds time variable to title
   transition_time(day)+  #Day variable used to cycle through time on animation
   shadow_mark() #Shows previous timepoints
@@ -169,8 +178,15 @@ dn1_pcoa <- read_tsv("data/mothur/d-1/vendors.trim.contigs.good.unique.good.filt
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
+#Read in .loadings file to add percent variation represented by PCoA axis
+dn1_axis_labels <- read_tsv("data/mothur/d-1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+dn1_axis1 <- dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+dn1_axis2 <- dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
 dn1 <- plot_pcoa(dn1_pcoa, -1)+
   ggtitle("Baseline")+ #Title plot
+  labs(x = paste("PCoA 1 (", dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", dn1_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/pcoa_day-1.png"), dn1)
 
@@ -196,11 +212,17 @@ d0_pcoa <- read_tsv("data/mothur/d0/vendors.trim.contigs.good.unique.good.filter
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
+#Read in .loadings file to add percent variation represented by PCoA axis
+d0_axis_labels <- read_tsv("data/mothur/d0/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+d0_axis1 <- d0_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+d0_axis2 <- d0_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
 d0 <- plot_pcoa(d0_pcoa, 0)+
   ggtitle("Clindamycin")+ #Title plot
+  labs(x = paste("PCoA 1 (", d0_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", d0_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/pcoa_day0.png"), d0)
-
 
 # Read in thetayc distance matrix that represents day 1 sequenced samples----
 d1_dist <- read_dist("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -224,8 +246,15 @@ d1_pcoa <- read_tsv("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
+#Read in .loadings file to add percent variation represented by PCoA axis
+d1_axis_labels <- read_tsv("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+d1_axis1 <- d1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+d1_axis2 <- d1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
 d1 <- plot_pcoa(d1_pcoa, 1) +
   ggtitle("Post-infection")+ #Title plot
+  labs(x = paste("PCoA 1 (", d1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", d1_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
 
@@ -237,7 +266,7 @@ write_tsv("data/process/adonis_dn1-1.tsv")
 #Examine initial day -1 vendor communities separately----
 
 #Function to plot pcoa data for each source of mice at day -1, colored according to experiment with shapes to differentiate cage----
-pcoa_vendor <- function(df, source, label){
+pcoa_vendor <- function(df, label){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = experiment, shape = cage)) +
     geom_point(size=4, alpha = 0.4) +
     coord_fixed() + 
@@ -249,7 +278,6 @@ pcoa_vendor <- function(df, source, label){
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5),
           text = element_text(size = 16))
-  save_plot(filename = paste0("results/figures/pcoa_dn1_", source,".png"), plot)
 }
 
 # Read in thetayc distance matrix that represents Day -1 Schloss samples----
@@ -274,7 +302,15 @@ s_dn1_pcoa <- read_tsv("data/mothur/d-1/schloss/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-s_dn1 <- pcoa_vendor(s_dn1_pcoa, "schloss", "Schloss")
+#Read in .loadings file to add percent variation represented by PCoA axis
+s_dn1_axis_labels <- read_tsv("data/mothur/d-1/schloss/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+s_dn1_axis1 <- s_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+s_dn1_axis2 <- s_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+s_dn1 <- pcoa_vendor(s_dn1_pcoa, "Schloss")+
+  labs(x = paste("PCoA 1 (", s_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", s_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_schloss.png"), s_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Young samples----
 y_dn1_dist <- read_dist("data/mothur/d-1/young/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -298,7 +334,15 @@ y_dn1_pcoa <- read_tsv("data/mothur/d-1/young/vendors.trim.contigs.good.unique.g
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-y_dn1 <- pcoa_vendor(y_dn1_pcoa, "young", "Young")
+#Read in .loadings file to add percent variation represented by PCoA axis
+y_dn1_axis_labels <- read_tsv("data/mothur/d-1/young/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+y_dn1_axis1 <- y_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+y_dn1_axis2 <- y_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+y_dn1 <- pcoa_vendor(y_dn1_pcoa, "Young")+
+  labs(x = paste("PCoA 1 (", y_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", y_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_young.png"), y_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Jackson samples----
 j_dn1_dist <- read_dist("data/mothur/d-1/jackson/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -322,7 +366,15 @@ j_dn1_pcoa <- read_tsv("data/mothur/d-1/jackson/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-j_dn1 <- pcoa_vendor(j_dn1_pcoa, "jackson", "Jackson")
+#Read in .loadings file to add percent variation represented by PCoA axis
+j_dn1_axis_labels <- read_tsv("data/mothur/d-1/jackson/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+j_dn1_axis1 <- j_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+j_dn1_axis2 <- j_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+j_dn1 <- pcoa_vendor(j_dn1_pcoa, "Jackson")+
+  labs(x = paste("PCoA 1 (", j_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", j_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_jackson.png"), j_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Charles River samples----
 c_dn1_dist <- read_dist("data/mothur/d-1/charles/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -346,7 +398,15 @@ c_dn1_pcoa <- read_tsv("data/mothur/d-1/charles/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-c_dn1 <- pcoa_vendor(c_dn1_pcoa, "charles_river", "Charles River")
+#Read in .loadings file to add percent variation represented by PCoA axis
+c_dn1_axis_labels <- read_tsv("data/mothur/d-1/charles/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+c_dn1_axis1 <- c_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+c_dn1_axis2 <- c_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+c_dn1 <- pcoa_vendor(c_dn1_pcoa, "Charles River")+
+  labs(x = paste("PCoA 1 (", c_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", c_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_charles_river.png"), c_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Taconic samples----
 t_dn1_dist <- read_dist("data/mothur/d-1/taconic/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -370,7 +430,15 @@ t_dn1_pcoa <- read_tsv("data/mothur/d-1/taconic/vendors.trim.contigs.good.unique
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-t_dn1 <- pcoa_vendor(t_dn1_pcoa, "taconic", "Taconic")
+#Read in .loadings file to add percent variation represented by PCoA axis
+t_dn1_axis_labels <- read_tsv("data/mothur/d-1/taconic/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+t_dn1_axis1 <- t_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+t_dn1_axis2 <- t_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+t_dn1 <- pcoa_vendor(t_dn1_pcoa, "Taconic")+
+  labs(x = paste("PCoA 1 (", t_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", t_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_taconic.png"), t_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Envigo samples----
 e_dn1_dist <- read_dist("data/mothur/d-1/envigo/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
@@ -394,7 +462,15 @@ e_dn1_pcoa <- read_tsv("data/mothur/d-1/envigo/vendors.trim.contigs.good.unique.
   right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
   filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
 
-e_dn1 <- pcoa_vendor(e_dn1_pcoa, "envigo", "Envigo")
+#Read in .loadings file to add percent variation represented by PCoA axis
+e_dn1_axis_labels <- read_tsv("data/mothur/d-1/envigo/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+e_dn1_axis1 <- e_dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+e_dn1_axis2 <- e_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+e_dn1 <- pcoa_vendor(e_dn1_pcoa, "Envigo")+
+  labs(x = paste("PCoA 1 (", e_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", e_dn1_axis2,"%)", sep = ""))
+save_plot(filename = paste0("results/figures/pcoa_dn1_envigo.png"), e_dn1)
 
 #Merge adonis results for each source of mice together to create one final results table
 rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
