@@ -103,13 +103,16 @@ shannon_stats_pairwise <- shannon_stats %>%
   )
   ) %>% 
   unnest(model) %>% 
-  select(-data, -parameter, -statistic) %>% 
+  select(-data, -parameter, -statistic, -p.value, -method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+#Combine with shannon_kruskal_stats_adjust so that adjusted p-values are on the same table
+  inner_join(shannon_kruskal_stats_adjust, by = c("day")) %>% 
+  select(-p.value, -parameter, -statistic, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
   write_tsv("data/process/shannon_stats_sig_days.tsv")
 
 #Format shannon pairwise stats to use with ggpubr package
 plot_format_shannon <- shannon_stats_pairwise %>%
   #Remove all columns except pairwise comparisons and day
-  select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+  select(-method, -p.value.adj) %>% 
   group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
   lapply(tidy_pairwise) %>% 
   bind_rows()
@@ -149,13 +152,16 @@ richness_stats_pairwise <- richness_stats %>%
   )
   ) %>% 
   unnest(model) %>% 
-  select(-data, -parameter, -statistic) %>% 
+  select(-data, -parameter, -statistic, -p.value, -method, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+#Combine with richness_kruskal_stats_adjust so that adjusted p-values are on the same table
+  inner_join(richness_kruskal_stats_adjust, by = c("day")) %>% 
+  select(-p.value, -parameter, -statistic, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
   write_tsv("data/process/richness_stats_sig_days.tsv")
 
 #Format richness pairwise stats to use with ggpubr package
 plot_format_richness <- richness_stats_pairwise %>%
   #Remove all columns except pairwise comparisons and day
-  select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+  select(-method,-p.value.adj) %>% 
   group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
   lapply(tidy_pairwise) %>% 
   bind_rows()
