@@ -159,7 +159,7 @@ For L2 Logistic regression analysis, use the following script to generate the in
 Rscript code/l2_classification_family_input_data.R
 Rscript code/l2_classification_input_data.R
 ```
-Use [ML_pipeline_microbiome repository] (https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis. Modify model_pipeline.R to specify outcomes and a 60:40 data split for cross-validation and testing steps ([modified version of repository] (https://github.com/tomkoset/ML_pipeline_microbiome)). Move Tomkovich_vendor_difs_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data (this will capture input data at both OTU and family level). Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
+Use [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis. Modify model_pipeline.R to specify outcomes and a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_vendor_difs_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data (this will capture input data at both OTU and family level). Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
 ```
 mkdir data/process/dayn1 data/process/day0 data/process/day1
 sbatch code/slurm/L2_log_Regression_dn1.sh
@@ -224,7 +224,7 @@ Rscript code/figure_S6.R
 Rscript code/figure_S7.R
 ```
 
-Make supplemental movie for the paper. Note conversion of gif generated from code/pcoa_stats.R requires [FFmpeg] (http://ffmpeg.org/). Install FFmpeg using homebrew.
+Make supplemental movie for the paper. Note conversion of gif generated from code/pcoa_stats.R requires [FFmpeg](http://ffmpeg.org/). Install FFmpeg using homebrew.
 ```
 brew install ffmpeg
 ```
