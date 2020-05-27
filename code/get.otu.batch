@@ -1,5 +1,0 @@
-set.dir(input=data/mothur, output=data/mothur)
-
-get.otulist( list=vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.list, label=0.03)
-
-bin.seqs(list =vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.list, fasta=vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta)
