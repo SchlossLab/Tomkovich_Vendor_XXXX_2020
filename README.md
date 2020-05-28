@@ -53,7 +53,7 @@ ABSTRAAAAAAAAAAAAACT
 * FFmpeg should be located in the user's PATH
 * R (v. 3.5.2) should be located in the user's PATH
 * R packages:
-    * broom v0.5.0
+    * broom v0.5.5
     * tidyverse_1.3.0
     * cowplot v0.9.3
     * magick v2.0
@@ -78,7 +78,7 @@ Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_vendor_difs_XXX_2020/
 ```
 cd Tomkovich_vendor_difs_XXXX_2020
 ```
-Obtain the SILVA reference alignment from version 132 described at http://blog.mothur.org/2018/01/10/SILVA-v132-reference-files/. We will use the SEED v. 132, which contain 12,083 bacterial sequences. This also contains the reference taxonomy. We will limit the databases to only include bacterial sequences.
+Obtain the SILVA reference alignment from version 132 described at https://mothur.org/blog/2018/SILVA-v132-reference-files/. We will use the SEED v. 132, which contain 12,083 bacterial sequences. This also contains the reference taxonomy. We will limit the databases to only include bacterial sequences.
 ```
 wget -N https://mothur.org/w/images/7/71/Silva.seed_v132.tgz
 tar xvzf Silva.seed_v132.tgz silva.seed_v132.align silva.seed_v132.tax
@@ -89,7 +89,7 @@ rm Silva.seed_v132.tgz silva.seed_v132.*
 mothur "#pcr.seqs(fasta=data/references/silva.seed.align, start=11894, end=25319, keepdots=F, processors=8)"
 mv data/references/silva.seed.pcr.align data/references/silva.v4.align
 ```
-Obtain the RDP reference taxonomy. The current version is v11.5 and we use a "special" pds version of the database files, which are described at http://blog.mothur.org/2017/03/15/RDP-v16-reference_files/.
+Obtain the RDP reference taxonomy. The current version is v11.5 and we use a "special" pds version of the database files, which are described at https://mothur.org/blog/2017/RDP-v16-reference_files/.
 ```
 wget -N https://www.mothur.org/w/images/c/c3/Trainset16_022016.pds.tgz
 tar xvzf Trainset16_022016.pds.tgz trainset16_022016.pds
@@ -179,11 +179,11 @@ bash code/bash/family_d1_cat_csv_files.sh
 ```
 Copy the 6 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_vendor_difs_XXXX_2020/data/process/classification/
 ML_pipeline_microbiome/data/process/dayn1
-ML_pipeline_microbiome/data/process/day0 
+ML_pipeline_microbiome/data/process/day0
 ML_pipeline_microbiome/data/process/day1
 ML_pipeline_microbiome/data/process/dayn1_family
 ML_pipeline_microbiome/data/process/day0_family
-ML_pipeline_microbiome/data/process/day1_family 
+ML_pipeline_microbiome/data/process/day1_family
 
 Rename classification output files to indicate which day of the experiment relative abundances from either the OTU or family level were used to train the models to predict *C. difficile* colonization status on day 7.
 ```
@@ -228,13 +228,13 @@ Make supplemental movie for the paper. Note conversion of gif generated from cod
 ```
 brew install ffmpeg
 ```
-Convert gif into .mov file and simultaneously move and rename file into submission directory. 
+Convert gif into .mov file and simultaneously move and rename file into submission directory.
 ```
 ffmpeg -i results/pcoa_over_time.gif -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" results/pcoa_over_time.mov
 cp results/pcoa_over_time.mov submission/movie_S1.mov
 ```
 
-Generate paper.
+#### Generate the paper.
 ```
 make write.paper
 ```
