@@ -77,11 +77,6 @@ pull_significant_taxa <- function(dataframe, taxonomic_level){
     pull(!!taxonomic_level) #!!Completes the transformation of taxonomic_level argument into a column name
 }
 
-#Function to find which significant otus/genera/families are shared 
-intersect_all <- function(a,b,...){
-  Reduce(intersect, list(a,b,...))
-}
-
 #List of days with sequence data----
 exp_days_seq <- unique(agg_otu_data %>% pull(day))
   

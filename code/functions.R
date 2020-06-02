@@ -147,6 +147,11 @@ fancy_scientific <- function(l) {
   parse(text=l)
 }
 
+#Function to find which significant otus/genera/families are shared 
+intersect_all <- function(a,b,...){
+  Reduce(intersect, list(a,b,...))
+}
+
 #Functions for machine learning analysis from Begum's paper:
 #Source: https://github.com/SchlossLab/Topcuoglu_ML_XXX_2019/blob/master/code/learning/functions.R
 # -------------------- Make performance files tidy------------------>
