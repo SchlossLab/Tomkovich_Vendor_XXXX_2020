@@ -203,7 +203,6 @@ Lachnospiraceae (OTU 36)	127	1	Wilcoxon rank sum test with continuity correction
 Butyricicoccus (OTU 131)	127	1	Wilcoxon rank sum test with continuity correction	two.sided	1.08191152127579e-4	2.4523327815584572e-5	1
 Lachnospiraceae (OTU 134)	127	1	Wilcoxon rank sum test with continuity correction	two.sided	3.24573456382737e-5	1.2261663907792286e-5	1
 Lachnospiraceae (OTU 243)	127	1	Wilcoxon rank sum test with continuity correction	two.sided	2.16382304255158e-5	1.2261663907792286e-5	1
-Peptostreptococcaceae (OTU 20)	127.5	NaN	Wilcoxon rank sum test with continuity correction	two.sided	0	0	NaN
 Parabacteroides (OTU 24)	127.5	NaN	Wilcoxon rank sum test with continuity correction	two.sided	0	0	NaN
 Lachnospiraceae (OTU 50)	127.5	NaN	Wilcoxon rank sum test with continuity correction	two.sided	0	0	NaN
 Alistipes (OTU 53)	127.5	NaN	Wilcoxon rank sum test with continuity correction	two.sided	0	0	NaN

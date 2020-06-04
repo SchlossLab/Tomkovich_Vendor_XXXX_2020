@@ -31,7 +31,9 @@ all %>%
   summarize(test=list(tidy(wilcox.test(test_aucs, mu=0.5, paired = FALSE, alternative="greater"))), 
             summary=list(tidy(summary(test_aucs)))) %>% 
   unnest() %>% 
-  write_tsv("data/process/classification_to_random.tsv")
+  write_tsv("data/process/classification_to_random.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S12_classification_to_random.xlsx", format_headers = FALSE)
 #All models perform significantly better than random (AUC of 0.5)
 
 #Kruskal-wallis test comparing test AUCs from all 6 models: 
@@ -47,7 +49,9 @@ model_stats_pairwise <-
   select(compare, p.value) %>% 
   rename(comparison = compare) %>% 
   arrange(p.value) %>% 
-  write_tsv("data/process/classification_model_pairwise_stats.tsv")
+  write_tsv("data/process/classification_model_pairwise_stats.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S13_classification_model_pairwise_stats.xlsx", format_headers = FALSE)
 
 #Compare each model's cv and test AUCs  
 all %>% 

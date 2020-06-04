@@ -1,61 +1,61 @@
-OTU	median_rank	median_feature_weight	model_input_day
-Desulfovibrio (OTU 3465)	2.5	-0.3296925030340111	-1
-Ruminococcaceae (OTU 467)	3.5	0.40744280193388066	-1
-Lachnospiraceae (OTU 543)	4	-0.34008039005473545	-1
-Erysipelotrichaceae (OTU 189)	7	0.3535074191234203	-1
-Porphyromonadaceae (OTU 228)	10.5	0.31800137849021626	-1
-Betaproteobacteria (OTU 58)	13	-0.18393602447931084	-1
-Enterobacteriaceae (OTU 1)	14.5	-0.1838742192593545	-1
-Enterococcus (OTU 23)	17	-0.16924718624077678	-1
-Porphyromonadaceae (OTU 139)	19.5	0.2965338002606991	-1
-Lachnospiraceae (OTU 397)	19.5	-0.2597015998577158	-1
-Burkholderiales (OTU 34)	23	-0.1733591678659266	-1
-Porphyromonadaceae (OTU 87)	23.5	0.2699772801286908	-1
-Clostridium (OTU 154)	26	-0.15629344724214916	-1
-Porphyromonadaceae (OTU 608)	26	0.27114126099007563	-1
-Porphyromonadaceae (OTU 222)	30	0.253072086268029	-1
-Ruminococcaceae (OTU 520)	30.5	-0.1553644695555795	-1
-Bacillus (OTU 636)	31.5	-0.1553644695555795	-1
-Dactylosporangium (OTU 3207)	32.5	-0.1553644695555795	-1
-Coriobacteriaceae (OTU 293)	34.5	0.24921040739051964	-1
-Clostridiales (OTU 356)	36.5	-0.24303921785172397	-1
-Enterobacteriaceae (OTU 1)	1	0.4805050429743277	0
-Bacteroides (OTU 2)	3	-0.452390011750085	0
-Lactobacillus (OTU 18)	4	-0.4092711501860915	0
-Escherichia/Shigella (OTU 610)	6.5	-0.3211501162625571	0
-Lachnospiraceae (OTU 56)	13	0.28346765351325365	0
-Ruminococcaceae (OTU 520)	13.5	-0.287966761885177	0
-Porphyromonadaceae (OTU 54)	15	-0.20115922661329164	0
-Porphyromonadaceae (OTU 22)	16	0.22379626906486155	0
-Lachnospiraceae (OTU 38)	16	-0.08215621458561985	0
-Lachnospiraceae (OTU 33)	17	-0.2524117226522107	0
-Porphyromonadaceae (OTU 7)	20	0.13144496788119575	0
-Ruminococcaceae (OTU 60)	24	-0.11394030817519127	0
-Erysipelotrichaceae (OTU 234)	24.5	0.19681046577382816	0
-Lachnospiraceae (OTU 9)	27	-0.21052103545453682	0
-Proteus (OTU 16)	27	-0.19095439071203102	0
-Alishewanella (OTU 776)	27	-0.11222606988121908	0
-Eisenbergiella (OTU 164)	32.5	-0.0456374695110339	0
-Clostridium (OTU 99)	33	0.18055557541024073	0
-Clostridium (OTU 226)	33	0.04605844444543253	0
-Lactobacillus (OTU 834)	33.5	-0.0456374695110339	0
-Lactobacillus (OTU 18)	2	-1.209561846396649	1
-Bacteroides (OTU 2)	4	-1.0447683127388354	1
-Lachnospiraceae (OTU 35)	7	0.8395257141727522	1
-Coriobacteriaceae (OTU 3419)	9	-0.42490082325726136	1
-Coriobacteriaceae (OTU 379)	10.5	0.8030734725326898	1
-Turicibacter (OTU 14)	11.5	0.6296225168141147	1
-Bifidobacterium (OTU 46)	12	0.7453827213448163	1
-Bacteroides (OTU 3)	12.5	0.6747382360394445	1
-Enterococcus (OTU 23)	13.5	-0.6034903369986337	1
-Porphyromonadaceae (OTU 7)	17.5	0.6152684912951247	1
-Erysipelotrichaceae (OTU 234)	17.5	0.6021268407672054	1
-Bacteria (OTU 509)	18	0.6066825319705877	1
-Lachnospiraceae (OTU 44)	20	0.5807993220192496	1
-Lactobacillus (OTU 31)	21	0.5531318973366881	1
-Lactobacillales (OTU 603)	21	0.5721851142342991	1
-Bacteroides (OTU 32)	23	0.11623828374270734	1
-Alistipes (OTU 161)	26	0.09003603176770333	1
-Anaerofustis (OTU 475)	26	-0.4718461291268826	1
-Lachnospiraceae (OTU 109)	28.5	0.009322759602494523	1
-Streptococcus (OTU 512)	28.5	0.530449090825015	1
+family	median_rank	median_feature_weight	model_input_day
+Clostridiaceae 1	5	0.48132265923780504	-1
+Sutterellaceae	6	-0.47409040786383716	-1
+Clostridia Unclassified	6	-0.45069349292300187	-1
+Deferribacteraceae	7.5	-0.39944872620815774	-1
+Burkholderiales Unclassified	8.5	-0.40165628522819974	-1
+Rikenellaceae	10	0.34087403600411953	-1
+Staphylococcaceae	13.5	-0.37029192712482983	-1
+Desulfovibrionales Unclassified	14	0.057855922687850954	-1
+Flavobacteriaceae	16.5	-0.19253890411206476	-1
+Proteobacteria Unclassified	18	0.18663534776958823	-1
+Peptostreptococcaceae	19	0.3011861827546056	-1
+Ruminococcaceae	19	0.2460960140035185	-1
+Cytophagaceae	19	-0.2640829755265243	-1
+Bacteroidaceae	19.5	-0.2800504736700357	-1
+Coriobacteriaceae	19.5	0.2950627103946124	-1
+Streptococcaceae	20.5	-0.25626559579465025	-1
+Rhodospirillaceae	21	-0.25453909199920144	-1
+Gp2 Unclassified	21.5	-0.25626559579465025	-1
+Clostridiales Incertae Sedis XIII	22	0.02599038720686881	-1
+Veillonellaceae	22.5	-0.1685523992131303	-1
+Bacteroidaceae	1	-0.5007118364051619	0
+Ruminococcaceae	5	0.34198871005160403	0
+Lactobacillales Unclassified	6.5	0.3188234693598958	0
+Deferribacteraceae	7	-0.3284570316690428	0
+Staphylococcaceae	8	-0.2933488391099328	0
+Enterobacteriaceae	10	0.22841224279569916	0
+Bifidobacteriaceae	11	0.19397475600305514	0
+Unclassified	11	-0.07914472247929742	0
+Bacilli Unclassified	12	-0.20127616074715132	0
+Alteromonadaceae	14.5	-0.24934766092302801	0
+Enterococcaceae	16.5	-0.17784729969083282	0
+Verrucomicrobiaceae	17	0.23996102045917073	0
+Clostridiales Unclassified	18	0.11088103432069714	0
+Anaeroplasmataceae	18	0.0805697506873721	0
+Fusobacteriaceae	18	0.10518475044922096	0
+Corynebacteriaceae	18.5	0.04698624744230111	0
+Coriobacteriaceae	19	0.18385618884478122	0
+Sphingobacteriaceae	19	-0.11647561409523802	0
+Lachnospiraceae	20	0.1048601131973099	0
+Firmicutes Unclassified	20	-0.13887684584165305	0
+Bifidobacteriaceae	2	2.025902829660961	1
+Enterococcaceae	4	-1.4942025147840927	1
+Peptostreptococcaceae	7	0.8394070445800451	1
+Desulfovibrionaceae	7	1.0139006479533186	1
+Lactobacillales Unclassified	7	1.494277533622491	1
+Erysipelotrichaceae	8	1.178557978718739	1
+Bacteroidaceae	12	-1.04785378972747	1
+Eubacteriaceae	12	-0.9293192854326615	1
+Verrucomicrobiaceae	14	0.6730869650730957	1
+Ruminococcaceae	15	-0.9383543019083237	1
+Deltaproteobacteria Unclassified	16.5	0.9654870966319133	1
+Prevotellaceae	18.5	-0.6982273878146765	1
+Clostridiaceae 1	19.5	-0.6850383402094689	1
+Proteobacteria Unclassified	20	-0.4831945124862168	1
+Pseudomonadaceae	20	-0.6389767874501737	1
+Actinomycetales Unclassified	20	-0.6982273878146765	1
+Coriobacteriaceae	21	0.5549978617799494	1
+Burkholderiaceae	21	-0.06691665097576682	1
+Lachnospiraceae	22	0.527694606514816	1
+Bacillales Unclassified	22	-0.06691665097576682	1

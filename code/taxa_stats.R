@@ -233,7 +233,9 @@ kw_w_sig_d1 <- read_tsv(file="data/process/family_stats_day_1.tsv") %>%
 
 #Combine family statistics for differences across souces of mice for days -1, 0 and 1:----
 family_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
-  write_tsv(path = paste0("data/process/family_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
+  write_tsv(path = paste0("data/process/family_stats_dn1to1_combined.tsv")) %>% #Save combined dataframe as a .tsv
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S9_family_stats_dn1to1.xlsx", format_headers = FALSE)
 
 #Read in just Kruskal Wallis results for the rest of the days:
 kw_sig_dn1 <- read_tsv(file="data/process/family_stats_day_-1.tsv") %>%  
@@ -284,7 +286,9 @@ kw_sig_d9 <- read_tsv(file="data/process/family_stats_day_9.tsv") %>%
 family_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
                                       kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
   filter(p.value.adj <= 0.05) %>% 
-  write_tsv(path = paste0("data/process/family_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
+  write_tsv(path = paste0("data/process/family_kw_stats_dn1to9.tsv")) %>% #Save combined dataframe as a .tsv
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S17_family_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 #Function to test at the genus level:
 kruskal_wallis_g <- function(timepoint){
@@ -470,7 +474,9 @@ kw_w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%
 
 #Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
 otu_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
-  write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv")) #Save combined dataframe as a .tsv
+  write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv")) %>%  #Save combined dataframe as a .tsv
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S8_otu_stats_dn1to1.xlsx", format_headers = FALSE)
 
 #Read in just Kruskal Wallis results for the rest of the days:
 kw_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1.tsv") %>%  
@@ -521,7 +527,9 @@ kw_sig_d9 <- read_tsv(file="data/process/otu_stats_day_9.tsv") %>%
 otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
                                       kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
   filter(p.value.adj <= 0.05) %>% #Select only significant rows
-  write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
+  write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) %>% #Save combined dataframe as a .tsv
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S16_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 # Plot OTUs of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
 #Function to plot 1 significant OTU relative abundance across sources of mice at a specific timepoint----
@@ -645,7 +653,9 @@ f_dn1to0_pairs_stats_adjust <- f_dn1to0_pairs %>%
   select(family, statistic, p.value, method, alternative, `-1`, `0`) %>% 
   mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
   arrange(p.value.adj) %>% 
-  write_tsv(path = "data/process/family_stats_dn1to0.tsv")
+  write_tsv(path = "data/process/family_stats_dn1to0.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S11_family_stats_dn1to0.xlsx", format_headers = FALSE)
 
 #Make a list of significant families impacted by clindamycin treatment  
 sig_family_pairs <- pull_significant_taxa(f_dn1to0_pairs_stats_adjust, family)
@@ -737,7 +747,9 @@ o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>%
     select(otu, statistic, p.value, method, alternative, `-1`, `0`) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
-  write_tsv(path = "data/process/otu_stats_dn1to0.tsv")
+  write_tsv(path = "data/process/otu_stats_dn1to0.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S10_otu_stats_dn1to0.xlsx", format_headers = FALSE)
 
 #Make a list of significant OTUs impacted by clindamycin treatment----  
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)

@@ -88,7 +88,9 @@ all_adonis <- adonis(all_dist~(source/(unique_cage*experiment*run))*day, strata 
 tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:day", "source:unique_cage:run", "source:unique_cage:day"),
         r_sq = all_adonis$aov.tab$R2[1:7],
         p = all_adonis$aov.tab$Pr[1:7]) %>% 
-  write_tsv("data/process/adonis_all.tsv")
+  write_tsv("data/process/adonis_all.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S5_PERMANOVA_all.xlsx", format_headers = FALSE)
 
 #Function to plot pcoa data for all vendors----
 plot_pcoa <- function(df){
@@ -261,7 +263,9 @@ save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
 
 #Make combined table of adonis results for D-1, 0, and 1
 rbind(dn1_results, d0_results, d1_results) %>% 
-write_tsv("data/process/adonis_dn1-1.tsv")
+write_tsv("data/process/adonis_dn1-1.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S6_PERMANOVA_dn1-1.xlsx", format_headers = FALSE)
 
 #Examine initial day -1 vendor communities separately----
 
@@ -474,5 +478,6 @@ save_plot(filename = paste0("results/figures/pcoa_dn1_envigo.png"), e_dn1)
 
 #Merge adonis results for each source of mice together to create one final results table
 rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
-write_tsv("data/process/adonis_dn1_source.tsv")
-
+  write_tsv("data/process/adonis_dn1_source.tsv") %>% 
+  #Also write results to supplemental table excel file
+  write_xlsx("submission/table_S7_PERMANOVA_dn1_source.xlsx", format_headers = FALSE)

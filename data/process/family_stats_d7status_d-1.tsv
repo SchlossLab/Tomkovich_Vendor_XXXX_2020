@@ -15,7 +15,7 @@ Enterobacteriaceae	178.5	0.07202276903844353	Wilcoxon rank sum test with continu
 Firmicutes Unclassified	86.5	0.11261711956571394	Wilcoxon rank sum test with continuity correction	two.sided	0.004046349089571455	0.005800710233301736	0.58879226410124
 Lactobacillales Unclassified	120	0.2386650808182171	Wilcoxon rank sum test with continuity correction	two.sided	0	1.4148073739760331e-5	0.58879226410124
 Oxalobacteraceae	120	0.2386650808182171	Wilcoxon rank sum test with continuity correction	two.sided	0	1.4148073739760331e-5	0.58879226410124
-Peptostreptococcaceae	104.5	0.1975749328738657	Wilcoxon rank sum test with continuity correction	two.sided	2.666911899944823e-4	0.003225760812665356	0.58879226410124
+Peptostreptococcaceae	100	0.10616140892550559	Wilcoxon rank sum test with continuity correction	two.sided	2.57494942063638e-4	0.003225760812665356	0.58879226410124
 Proteobacteria Unclassified	120	0.2386650808182171	Wilcoxon rank sum test with continuity correction	two.sided	0	1.4148073739760331e-5	0.58879226410124
 Unclassified	96.5	0.22357889959453794	Wilcoxon rank sum test with continuity correction	two.sided	0.007402979584329594	0.013313337389114471	0.58879226410124
 Staphylococcaceae	143	0.26533719303561965	Wilcoxon rank sum test with continuity correction	two.sided	1.839249586168843e-5	0	0.6102755439819252
