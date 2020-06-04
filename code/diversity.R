@@ -134,6 +134,14 @@ richness_kruskal_stats_adjust <- richness_stats %>%
   arrange(p.value.adj) %>% 
   write_tsv("data/process/richness_stats_all_days.tsv")
 
+#Combine Kruskal-Wallis test results for shannon and richness diversity metrics
+shannon_results <- shannon_kruskal_stats_adjust %>% 
+  mutate(diversity_metric = "Shannon Diversity")
+richness_results <- richness_kruskal_stats_adjust %>% 
+  mutate(diversity_metric = "Richness")
+diversity_kruskal_stats_adjust <- rbind(shannon_results, richness_results) %>% 
+  write_xlsx("submission/table_S3_diversity_kruskal-wallis.xlsx", format_headers = FALSE)
+
 #List significant days after BH adjustment of p-values:
 sig_richness_days <- richness_kruskal_stats_adjust %>% 
   filter(p.value.adj <= 0.05) %>% 
@@ -157,6 +165,14 @@ richness_stats_pairwise <- richness_stats %>%
   inner_join(richness_kruskal_stats_adjust, by = c("day")) %>% 
   select(-p.value, -parameter, -statistic, -Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
   write_tsv("data/process/richness_stats_sig_days.tsv")
+
+#Combine pairwise wilcoxon test results for shannon and richness diversity metrics
+shannon_pairwise_results <- shannon_stats_pairwise %>% 
+  mutate(diversity_metric = "Shannon Diversity")
+richness_pairwise_results <- richness_stats_pairwise %>% 
+  mutate(diversity_metric = "Richness")
+diversity_pairwise_results <- rbind(shannon_pairwise_results, richness_pairwise_results) %>% 
+  write_xlsx("submission/table_S4_diversity_pairwise.xlsx", format_headers = FALSE)
 
 #Format richness pairwise stats to use with ggpubr package
 plot_format_richness <- richness_stats_pairwise %>%
