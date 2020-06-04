@@ -1,49 +1,9 @@
 source("code/functions.R")
 
-#Graph weight data as percent baseline weight (see Theriot et al. 2011) or weight change (g) from baseline weight.----
-
-#Calculate percent baseline weight data for each mouse based on the D-1 weight.
-weight_data <- metadata %>%  
-  group_by(mouse_id, day) %>% 
-  mutate(percent_baseline_weight = 100 + ((weight-baseline_weight)/(baseline_weight))*100) %>% 
-  ungroup() %>% 
-  group_by(mouse_id) %>% #Group by just mouse_id to figure out the lowest percent baseline weight for each mouse
-  mutate(lowest_percent_baseline_weight = min(percent_baseline_weight)) %>% #Create a column to display the lowest percent baseline weight for each mouse
-  ungroup() %>% 
-  filter(!is.na(weight)) #512 observations that are not NAs
+#Graph weight data as weight change (g) from baseline weight.----
 
 #Range of N mice per day
 weight_data %>% group_by(day) %>% count() %>% arrange(n) 
-
-#Function to summarize percent_baseline_weight data (calculate the mean for each group) and plot the data
-summarize_plot <- function(df){
-  mean_summary <- df %>% 
-    group_by(vendor, day) %>% 
-    summarize(mean_percent_weight = mean(percent_baseline_weight, na.rm = TRUE))
-  ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = percent_baseline_weight, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
-    geom_line(mean_summary, mapping = aes(x = day, y = mean_percent_weight, color = vendor), size = 1) +
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    labs(x = "Days Post-Infection", y = "% Baseline Weight") +
-    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-                       limits = c(-1.5, 9.5)) +
-    theme_classic()
-}
-
-#Combined percent baseline weight plot for the 2 experiments----
-combined_exp_percent_weight <- summarize_plot(weight_data)
-
-#Percent baseline weight plot for the 1st experiment----
-exp1_percent_weight <- summarize_plot(weight_data %>% filter(experiment == 1))
-
-#Percent baseline weight plot for the 2nd experiment----
-exp2_percent_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
-
-plot_grid(combined_exp_percent_weight, exp1_percent_weight, exp2_percent_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
-  ggsave("exploratory/notebook/percent_weight_changes.pdf", width = 8.5, height = 11)
 
 #Plot weight data as Weight change (g)----
 
@@ -96,6 +56,8 @@ weight_kruskal_stats_adjust <- weight_kruskal_stats %>%
   mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
   arrange(p.value.adj) %>% 
   write_tsv("data/process/weight_stats_all_days.tsv")
+#Also write to supplemental table excel file
+weight_kruskal_stats_adjust %>% write_xlsx("submission/table_S2_weight_kruskal-wallis.xlsx", format_headers = FALSE)
 
 #Timepoints where weight_change is significantly different across the sources of mice
 sig_weight_days <- weight_kruskal_stats_adjust %>% 
@@ -242,9 +204,4 @@ weight_stats <-  ggplot(NULL) +
     theme_classic()
 save_plot(filename = paste0("results/figures/weight_over_time.png"), plot = weight_stats, base_aspect_ratio = 2)
 
-#Plot all the timepoints where weight_changes were significantly different across sources of mice
-#Old code, no longer in use since each day will have different stats data frame
-#for(d in sig_weight_days){
-#  plot_weight_timepoint(d)
-#}
 
