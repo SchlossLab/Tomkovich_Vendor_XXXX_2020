@@ -1,4 +1,4 @@
-comparison	p.value
+comparison	p.value.adj
 otu_day0-family_dayn1	2.0672830698925336e-17
 otu_day1-otu_day0	1.1138178809423493e-13
 otu_day0-family_day1	3.960587746301206e-12

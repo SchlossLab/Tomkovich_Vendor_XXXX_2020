@@ -45,10 +45,11 @@ kruskal.test(test_aucs~model_name, data = all)
 model_stats_pairwise <- 
   pairwise.wilcox.test(g = as.factor(all$model_name), x=all$test_aucs, p.adjust.method = "BH") %>% 
   tidy() %>% 
-  mutate(compare=paste(group1, group2, sep="-")) %>% 
-  select(compare, p.value) %>% 
+  mutate(compare=paste(group1, group2, sep="-")) %>%
+  rename(p.value.adj = p.value) %>% #Specify that p.value is actually Benjamini-Hochberg adjusted P value
+  select(compare, p.value.adj) %>% 
   rename(comparison = compare) %>% 
-  arrange(p.value) %>% 
+  arrange(p.value.adj) %>% 
   write_tsv("data/process/classification_model_pairwise_stats.tsv") %>% 
   #Also write results to supplemental table excel file
   write_xlsx("submission/table_S13_classification_model_pairwise_stats.xlsx", format_headers = FALSE)
