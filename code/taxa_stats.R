@@ -286,9 +286,9 @@ kw_sig_d9 <- read_tsv(file="data/process/family_stats_day_9.tsv") %>%
 family_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
                                       kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
   filter(p.value.adj <= 0.05) %>% 
-  write_tsv(path = paste0("data/process/family_kw_stats_dn1to9.tsv")) %>% #Save combined dataframe as a .tsv
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S17_family_kw_stats_dn1to9.xlsx", format_headers = FALSE)
+  write_tsv(path = paste0("data/process/family_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
+#Also write results to supplemental table excel file
+write_xlsx(family_stats_dn1to9_combined, "submission/table_S17_family_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 #Function to test at the genus level:
 kruskal_wallis_g <- function(timepoint){
@@ -527,9 +527,9 @@ kw_sig_d9 <- read_tsv(file="data/process/otu_stats_day_9.tsv") %>%
 otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, kw_sig_d3, kw_sig_d4,
                                       kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
   filter(p.value.adj <= 0.05) %>% #Select only significant rows
-  write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) %>% #Save combined dataframe as a .tsv
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S16_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
+  write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
+#Also write results to supplemental table excel file
+write_xlsx(otu_stats_dn1to9_combined, "submission/table_S16_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 # Plot OTUs of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
 #Function to plot 1 significant OTU relative abundance across sources of mice at a specific timepoint----
@@ -881,73 +881,6 @@ y_OTU7 <- .4
 label_OTU7 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(p.signif)
 otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)
-
-#Previously plotted taxa for lab meeting presentations:
-otu_over_time("Ruminococcaceae (OTU 520)")
-otu_over_time("Erysipelotrichaceae (OTU 234)")
-otu_over_time("Lactobacillus (OTU 18)")
-#Taxa that are different across vendors and are in the top 20 features for the classification model at that particular timepoint
-#Day 0 taxa (OTU 1 & 2, which were already plotted above since they appear in multiple models)
-otu_over_time("Proteus (OTU 16)")
-#Day -1 taxa
-otu_over_time("Erysipelotrichaceae (OTU 189)")
-otu_over_time("Betaproteobacteria (OTU 58)")
-otu_over_time("Burkholderiales (OTU 34)")
-otu_over_time("Coriobacteriaceae (OTU 293)")
-#Day 1 taxa
-otu_over_time("Turicibacter (OTU 14)")
-otu_over_time("Bifidobacterium (OTU 46)")
-otu_over_time("Bacteroides (OTU 3)")
-otu_over_time("Lactobacillus (OTU 31)")
-otu_over_time("Bacteroides (OTU 32)")
-otu_over_time("Anaerofustis (OTU 475)")
-#Additional taxa important to Day 0 logistic regression models 
-# but these taxa were not sig. at that timepoint and/or didn't overlap with important taxa from the other models 
-otu_over_time("Escherichia/Shigella (OTU 610)") #Error so made without using plot function below
-otu_over_time("Lachnospiraceae (OTU 56)")
-otu_over_time("Porphyromonadaceae (OTU 54)")
-otu_over_time("Lachnospiraceae (OTU 38)")
-otu_over_time("Porphyromonadaceae (OTU 22)")
-otu_over_time("Lachnospiraceae (OTU 33)")
-otu_over_time("Ruminococcaceae (OTU 60)")
-otu_over_time("Alishewanella (OTU 776)")
-otu_over_time("Lachnospiraceae (OTU 9)")
-otu_over_time("Eisenbergiella (OTU 164)")
-otu_over_time("Clostridium (OTU 226)")
-otu_over_time("Clostridium (OTU 99)")
-otu_over_time("Lactobacillus (OTU 834)")
-#Need to do separate plot of Escherichia Shigella because the slashes mess up the file name
-Escherichia_shigella_over_time <- function(otu_plot){
-  otu_mean <- agg_otu_data %>% 
-    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
-    group_by(vendor, day) %>% 
-    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
-    ungroup
-  otu_mice <-  agg_otu_data %>% 
-    filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
-    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
-    select(vendor, day, agg_rel_abund, otu)
-  otu_time <- ggplot(NULL)+
-    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
-    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=otu_plot,
-         x="Day",
-         y="Relative abundance (%)") +
-    scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-                       limits = c(-1.5, 9.5)) +
-    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-    theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.title=element_blank())+
-    theme(text = element_text(size = 16))  # Change font size for entire plot
-  save_plot(filename = paste0("results/figures/Escherichia_time.png"), otu_time, base_aspect_ratio = 2)
-}
-Escherichia_shigella_over_time("Escherichia/Shigella (OTU 610)")
 
 #Function to plot families of interest that overlap with top 20 OTUs in 3 logistic regression models 
 #Customize the x_annoation, y_position, and label argument values for each family prior to running the function
