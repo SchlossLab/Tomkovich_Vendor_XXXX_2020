@@ -1,11 +1,9 @@
 Download the [latest release](https://github.com/SchlossLab/new_project/releases/latest) to the directory and decompress
 
 
-## Initial gut microbiota influences Clostridioides difficile clearance after clindamycin perturbation in mice
+## Initial gut microbiota and response to antibiotic perturbation influence *Clostridioides difficile* colonization in mice
 
-ABSTRAAAAAAAAAAAAACT
-
-
+The microbiota plays a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use a single university colony or vendor, which have lower inter-individual microbiota variation compared to humans. We treated mice from 6 different colony sources (2 University and 4 vendors) with a single clindamycin dose, followed by *C. difficile* challenge 1 day later and measured *C. difficile* colonization levels through 9 days post-infection. The microbiota was profiled throughout the experiment via 16S rRNA gene sequencing analysis to examine variation across colony sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all sources of mice were colonized 1-day post-infection, variation in *C. difficile* colonization levels emerged from days 3-7 post-infection with 3 sources tending to be colonized with *C. difficile* for longer and at higher levels. We identified bacterial taxa with different relative abundances across colony sources throughout the experiment, as well as taxa that were consistently impacted by clindamycin treatment. We created bacterial community-based logistic regression models that successfully classified mice based on their day 7 *C. difficile* colonization status. Importantly, after examining the taxa that were most important to the classification models, we identified a subset of key taxa that varied across colony sources (*Bacteroides*, *Deferribacteraceae*), were altered by clindamycin (*Porphyromonadaceae*, *Ruminococcaceae*), or both (*Enterobacteriaceae*, *Enterococcus*, *Bifidobacteriaceae*, *Coriobacteriaceae*, *Lachnospiraceae*, and *Verrucomicrobiaceae*). These results suggest the response of the initial gut microbiota to clindamycin treatment influences *C. difficile* 630 colonization dynamics. 
 
 
 ### Overview
@@ -65,6 +63,7 @@ ABSTRAAAAAAAAAAAAACT
     * ggpubr v.0.2.4
     * ggforce v0.1.3
     * gganimate v1.0.5
+    * writexl v1.1
 * Analysis assumes the use of 8 processors  
 
 
@@ -195,7 +194,7 @@ Make plots comparing cross-validation and test AUROCs for classification models 
 Rscript code/class._60-40_analysis.R
 Rscript code/class_interpretation.R
 ```
-Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (bacterial families from Day -1, 0, and 1) and make plots to interpret which families are contributing to the 3 models.
+Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (bacterial families from Day -1, 0, and 1) and supplemental tables of the top 20 taxa that were contributing to the 6 models.
 ```
 Rscript code/class._family_analysis.R
 Rscript code/class_interpretation_family.R
@@ -203,6 +202,10 @@ Rscript code/class_interpretation_family.R
 Perform statistical analysis of 6 classification models.
 ```
 Rscript code/compare_models.R
+```
+Compare classification model taxa to the taxa that varied across sources and/or were altered by clindamycin treatment.
+```
+Rscript code/venn_diagram_comparisons.R
 ```
 
 Make figures for the paper.
