@@ -36,9 +36,6 @@ exp1_weight <- summarize_plot(weight_data %>% filter(experiment == 1))
 #Percent weight change plot for the 2nd experiment----
 exp2_weight <- summarize_plot(weight_data %>% filter(experiment == 2))
 
-plot_grid(combined_exp_weight, exp1_weight, exp2_weight, labels = c("Combined Experiments", "Experiment 1", "Experiment 2"), ncol = 1, label_x = 0, label_y = 1)+
-  ggsave("exploratory/notebook/weight_changes.pdf", width = 8.5, height = 11)
-
 #Statistical analysis----
 #Kruskal_wallis test for differences across groups at different timepoints with Benjamini-Hochburg correction----
 set.seed(19881117) #Same seed used for mothur analysis
@@ -81,95 +78,6 @@ weight_stats_pairwise <- weight_kruskal_stats %>%
   unnest(model) %>% 
   select(-data, -parameter, -statistic) %>% 
   write_tsv("data/process/weight_stats_sig_days.tsv")
-
-#Format pairwise stats to use with ggpubr package
-plot_format_stats <- weight_stats_pairwise %>%
-  #Remove all columns except pairwise comparisons and day
-  select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
-  group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
-  lapply(tidy_pairwise) %>% 
-  bind_rows()
-
-plot_format_stats %>% filter(day == 8 & p.adj <= 0.05) #7 significant
-plot_format_stats %>% filter(day == 7 & p.adj <= 0.05) #4 significant
-plot_format_stats %>% filter(day == 9 & p.adj <= 0.05) # 6 significant
-plot_format_stats %>% filter(day == 5 & p.adj <= 0.05) #5 significant
-plot_format_stats %>% filter(day == 1 & p.adj <= 0.05) #0 significant
-plot_format_stats %>% filter(day == 2 & p.adj <= 0.05) #0 significant
-plot_format_stats %>% filter(day == 3 & p.adj <= 0.05) #0 significant
-plot_format_stats %>% filter(day == 6 & p.adj <= 0.05) # 0 significant
-
-# Boxplots of weight_change data at timepoints where there were significant differences in CFU levels across the different sources of mice:
-#Function to plot weight_change data across sources of mice at a specific timepoint----
-#Arguments:
-# timepoint = timepoint to be analyzed
-# stats = data frame of stat values to be added to the plot with ggpubr stat_pvalue_manual
-plot_weight_timepoint <- function(timepoint, stats){
-  plot_weight_DX <- weight_data %>% 
-    filter(day == timepoint) %>% 
-    ggplot(aes(x= vendor, y=weight_change, color=vendor))+
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    geom_text(x = 11, y = 104, color = "black", label = "LOD")+
-    geom_boxplot(outlier.shape = NA, size = 1.2)+
-    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
-    labs(title=NULL, 
-         x=NULL,
-         y="Weight Change (g)")+
-    ylim(-5.5, 3.5)+
-    stat_pvalue_manual(data = stats, label = "p.adj", y.position = "y.position")+
-    theme_classic()+
-    theme(plot.title=element_text(hjust=0.5))+
-    theme(legend.position = "none") + #Get rid of legend title & move legend position
-    theme(text = element_text(size = 16)) #Remove legend
-save_plot(filename = paste0("results/figures/weight_D", timepoint,".png"), plot_weight_DX, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
-}
-
-
-# Format day 8 stats dataframe
-d8_stats <- plot_format_stats %>% 
-  filter(day == 8 & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(1.4, 2.6, 3.4, 2, 3, 2.3, 1.8))
-#Plot of day 8----
-plot_weight_timepoint(8, d8_stats)
-# Format day 7 stats dataframe
-d7_stats <- plot_format_stats %>% 
-  filter(day == 7 & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(2.8, 3.2, 3.5, 2.4))
-#Plot of day 7----
-plot_weight_timepoint(7, d7_stats)
-# Format day 9 stats dataframe
-d9_stats <- plot_format_stats %>% 
-  filter(day == 9 & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(1.4, 2.6, 3.4, 2.2, 3, 1.8))
-# Plot of day 9---- 
-plot_weight_timepoint(9, d9_stats)
-# Format day 5 stats dataframe
-d5_stats <- plot_format_stats %>% 
-  filter(day == 5 & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(2.9, 2.2, 2.6, 3.2, 3.5))
-# Plot of day 5----
-plot_weight_timepoint(5, d5_stats)
-#Day 1,2,3, and 6 have no significant pairwise comparisons, so there's no need to format the stats into a data frame.
-#Create an empty place holder data frame to use as 2nd argument for plot_weight_timepoints function for days 1,2,3 and 6
-stats_na <- plot_format_stats %>% 
-  filter(day == 1 & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = NA)
-# Plot of day 1----
-plot_weight_timepoint(1, stats_na)
-#Plot of day 2---- 
-plot_weight_timepoint(2, stats_na)
-#Plot of day 3
-plot_weight_timepoint(3, stats_na)
-#Plot of day 6
-plot_weight_timepoint(6, stats_na)
 
 #Weight over time plot with astericks on days where weight varied significantly across sources of mice using annotate()----
 #List significant days after BH adjustment of p-values:

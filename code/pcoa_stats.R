@@ -120,7 +120,7 @@ all_axis2 <- all_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(d
 
 #PCoA plot that combines the 2 experiments and save the plot----  
 pcoa_plot_combined <- plot_pcoa(pcoa_data)+
-  labs(x = paste("PCoA 1 (", all_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+  labs(x = paste("PCoA 1 (", all_axis1, "%)", sep = ""), #Annotations for each axis from loadings file
        y = paste("PCoA 2 (", all_axis2,"%)", sep = ""))
 save_plot(filename = paste0("results/figures/pcoa.png"), pcoa_plot_combined)
 

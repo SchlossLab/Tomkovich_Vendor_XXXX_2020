@@ -240,8 +240,6 @@ shannon_d1 <- shannon_dx_plot(1) +
   stat_pvalue_manual(data = pairwise_shannon_day1_plot, label = "p.adj", y.position = "y.position") 
 save_plot("results/figures/shannon_d1.png", shannon_d1)
 
-shannon_d7 <- shannon_dx_plot(7)
-
 #Function to make boxplots of sobs (richness) for all sources of mice on a specific experimental day----
 #Arguments: 
 #  timepoint = day of the experiment
@@ -306,7 +304,4 @@ sobs_d1 <- sobs_dx_plot(1) +
   ggtitle("Post-infection")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/richness_d1.png", sobs_d1) #Use save_plot instead of ggsave because it works better with cowplot
-
-  
-sobs_d7 <- sobs_dx_plot(7)
 
