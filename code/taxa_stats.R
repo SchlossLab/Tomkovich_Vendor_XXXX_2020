@@ -26,9 +26,8 @@ agg_taxa_data <- inner_join(otu_data, taxonomy)
 
 # Function to summarize relative abundance level for a given taxonomic level (ex. genus, family, phlyum, etc.)
 agg_taxonomic_data <- function(taxonomic_level) {
-  taxonomic_level <- enquo(taxonomic_level) #Part of transformation of taxonomic_level argument into a column name
   agg_taxa_data %>% 
-    group_by(id, !!taxonomic_level) %>% #!!Completes the transformation of taxonomic_level argument into a column name
+    group_by(id, {{ taxonomic_level }}) %>% #Embracing treats the taxonomic_level argument as a column name
     summarize(agg_rel_abund=sum(rel_abund)) %>% 
     # Merge relative abundance data to specifci taxonomic_level data
     inner_join(., metadata, by = "id") %>% 
@@ -62,8 +61,6 @@ agg_otu_data <- inner_join(agg_otu, taxa_info, by="key") %>%
   rename(otu=key) %>% 
   mutate(otu=paste0(gsub('TU0*', 'TU ', otu))) 
 
-# Relative abundance data at the genus level:
-agg_genus_data <- agg_taxonomic_data(genus)
 # Relative abundance data at the family level:
 agg_family_data <- agg_taxonomic_data(family)
 
@@ -156,13 +153,6 @@ Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) +
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_height = 6, base_width = 8)
 
-#Plots of the relative abundances of families that significantly varied across sources of mice on day 7----
-#and were important in the 3 logistic regression models
-sig_families_d7_model_overlap <- intersect_all(`sig_family_day7`, `interp_families_combined`)
-sig_families_d7_overlap <- plot_families_dx(sig_families_d7_model_overlap, 7) +
-  ggtitle("Day 7 Model Overlap")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-
 # Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
 pairwise_day_family <- function(timepoint, sig_family_dayX){
   family_stats <- agg_family_data %>% 
@@ -195,6 +185,7 @@ pairwise_day_family <- function(timepoint, sig_family_dayX){
     bind_rows()
   return(plot_format_stats)  
 }
+
 #Perform pairwise comparisons for day -1, 0, and 1. When mice are undergoing greatest perturbations (clindamycin administration, followed by C. difficile challenge)
 family_dayn1_stats <- pairwise_day_family(-1, `sig_family_day-1`)
 family_day0_stats <- pairwise_day_family(0, sig_family_day0)
@@ -290,37 +281,6 @@ family_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d
 #Also write results to supplemental table excel file
 write_xlsx(family_stats_dn1to9_combined, "submission/table_S17_family_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
-#Function to test at the genus level:
-kruskal_wallis_g <- function(timepoint){
-  genus_stats <- agg_genus_data %>% 
-    filter(day == timepoint) %>%
-    select(vendor, genus, agg_rel_abund) %>% 
-    group_by(genus) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-  #Adjust p-values for testing multiple genera
-  genus_stats_adjust <- genus_stats %>% 
-    select(genus, statistic, p.value, parameter, method, Schloss, Young, Jackson, `Charles River`, Taconic, Envigo) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/genus_stats_day_", timepoint, ".tsv"))
-}
-# Perform kruskal wallis tests at the genus level for all days of the experiment that were sequenced----
-for (d in exp_days_seq){
-  kruskal_wallis_g(d)
-  #Make a list of significant genera across sources of mice for a specific day  
-  stats <- read_tsv(file = paste0("data/process/genus_stats_day_", d, ".tsv"))
-  name <- paste("sig_genus_day", d, sep = "") 
-  assign(name, pull_significant_taxa(stats, genus))
-}
-
-#Shared significant genera across D-1 to D1----
-shared_sig_genera_Dn1toD1 <- intersect_all(`sig_genus_day-1`, sig_genus_day0, sig_genus_day1)
-# 11 genera: Betaproteobacteria Unclassified, Burkholderiales Unclassified, Parasutterella, Parabacteroides, Mucispirillum, Turicibacter, Bacteroides, Clostridium XVIII, Enterococcus, Lachnospiraceae Unclassified
-
 #Function to test at the otu level:
 kruskal_wallis_otu <- function(timepoint){
   otu_stats <- agg_otu_data %>% 
@@ -396,13 +356,6 @@ Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
   ggtitle("Post-infection")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
-
-#Plots of the relative abundances of OTUs that significantly varied across sources of mice on day 7----
-#and were important in the 3 logistic regression models
-sig_otus_d7_model_overlap <- intersect_all(`sig_otu_day7`, `interp_combined`)
-sig_otus_d7_overlap <- plot_otus_dx(sig_otus_d7_model_overlap, 7) +
-  ggtitle("Day 7")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
 pairwise_day_otu <- function(timepoint, sig_otu_dayX){
@@ -531,100 +484,6 @@ otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, 
 #Also write results to supplemental table excel file
 write_xlsx(otu_stats_dn1to9_combined, "submission/table_S16_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
-# Plot OTUs of interest (overlap with top 20 otus that came out of logistic regression model built from corresponding input day community: -1, 0, or 1)----
-#Function to plot 1 significant OTU relative abundance across sources of mice at a specific timepoint----
-#Arguments:
-# name = name of OTU to plot.
-# timepoint = timepoint to be analyzed
-plot_otu_timepoint <- function(name, timepoint, stats){
-  plot_otu <- agg_otu_data %>% 
-    filter(otu == name) %>% 
-    filter(day == timepoint) %>% 
-    mutate(otu=factor(otu, name)) %>% 
-    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
-    ggplot(aes(x= vendor, y=agg_rel_abund, color=vendor))+
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    geom_hline(yintercept=1/5437, color="gray")+
-    geom_boxplot(outlier.shape = NA, size = 1.2)+
-    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
-    labs(title=name, 
-         x=NULL,
-         y="Relative abundance (%)")+
-    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-    stat_pvalue_manual(data = stats, label = "p.adj", y.position = "y.position")+
-    theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"))+
-    theme(legend.position = "none") + #Get rid of legend
-    theme(text = element_text(size = 16))  # Change font size for entire plot
-  save_plot(filename = paste0("exploratory/notebook/day", timepoint, "/", name, "_at_day", timepoint,".png"), plot_otu, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
-}
-#Format day -1 stats dataframe for Otu 189:
-Otu189_dn1_stats <- otu_dayn1_stats %>% 
-  filter(otu == "Erysipelotrichaceae (OTU 189)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% #No significant pairwise comparisons
-  mutate(y.position = NA)
-#Otu 189 plot----
-plot_otu_timepoint("Erysipelotrichaceae (OTU 189)", -1, Otu189_dn1_stats)
-
-#Format day -1 stats dataframe for Otu 58:
-Otu58_dn1_stats <- otu_dayn1_stats %>% 
-  filter(otu == "Betaproteobacteria (OTU 58)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% #No significant pairwise comparisons
-  mutate(y.position = c(1, .8, .4, .2, 1e-20))
-#Otu 58 plot----
-plot_otu_timepoint("Betaproteobacteria (OTU 58)", -1, Otu58_dn1_stats)
-
-#Format day -1 stats dataframe for Otu 23:
-Otu23_dn1_stats <- otu_dayn1_stats %>% 
-  filter(otu == "Enterococcus (OTU 23)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% #No significant pairwise comparisons
-  mutate(y.position = NA)
-#Otu 23 plot----
-plot_otu_timepoint("Enterococcus (OTU 23)", -1, Otu23_dn1_stats)
-
-#Format day -1 stats dataframe for Otu 34:
-Otu34_dn1_stats <- otu_dayn1_stats %>% 
-  filter(otu == "Burkholderiales (OTU 34)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% #No significant pairwise comparisons
-  mutate(y.position = c(1, .8, .4, .2, 1e-20))
-#Otu 34 plot----
-plot_otu_timepoint("Burkholderiales (OTU 34)", -1, Otu34_dn1_stats)
-
-#Format day -1 stats dataframe for Otu 293:
-Otu293_dn1_stats <- otu_dayn1_stats %>% 
-  filter(otu == "Coriobacteriaceae (OTU 293)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% #No significant pairwise comparisons
-  mutate(y.position = c(1.2, 1, .8, .4, .2, 1e-20))
-#Otu 293 plot----
-plot_otu_timepoint("Coriobacteriaceae (OTU 293)", -1, Otu293_dn1_stats)
-
-#Format day 0 stats dataframe for Otu 1:
-Otu1_d0_stats <- otu_day0_stats %>% 
-  filter(otu == "Enterobacteriaceae (OTU 1)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(.6, .8, 1.7, 2, 2.2, .4, 1.1, 1.4, .1)) #9 pairwise sig.
-#Otu 1 plot----
-plot_otu_timepoint("Enterobacteriaceae (OTU 1)", 0, Otu1_d0_stats)
-
-#Format day 0 stats dataframe for Otu 2:
-Otu2_d0_stats <- otu_day0_stats %>% 
-  filter(otu == "Bacteroides (OTU 2)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(.2, .6, .9, 1.2, 1.5)) #5 pairwise sig.
-#Otu 2 plot----
-plot_otu_timepoint("Bacteroides (OTU 2)", 0, Otu2_d0_stats)
-
-#Format day 0 stats dataframe for Otu 16:
-Otu16_d0_stats <- otu_day0_stats %>% 
-  filter(otu == "Proteus (OTU 16)" & p.adj <= 0.05) %>% 
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(1.4, 1.1, .8, .5, .2)) #5 pairwise sig.
-#Otu 16 plot----
-plot_otu_timepoint("Proteus (OTU 16)", 0, Otu16_d0_stats)
-
 #Wilcoxan Signed rank test for relative abundance differences after clindamycin treatment (for all mice with paired data for day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
 #Pull mice ids that have sequence data for both day -1 and day 0:
 mice_seq_dn1_0_pairs <- agg_family_data %>% 
@@ -699,33 +558,6 @@ clind_impacted_families_plot_d0 <- clind_impacted_families_plot_dx(0)+
   ggtitle("Clindamycin")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
 save_plot(filename = paste0("results/figures/clind_impacted_families_plot_d0.png"), clind_impacted_families_plot_d0, base_height = 12, base_width = 7)
-
-
-#Dataframe for statistical test at the genus level
-paired_genus <- agg_genus_data %>% 
-  filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
-  filter(day == -1 | day == 0) %>% #Experiment days that represent initial community and community post clindamycin treatment
-  mutate(day = as.factor(day)) %>% 
-  select(day, genus, agg_rel_abund)
-
-#Wilcoxon signed rank test for all day -1, day 0 pairs at the genus level:
-g_dn1to0_pairs <- paired_genus %>% 
-    group_by(genus) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-#Adjust p-values for testing multiple genera
-g_dn1to0_pairs_stats_adjust <- g_dn1to0_pairs %>%
-    select(genus, statistic, p.value, method, alternative, `-1`, `0`) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-  write_tsv(path = "data/process/genus_stats_dn1to0.tsv")
-
-#Make a list of significant families impacted by clindamycin treatment  
-sig_genera_pairs <- pull_significant_taxa(g_dn1to0_pairs_stats_adjust, genus)
-# 30 Significant genera
 
 #Dataframe for statistical test at the OTU level
 paired_otu <- agg_otu_data %>% 
@@ -1066,4 +898,12 @@ for (d in model_input_days){
 `sig_otu_status_-1` # 1 OTU "Ruminococcaceae (OTU 467)"
 sig_otu_status_0 # 0 OTUs
 sig_otu_status_1 # 0 OTUs
+
+#Set up statistical annotation arguments for Ruminococcaceae (OTU 467):
+x_OTU467 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Ruminococcaceae (OTU 467)") %>% pull(day) #No timepoints were significant
+y_OTU467 <- .4
+label_OTU467 <- plot_otu_stats_dn1to9 %>% 
+  filter(otu == "Ruminococcaceae (OTU 467)") %>% pull(p.signif)
+otu_over_time("Ruminococcaceae (OTU 467)", x_annotation = x_OTU467, y_position = y_OTU467, label = label_OTU467)
 

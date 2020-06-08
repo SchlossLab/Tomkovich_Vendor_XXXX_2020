@@ -1,6 +1,8 @@
 source("code/functions.R")
 
 #Graph weight data as weight change (g) from baseline weight.----
+weight_data <- metadata %>%
+  filter(!is.na(weight)) #512 observations that are not NAs
 
 #Range of N mice per day
 weight_data %>% group_by(day) %>% count() %>% arrange(n) 

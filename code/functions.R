@@ -73,8 +73,7 @@ metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>%
                                          cfu_d7 == NA ~ "NA"))
 
 #Create a column to denote baseline_weight and weight_change from baseline_weight for each mouse----
-#Percent baseline weight for each mouse will be calculated 
-#based on the weight recorded on D-1 of the experiment
+#Calculated based on the weight recorded on D-1 of the experiment
 baseline_weight <- metadata %>% select(mouse_id, weight, day) %>% 
   filter(day == -1) %>% 
   mutate(baseline_weight = weight) %>% 
@@ -122,7 +121,11 @@ dropped_by_miseq_ids <- anti_join(sequenced, matching, by = "id") %>% pull(id)
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
 color_vendors <- levels(metadata$vendor)
 
-### Caluclate Standard Error----
+#Export processed metadata as a .tsv to read in to manuscript.Rmd for pulling out
+#sample sizes to add to figure legends.
+write_tsv(metadata, "data/process/processed_metadata.tsv")
+
+### Calculate Standard Error----
 calc_se <- function(stdev, n){
   stdev/sqrt(n)
 }
