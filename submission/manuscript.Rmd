@@ -88,7 +88,7 @@ Mouse models of CDIs have been a great tool for understanding *C. difficile* pat
 
 In the past, our group has attempted to introduce more microbiome variation into the CDI mouse model by using a variety of antibiotic treatments [@Reeves2011; @Schubert2015; @Jenior2017; @Jenior2018]. An alternative approach to maximize microbiome variation is to use mice from multiple sources [@Velazquez2019; @Osbelt2020]. Microbiome differences between different mouse vendors have been well documented and shown to influence susceptibility to a variety of diseases [@Stough2016; @Alegre2019], including enteric infections [@EtienneMesmin2017; @Velazquez2019; @Osbelt2020; @Lai2020; @Thiemann2017; @Rolig2013; @Ge2018]. Additionally, different research groups have observed different CDI outcomes in mice despite using similar models and the microbiome has been proposed as one factor potentially mediating susceptibility [@Hutton2014; @Lawley2013; @Reeves2011; @Buffie2011; @Jenior2018; @Buffie2014]. Here we examined how variations in the baseline microbiome and responses to clindamycin treatment in C57BL/6 mice from six different sources influenced susceptibility to *C. difficile* colonization and the time needed to clear the infection.
 
-```{r, cfu}
+```{r cfu}
 cfu_stats_all <- read_tsv("../data/process/cfu_stats_all_days.tsv")
 padj_d1_cfu <- cfu_stats_all %>% filter(day == 1) %>% pull(p.value.adj) 
 mean_d1 <- cfu_stats_all %>% filter(day == 1) %>% select(-day, -statistic, -p.value, -parameter, -method, -p.value.adj) %>% pivot_longer(everything(), values_to = "mean_cfu", names_to = "Source") %>% arrange(mean_cfu)
@@ -102,7 +102,7 @@ max_padj_d3to7 <- cfu_stats_sig %>% select(p.value.adj) %>% max
 
 **Clindamycin treatment renders all mice susceptible to *C. difficile* 630 colonization regardless of colony source.** To test how the microbiotas of mice from different colony sources impact colonization dynamics after clindamycin exposure, we utilized C57BL/6 mice from 6 different sources: two colonies from the University of Michigan (the Young and Schloss lab colonies), the Jackson Laboratory, Charles River Laboratories, Taconic Biosciences, and Envigo (which was formerly Harlan). These 4 vendors were chosen because they represent commonly used vendors for CDI studies in mice [@Spinler2016; @Markey2018; @McKee2018; @Yamaguchi2020; @Stroke2018; @EtienneMesmin2017; @Quigley2019; @Mullish2019]. After a 13-day acclimation period for the mice ordered from vendors, all mice were treated with 10 mg/kg clindamycin via intraperitoneal injection and one day later challenged with 10^3^ *C. difficile* 630 spores (Fig. 1A). Clindamycin was chosen because we have previously demonstrated mice are rendered susceptible, but consistently cleared the CDI within 9 days [@Jenior2018; @Tomkovich2019], clindamycin is frequently implicated with human CDIs [@Guh2018], and is also part of the antibiotic treatment for the frequently cited 2008 CDI mouse model [@Chen2008]. The day after infection, *C. difficile* was detectable in all mice at a similar level (Mean CFU range: `r format(min_mean_d1, digits = 2, scientific=TRUE)`-`r format(max_mean_d1, scientific=TRUE, digits = 2)`; *P*~FDR~ = `r padj_d1_cfu`), indicating clindamycin rendered all mice susceptible regardless of colony source (Fig. 1B). Interestingly, variation in *C. difficile* CFU levels across sources of mice emerged from days 3-7 post-infection (all *P*~FDR~ $\le$ `r max_padj_d3to7`; Fig. 1B and Table S1), suggesting mouse colony source is associated with *C. difficile* clearance. We conducted two experiments approximately 3 months apart and combined the data because the colonization dynamics across sources of mice varied similarily in both experiments (Fig. S1). Although *C. difficile* 630 causes mild symptoms in mice comparied to other *C. difficile* strains [@Theriot2011], we also saw that weight change significantly varied across sources of mice with the most weight lost two days post-infection (Fig. 1C and Table S2). Interestingly, mice ordered from Jackson, Taconic, and Envigo tended to lose the most weight, have higher *C. difficile* CFU levels and take longer to clear the infection compared to the other sources of mice, which was particularly evident 7 days post-infection (Fig. 1C and D). Importantly, there was also one Jackson and one Envigo mouse that died between 1- and 3-days post-infection. Thus, clindamycin rendered all mice susceptible to *C. difficile* 630 colonization, regardless of colony source, but variation across sources emerged with 3 out of 6 sources taking longer to clear *C. difficile*.
 
-```{r, alpha}
+```{r alpha}
 richness_stats_all <- read_tsv("../data/process/richness_stats_all_days.tsv")
 padj_dn1_richness <- richness_stats_all %>% filter(day == -1) %>% pull(p.value.adj)
 
@@ -110,7 +110,7 @@ shannon_stats_all <- read_tsv("../data/process/shannon_stats_all_days.tsv")
 padj_dn1_shannon <- shannon_stats_all %>% filter(day == -1) %>% pull(p.value.adj)
 ```
 **Bacterial communities vary across mouse colony sources.** Given the well known variation in mouse microbiomes across vendors and university colonies [@Alegre2019], we hypothesized that the variation in *C. difficile* clearance could be explained by microbiota variation across the 6 sources. We used 16S rRNA gene sequencing to characterize the fecal bacterial communities from the mice over the course of the experiment. Since antibiotics and other risk factors of CDIs are associated with decreased microbiota diversity [@Ross2016], we first examined alpha diversity measures across the 6 sources of mice. Examining the bacterial communities at baseline, prior to clindamycin treatment there was a significant difference in the number of observed OTUs (*P*~FDR~ = `r padj_dn1_richness`), but not Shannon diversity index (*P*~FDR~ = `r padj_dn1_shannon`) across sources of mice (Fig. 2A-B and Table S3). As expected, clindamycin treatment decreased richness and Shannon diversity across all sources of mice, and communities started to recover 1 day post-infection (Fig. 2C-D). Interestingly, significant differences in diversity metrics across sources (*P*~FDR~ < 0.05) emerged after both clindamycin and *C. difficile* infection, with Charles River mice having higher richness and Shannon Diversity than most of the other groups (Fig 2C-F and Table S4). While Charles River mice had more diverse microbiotas, Young and Schloss lab mice were also able to clear *C. difficile* faster, suggesting microbiota diversity alone does not explain the observed variation in *C. difficile* colonization across vendors.
-```{r, adonis}
+```{r adonis}
 adonis_stats_all <- read_tsv("../data/process/adonis_all.tsv")
 r_sq_ordered_adonis <- adonis_stats_all %>% arrange(desc(r_sq))
 rsq_adonis_source <- r_sq_ordered_adonis %>% pull(r_sq) %>% max
@@ -122,9 +122,15 @@ d0_rsq_sum <-  adonis_stats_dn101 %>% filter(day == 0) %>% select(r_sq) %>% sum
 d1_rsq_sum <-  adonis_stats_dn101 %>% filter(day == 1) %>% select(r_sq) %>% sum
 p_adonis_intial <- adonis_stats_dn101 %>% select(p) %>% max 
 p_adonis_min <- adonis_stats_dn101 %>% select(p) %>% min #All p values are same
+
+source_adonis_dn1 <- read_tsv("../data/process/adonis_dn1_source.tsv")
+adonis_schloss_rsq_sum <- source_adonis_dn1 %>% filter(source == "Schloss") %>% select(r_sq) %>% sum
+p_adonis_schloss_max <- source_adonis_dn1 %>% filter(source == "Schloss") %>% select(p) %>% max
+adonis_young_rsq_sum <- source_adonis_dn1 %>% filter(source == "Young") %>% select(r_sq) %>% sum
+p_adonis_young_max <- source_adonis_dn1 %>% filter(source == "Young") %>% select(p) %>% max
 ```
 Next, we compared the bacterial communities from the 6 colonies over the course of the experiment using principal coordinate analysis (PCoA) of the Theta YC distances. Permutational multivariate analysis of variance (PERMANOVA) analysis revealed colony source was the major factor explaining the observed variation across fecal communities (R^2^ = `r rsq_adonis_source`, *P* = `r p_adonis_source`) followed by interactions between cage and day of the experiment (Movie S1 and Table S5). Since, the majority of the perturbations happened over the initial days of the experiment, we decided to focus on the bacterial communities at baseline (day -1), after clindamycin treatment (day 0), and post-infection (day 1). For all 3 timepoints, source and the interaction with cage significantly explained most of the observed community variation (combined R^2^ = `r dn1_rsq_sum`, `r d0_rsq_sum`, `r d1_rsq_sum`, respectively; *P* = `r p_adonis_intial`; Fig. 3 and Table S6). We also compared baseline communities across the 2 experiments, and found experiment and cage significantly explained the observed variation only for the Schloss and Young lab mouse colonies (Fig. S2 and Table S7), suggesting vendor communities were relatively stable between the 2 experiments. Thus, mouse colony source was the factor that explained the most variation observed in the bacterial communities. Importantly with the exception of the 2 University colonies, the community of each source clustered apart from one another suggesting each community had a unique response to clindamycin treatment and *C. difficile* challenge.
-```{r, source_taxa}
+```{r source_taxa}
 #Number of different otus and families across sources at day -1, 0, and 1 timepoints
 source_otus <- read_tsv("../data/process/otu_stats_dn1to1_combined.tsv")
 source_otus_dn1 <- source_otus %>% filter(day == -1) %>% nrow()
@@ -154,7 +160,7 @@ shared_source_families_dn1to1 <- length(intersect_all(source_f_dn1, source_f_d0,
 ```
 After finding differences at the community level, we next identified the taxa that varied across sources of mice over the initial days of the experiment. We examined bacterial relative abundances at the operational taxonomic unit (OTU) and family levels, expecting the number of differences to be reduced at the family level due to the nature of bacterial taxonomy [@Nguyen2015]. Focusing on the baseline communities first, there were `r source_otus_dn1` OTUs and only `r source_families_dn1` families (Table S8-9) with relative abundances that varied across colony sources. Clindamycin treatment reduced the number of taxa with relative abundances that varied across sources to `r source_otus_d0` OTUs and `r source_families_d0` families (Table S8-9). After *C. difficile* challenge, there were `r source_otus_d1` OTUs and `r source_families_d1` families (Table S8-9) with significantly different relative abundances across sources, as the communities started to recover from antibiotic treatment. In spite of the experimental perturbations that occurred during these 3 timepoints, there were `r shared_source_otus_dn1to1` OTUs (Fig 4A-C) and `r shared_source_families_dn1to1` families with relative abundances that consistently varied across colony sources (Fig. 4D-F). Importantly, some of the taxa that consistently varied across sources also shifted with clindamycin treatment. For example, *Proteus* increased after clindamycin treatment, but only in Taconic mice. *Enterococcus* was primarily found only in mice purchased from commercial vendors and also increased after clindamycin treatment. In summary, mouse bacterial communities significantly varied according to colony source throughout the course of the experiment and a consistent subset of bacterial taxa remained different across sources regardless of clindamycin and *C. difficile* challenge.
 
-```{r, source_clindamycin}
+```{r clindamycin_taxa}
 clindamycin_otus <- read_tsv("../data/process/otu_stats_dn1to0.tsv")
 clindamycin_otus_sig <- clindamycin_otus %>% filter(p.value.adj < 0.05) %>% nrow()
 
@@ -163,7 +169,7 @@ clindamycin_families_sig <- clindamycin_families %>% filter(p.value.adj < 0.05) 
 ```
 **Clindamycin treatment alters a subset of taxa that were found in all colony sources.** Although there were bacteria that consistently varied across colony sources, we also wanted to identify the bacteria that shifted after clindamycin treatment, regardless of colony source. By analyzing all mice that had sequence data from fecal samples collected at baseline and after clindamycin treatment, we identified `r clindamycin_otus_sig` OTUs and `r clindamycin_families_sig` families that were altered after clindamycin treatment (Fig. 5 and Table S10-11). Interestingly, when we compared the list of significant clindamycin impacted bacteria with the bacteria that consistently varied across groups over the initial 3 timepoints of our experiment, we found 3 OTUs (*Lachnospiraceae* (OTU 130), *Lactobacillus* (OTU 6), *Enterococcus* (OTU 23)) and 3 families (*Porphyromonadaceae*, *Enterococcaceae*, *Lachnospiraceae*) overlapped (Fig. 4, Fig. 5C-D). These findings demonstrate that clindamycin has a consistent impact on the fecal bacterial communities of mice from all colony sources and only a subset of the taxa also varied across colony sources.
 
-```{r, classification}
+```{r classification}
 models_vs_random <- read_tsv("../data/process/classification_to_random.tsv")
 max_p_vs_random <- models_vs_random %>% select(p.value) %>% max
 median_otu_day0_AUROC <- models_vs_random %>% filter(model_name == "otu_day0") %>% pull(median)
@@ -351,14 +357,51 @@ This work was supported by the National Institutes of Health (U01AI124255). ST w
 \newpage
 
 ## Figures
-```{r, sample_size}
+```{r sample_size}
 #figure out in functions.R and export results as a tsv to read in
-#analysis_n <- read_tsv("../data/process/____.tsv")
+analysis_n <- read_tsv("../data/process/processed_metadata.tsv")
 
+#Initial N for each source from the 2 experiments combined:
+schloss_i <- analysis_n %>% filter(day == -1 & vendor == "Schloss") %>% nrow()
+young_i <- analysis_n %>% filter(day == -1 & vendor == "Young") %>% nrow()
+jackson_i <- analysis_n %>% filter(day == -1 & vendor == "Jackson") %>% nrow()
+cr_i <- analysis_n %>% filter(day == -1 & vendor == "Charles River") %>% nrow()
+taconic_i <- analysis_n %>% filter(day == -1 & vendor == "Taconic") %>% nrow()
+envigo_i <- analysis_n %>% filter(day == -1 & vendor == "Envigo") %>% nrow()
 
+#Range in N for C. difficile CFU quantification:
+cfu_n_by_day <- analysis_n %>% 
+  filter(!is.na(cfu)) %>% #remove rows with NAs
+  group_by(day) %>% count() %>% arrange(n) %>% ungroup()
+min_cfu_n <- cfu_n_by_day %>% select(n) %>% min
+max_cfu_n <- cfu_n_by_day %>% select(n) %>% max
+
+#Range in N for mouse weight change data over the course of the experiment:
+weight_n_by_day <- analysis_n %>% 
+  filter(!is.na(weight)) %>% #remove rows with NAs
+  group_by(day) %>% count() %>% arrange(n) %>% ungroup()
+min_weight_n <- weight_n_by_day %>% select(n) %>% min
+max_weight_n <- weight_n_by_day %>% select(n) %>% max
+
+#C. difficile day 7 colonization status N range across sources:
+day7_status_n <- analysis_n %>% 
+  filter(!is.na(clearance_status_d7)) %>% #remove rows with NAs
+  filter(day == 7) %>% 
+  group_by(vendor) %>% count() %>% arrange(n) %>% ungroup
+day7_status_n_min <- day7_status_n %>% select(n) %>% min
+day7_status_n_max <-day7_status_n %>% select(n) %>% max
+
+#N for mice with sequencing data on both day -1 and day 0 (used to determine taxa that were altered by clindamycin treatment)
+n_paired_for_clind <- read_tsv("../data/process/vendors.diversity.summary") %>% #read in sequencing data & join to metadata
+  filter(method == "ave") %>% 
+  select(group, sobs, shannon, invsimpson, coverage) %>% 
+  inner_join(metadata, by = c("group" = "id")) %>% 
+  filter(day == -1 | day == 0) %>% 
+  filter(duplicated(mouse_id)) %>% 
+  nrow()
 ```
 \includegraphics{figure_1.pdf}
-**Figure 1. Clindamycin is sufficient to promote *C. difficile* colonization regardless of colony source, but clearance time varies across sources of C57BL/6 mice.** A. Setup of the experimental timeline. Mice for the experiments were obtained from 6 different sources: the Schloss (N =8) and Young lab (N = 9) colonies at the University of Michigan, the Jackson Laboratory (N = 8), Charles River Laboratory (N = 8), Taconic Biosciences (N = 8), and Envigo (N = 8). All mice were administered 10 mg/kg clindamycin intraperitoneally (IP) 1 day before challenge with *C. difficile* 630 spores on day 0. Mice were weighed and feces was collected daily through the end of the experiment (9 days post-infection). Note: 3 mice died during course of experiment. 1 Taconic mouse prior to infection and 1 Jackson and 1 Envigo mouse between 1- and 3-days post-infection. B. *C. difficile* CFU/gram stool measured over time (N = 20-49 mice per timepoint) via serial dilutions. The black line represents the limit of detection for the first serial dilution. CFU quantification data was not available for each mouse due to early deaths, stool sampling difficulties, and not plating all of the serial dilutions. C. Mouse weight change measured in grams over time (N = 45-49 mice per timepoint), all mice were normalized to the weight recorded 1 day before infection. For B-C: timepoints where differences across sources of mice were statistically significant by Kruskal-Wallis test with Benjamini-Hochberg correction for testing across multiple days (Table S1 and Table S2) are reflected by the asterisk(s) above each timepoint (\*\, P < 0.05, \*\*\, P < 0.01, \*\*\*\, P < 0.001). Lines represent the mean for each source and circles represent individual mice. D. *C. difficile* CFU status on Day 7 within each mouse colony source. Mice were classified as colonized or cleared (not detectable at the limit of detection of 100 CFU). Schloss (N = 6), Young (N = 9), Jackson (N = 5), Charles River (N = 8), Taconic (N = 5), Envigo (N = 7). Alternative: N = 5-9 mice per group. 
+**Figure 1. Clindamycin is sufficient to promote *C. difficile* colonization regardless of colony source, but clearance time varies across sources of C57BL/6 mice.** A. Setup of the experimental timeline. Mice for the experiments were obtained from 6 different sources: the Schloss (N = `r schloss_i`) and Young lab (N = `r young_i`) colonies at the University of Michigan, the Jackson Laboratory (N = `r jackson_i`), Charles River Laboratory (N = `r cr_i`), Taconic Biosciences (N = `r taconic_i`), and Envigo (N = `r envigo_i`). All mice were administered 10 mg/kg clindamycin intraperitoneally (IP) 1 day before challenge with *C. difficile* 630 spores on day 0. Mice were weighed and feces was collected daily through the end of the experiment (9 days post-infection). Note: 3 mice died during course of experiment. 1 Taconic mouse prior to infection and 1 Jackson and 1 Envigo mouse between 1- and 3-days post-infection. B. *C. difficile* CFU/gram stool measured over time (N = `r min_cfu_n`-`r max_cfu_n` mice per timepoint) via serial dilutions. The black line represents the limit of detection for the first serial dilution. CFU quantification data was not available for each mouse due to early deaths, stool sampling difficulties, and not plating all of the seriral dilutions. C. Mouse weight change measured in grams over time (N = `r min_weight_n`-`r max_weight_n` mice per timepoint), all mice were normalized to the weight recorded 1 day before infection. For B-C: timepoints where differences across sources of mice were statistically significant by Kruskal-Wallis test with Benjamini-Hochberg correction for testing across multiple days (Table S1 and Table S2) are reflected by the asterisk(s) above each timepoint (\*\, P < 0.05, \*\*\, P < 0.01, \*\*\*\, P < 0.001). Lines represent the mean for each source and circles represent individual mice. D. *C. difficile* CFU status on Day 7 within each mouse colony source. Mice were classified as colonized or cleared (not detectable at the limit of detection of 100 CFU). N = `r day7_status_n_min`-`r day7_status_n_max` mice per group. 
 
 \newpage
 \includegraphics{figure_2.pdf}
@@ -374,7 +417,7 @@ This work was supported by the National Institutes of Health (U01AI124255). ST w
 
 \newpage
 \includegraphics{figure_5.pdf}
-**Figure 5. Clindamycin treatment has the same effects on a subset of taxa regardless of colony source.** A-B. Boxplots of the top 10 most significant (adjusted P value < 0.05) OTUs with relative abundances that changed post clindamycin treatment. C-D. Boxplots of the top 10 most significant families with relative abundances that changed post clindamycin treatment. Data were analyzed by Wilcoxon signed rank test limited to mice that had paired sequence data for day -1 and 0 (N = 31). Tests were performed at the OTU and family level with Benjamini-Hochberg correction for testing all identified OTUs and families. See Table S10-11 for complete list of OTUs and families significantly impacted by clindamycin treatment. The grey vertical line indicates the limit of detection for A-D.
+**Figure 5. Clindamycin treatment has the same effects on a subset of taxa regardless of colony source.** A-B. Boxplots of the top 10 most significant (adjusted *P* value < 0.05) OTUs with relative abundances that changed post clindamycin treatment. C-D. Boxplots of the top 10 most significant families with relative abundances that changed post clindamycin treatment. Data were analyzed by Wilcoxon signed rank test limited to mice that had paired sequence data for day -1 and 0 (N = `r n_paired_for_clind`). Tests were performed at the OTU and family levels with Benjamini-Hochberg correction for testing all identified OTUs and families. See Table S10-11 for complete list of OTUs and families significantly impacted by clindamycin treatment. The grey vertical line indicates the limit of detection for A-D.
 
 \newpage
 \includegraphics{figure_6.pdf}
@@ -394,11 +437,11 @@ This work was supported by the National Institutes of Health (U01AI124255). ST w
 
 \newpage
 \includegraphics{figure_S2.pdf}
-**Figure S2. Only bacterial communities from University of Michigan mice significantly vary between experiments.** A-F. PCoA of Theta YC distances for the baseline fecal bacterial communities within each source of mice. Each symbol represents a stool sample from an individual mouse with color corresponding to experiment and shape representing cage mates. PERMANOVA was performed within each group to examine the contributions of experiment and cage to observed variation. Experiment number and cage only significantly explained observed variation for mice from the Schloss (add r2 and P values) and Young (add r2 and P values) lab colonies (Table S5).
+**Figure S2. Only bacterial communities from University of Michigan mice significantly vary between experiments.** A-F. PCoA of Theta YC distances for the baseline fecal bacterial communities within each source of mice. Each symbol represents a stool sample from an individual mouse with color corresponding to experiment and shape representing cage mates. PERMANOVA was performed within each group to examine the contributions of experiment and cage to observed variation. Experiment number and cage only significantly explained observed variation for mice from the Schloss (combined R^2^ = `r adonis_schloss_rsq_sum`; *P* $\le$ `r p_adonis_schloss_max`) and Young (combined R^2^ = `r adonis_young_rsq_sum`; *P* $\le$ `r p_adonis_young_max`) lab colonies (Table S7).
 
 \newpage
 \includegraphics{figure_S3.pdf}
-**Figure S3. *C. difficile* colonization status 7 days post-infection varies across mice.** A. Bar graph visualizations of overall day 7 classification outcomes used to build logistic regression models. Mice were classified as colonized or cleared (not detectable at the limit of detection of 100 CFU) based on CFU g/stool data from 7 days post-infection. B-D. Classification input data used for models based on day -1 (B), day 0 (C), and day 1 (D) community relative abundance data. Only mice with day 7 *C. difficile* status and community relative abundance data for each respective timepoint were used as input data for the classification models.
+**Figure S3. *C. difficile* colonization status 7 days post-infection varies across mice.** A. Bar graph visualizations of overall day 7 C. difficile colonization status that were used as classification outcomes to build logistic regression models. Mice were classified as colonized or cleared (not detectable at the limit of detection of 100 CFU) based on CFU g/stool data from 7 days post-infection. B-D. Classification input data used for models based on day -1 (B), day 0 (C), and day 1 (D) community relative abundance data. Only mice with day 7 *C. difficile* status and community relative abundance data for each respective timepoint were used as input data for the classification models.
 
 \newpage
 \includegraphics{figure_S4.pdf}
@@ -420,7 +463,7 @@ This work was supported by the National Institutes of Health (U01AI124255). ST w
 ## Supplementary Tables and Movie
 All supplemental material is available at: https://github.com/SchlossLab/Tomkovich_vendor_difs_XXXX_2020/submission. 
 
-**Movie S1. Large shifts in bacterial community structure occurred after clindamycin and *C. difficile* infection.** PCoA of Theta YC distances animated from 0 through 9 days post-infection. Transparency of the circle corresponds to the day of the experiment, each circle represents a sample from an individual mouse at a specific timepoint. See Table S5 for PERMANOVA results).
+**Movie S1. Large shifts in bacterial community structure occurred after clindamycin and *C. difficile* infection.** PCoA of Theta YC distances animated from 0 through 9 days post-infection. PERMANOVA analysis indicated colony source was the variable that explained the most observed variation across fecal communities (source R^2^ = `r rsq_adonis_source`, *P* = `r p_adonis_source`) followed by interactions between cage and day of the experiment. Transparency of the circle corresponds to the day of the experiment, each circle represents a sample from an individual mouse at a specific timepoint. See Table S5 for PERMANOVA results).
 
 **Table S1. *C. difficile* CFU statistical results.**
 
