@@ -392,10 +392,10 @@ day7_status_n_min <- day7_status_n %>% select(n) %>% min
 day7_status_n_max <-day7_status_n %>% select(n) %>% max
 
 #N for mice with sequencing data on both day -1 and day 0 (used to determine taxa that were altered by clindamycin treatment)
-n_paired_for_clind <- read_tsv("../data/process/vendors.diversity.summary") %>% #read in sequencing data & join to metadata
+n_paired_for_clind <- read_tsv("../data/process/vendors.diversity.summary") %>% #read in sequencing data & join to analysis_n
   filter(method == "ave") %>% 
   select(group, sobs, shannon, invsimpson, coverage) %>% 
-  inner_join(metadata, by = c("group" = "id")) %>% 
+  inner_join(analysis_n, by = c("group" = "id")) %>% 
   filter(day == -1 | day == 0) %>% 
   filter(duplicated(mouse_id)) %>% 
   nrow()
