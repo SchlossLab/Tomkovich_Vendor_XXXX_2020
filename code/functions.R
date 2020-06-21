@@ -49,21 +49,37 @@ cfu1_0s <- metadata %>% filter(cfu1 == 0) #Now only 184 instances, which is what
 cfu2_0s <- metadata %>% filter(cfu2 == 0) #0 instances of 0.
 cfu_nas_final <- map(metadata, ~sum(is.na(.))) #196 for cfu1, 367 instances for cfu2. #161 for cfu
 
-# Create columns for C. difficile CFU at Day 5 and Day 6 since these were the 2 timepoints where there were significant differences across vendors and the most significant pairwise.wilcox values (6 pairs)
-cfu_d5 <- metadata %>% 
-  filter(day == 5) %>% 
-  mutate(cfu_d5 = cfu) %>% 
-  select(mouse_id, cfu_d5) #43 values with 6 NAs
-cfu_d6 <- metadata %>% 
-  filter(day == 6) %>% 
-  mutate(cfu_d6 = cfu) %>% 
-  select(mouse_id, cfu_d6) #34 values with 15 NAs
-cfu_d7 <- metadata %>% 
-  filter(day == 7) %>% 
-  mutate(cfu_d7 = cfu) %>% 
-  select(mouse_id, cfu_d7) #40 values with 5 NAs. 17 mice with 0, 23 still colonized. Close to half have cleared. By D8 33 mice with 0s, 3 still colonized, 13 NAs
+# Function to create columns for C. difficile CFU at Days 1-9
+cfu_dx <- function(timepoint){
+  metadata %>% 
+    filter(day == timepoint) %>% 
+    mutate("col_name" = cfu) %>% 
+    select(mouse_id, "col_name")
+}
+cfu_d1 <- cfu_dx(1) %>% 
+  rename(cfu_d1 = col_name) 
+cfu_d2 <- cfu_dx(2) %>% 
+  rename(cfu_d2 = col_name) 
+cfu_d3 <- cfu_dx(3) %>% 
+  rename(cfu_d3 = col_name) 
+cfu_d4 <- cfu_dx(4) %>% 
+  rename(cfu_d4 = col_name) 
+cfu_d5 <- cfu_dx(5) %>% 
+  rename(cfu_d5 = col_name) #43 values with 6 NAs
+cfu_d6 <- cfu_dx(6) %>% 
+  rename(cfu_d6 = col_name) #34 values with 15 NAs
+cfu_d7 <- cfu_dx(7) %>% 
+  rename(cfu_d7 = col_name) #40 values with 9 NAs 
+cfu_d8 <- cfu_dx(8) %>% 
+  rename(cfu_d8 = col_name)
+cfu_d9 <- cfu_dx(9) %>% 
+  rename(cfu_d9 = col_name) 
 
-# add cfu_d5, d6, d7 columns to metadata----
+# add cfu_d1-9 columns to metadata----
+metadata <- full_join(metadata, cfu_d1, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d2, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d3, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d4, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d5, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d6, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>% 
@@ -71,6 +87,8 @@ metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>%
   mutate(clearance_status_d7 = case_when(cfu_d7 > 0 ~ "colonized",
                                          cfu_d7 == 0 ~ "not_detectable",
                                          cfu_d7 == NA ~ "NA"))
+metadata <- full_join(metadata, cfu_d8, by = "mouse_id")
+metadata <- full_join(metadata, cfu_d9, by = "mouse_id")
 
 #Create a column to denote baseline_weight and weight_change from baseline_weight for each mouse----
 #Calculated based on the weight recorded on D-1 of the experiment
@@ -120,6 +138,10 @@ dropped_by_miseq_ids <- anti_join(sequenced, matching, by = "id") %>% pull(id)
 #Define color scheme----
 color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
 color_vendors <- levels(metadata$vendor)
+
+#Define shape scheme to differentiate experiment 1 and 2----
+shape_scheme <- c(19, 17)
+shape_experiment <- c(1, 2)
 
 #Export processed metadata as a .tsv to read in to manuscript.Rmd for pulling out
 #sample sizes to add to figure legends.
@@ -185,45 +207,52 @@ read_files <- function(filenames){
 # -------------------------------------------------------------------->
 
 #Function to calculate the mean cfu values from a dataframe (x) 
-get_cfu_mean_vendor <- function(x){
+get_cfu_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
-    summarize(mean=mean(cfu)) %>%
-    spread(key=vendor, value=mean)
+    summarize(median=median(cfu)) %>%
+    spread(key=vendor, value=median)
 }
 
-#Function to calculate the mean weight_change values from a dataframe (x) 
-get_weight_mean_vendor <- function(x){
+#Function to calculate the median weight_change values from a dataframe (x) 
+get_weight_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
-    summarize(mean=mean(weight_change)) %>%
-    spread(key=vendor, value=mean)
+    summarize(median=median(weight_change)) %>%
+    spread(key=vendor, value=median)
 }
 
-#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by vendor
-get_rel_abund_mean_vendor <- function(x){
+#Function to calculate the median agg_rel_abund values from a dataframe (x) grouped by vendor
+get_rel_abund_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
-    summarize(mean=mean(agg_rel_abund)) %>%
-    spread(key=vendor, value=mean)
+    summarize(median=median(agg_rel_abund)) %>%
+    spread(key=vendor, value=median)
 }
 
-#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by day
-get_rel_abund_mean_day <- function(x){
+#Function to calculate the median agg_rel_abund values from a dataframe (x) grouped by day
+get_rel_abund_median_day <- function(x){
   x %>%
     group_by(day) %>%
-    summarize(mean=mean(agg_rel_abund)) %>%
-    spread(key=day, value=mean)
+    summarize(median=median(agg_rel_abund)) %>%
+    spread(key=day, value=median)
 }
 
-#Function to calculate the mean agg_rel_abund values from a dataframe (x) grouped by day 7 C. diff colonization status
-get_rel_abund_mean_d7status <- function(x){
+#Function to calculate the median agg_rel_abund values from a dataframe (x) grouped by day 7 C. diff colonization status
+get_rel_abund_median_d7status <- function(x){
   x %>%
     group_by(clearance_status_d7) %>%
-    summarize(mean=mean(agg_rel_abund)) %>%
-    spread(key=clearance_status_d7, value=mean)
+    summarize(median=median(agg_rel_abund)) %>%
+    spread(key=clearance_status_d7, value=median)
 }
 
+#Function to calculate the median agg_rel_abund values from a dataframe (x) grouped by experiment
+get_rel_abund_median_experiment <- function(x){
+  x %>%
+    group_by(experiment) %>%
+    summarize(median=median(agg_rel_abund)) %>%
+    spread(key=experiment, value=median)
+}
 #Function to tidy pairwise comparisons to use for adding stats to plots----
 tidy_pairwise <- function(spread_pairwise){
   spread_pairwise %>% 
@@ -245,18 +274,18 @@ tidy_pairwise_family <- function(spread_pairwise){
     separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
 
-#Function to calculate the mean shannon values from a dataframe (x) grouped by vendor
-get_shannon_mean_vendor <- function(x){
+#Function to calculate the median shannon values from a dataframe (x) grouped by vendor
+get_shannon_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
-    summarize(mean=mean(shannon)) %>%
-    spread(key=vendor, value=mean)
+    summarize(median=median(shannon)) %>%
+    spread(key=vendor, value=median)
 }
 
-#Function to calculate the mean sobs (richness) values from a dataframe (x) grouped by vendor
-get_sobs_mean_vendor <- function(x){
+#Function to calculate the median sobs (richness) values from a dataframe (x) grouped by vendor
+get_sobs_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
-    summarize(mean=mean(sobs)) %>%
-    spread(key=vendor, value=mean)
+    summarize(median=median(sobs)) %>%
+    spread(key=vendor, value=median)
 }

@@ -94,7 +94,7 @@ tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:
 
 #Function to plot pcoa data for all vendors----
 plot_pcoa <- function(df){
-  ggplot(df, aes(x=axis1, y=axis2, color = vendor, alpha = day)) +
+  ggplot(df, aes(x=axis1, y=axis2, color = vendor, alpha = day, shape = experiment)) +
     geom_point(size=2) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -103,6 +103,10 @@ plot_pcoa <- function(df){
     scale_alpha_continuous(range = c(.3, 1),
                            breaks= c(2, 4, 6, 8, 10),
                            labels=c(2, 4, 6, 8, 10))+
+    scale_shape_manual(name="Experiment",
+                       values=shape_scheme,
+                       breaks=shape_experiment,
+                       labels=shape_experiment) +
     coord_fixed() + 
     xlim(-0.4, 0.65)+
     ylim(-0.45, 0.6)+
@@ -122,7 +126,7 @@ all_axis2 <- all_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(d
 pcoa_plot_combined <- plot_pcoa(pcoa_data)+
   labs(x = paste("PCoA 1 (", all_axis1, "%)", sep = ""), #Annotations for each axis from loadings file
        y = paste("PCoA 2 (", all_axis2,"%)", sep = ""))
-save_plot(filename = paste0("results/figures/pcoa.png"), pcoa_plot_combined)
+save_plot(filename = paste0("results/figures/pcoa.png"), pcoa_plot_combined, base_height = 5, base_width = 4.5)
 
 #Animation of PCoA plot over time for all sequenced samples ----
 #Source: Will Close's Code Club from 4/12/2020 on plot animation
@@ -142,20 +146,23 @@ anim_save(animation = pcoa_gif, filename = 'results/pcoa_over_time.gif')
 
 #Function to plot pcoa data for all sources of mice at a specific timepoint----
 plot_pcoa <- function(df, timepoint){
-  plot <- ggplot(df, aes(x=axis1, y=axis2, color = vendor)) +
+  plot <- ggplot(df, aes(x=axis1, y=axis2, color = vendor, shape = experiment)) +
     geom_point(size=4, alpha = 0.4) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name="Experiment",
+                       values=shape_scheme,
+                       breaks=shape_experiment,
+                       labels=shape_experiment) +
     coord_fixed() + 
     labs(x="PCoA 1",
          y="PCoA 2",
          color= "Source") +
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5),
-          text = element_text(size = 16),
-          legend.position = "bottom")
+          text = element_text(size = 16))
 }
 
 # Read in thetayc distance matrix that represents day -1 sequenced samples----
@@ -189,7 +196,7 @@ dn1 <- plot_pcoa(dn1_pcoa, -1)+
   ggtitle("Baseline")+ #Title plot
   labs(x = paste("PCoA 1 (", dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", dn1_axis2,"%)", sep = ""))+
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/pcoa_day-1.png"), dn1)
 
 # Read in thetayc distance matrix that represents day 0 sequenced samples----
@@ -223,7 +230,7 @@ d0 <- plot_pcoa(d0_pcoa, 0)+
   ggtitle("Clindamycin")+ #Title plot
   labs(x = paste("PCoA 1 (", d0_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", d0_axis2,"%)", sep = ""))+
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/pcoa_day0.png"), d0)
 
 # Read in thetayc distance matrix that represents day 1 sequenced samples----
@@ -257,7 +264,7 @@ d1 <- plot_pcoa(d1_pcoa, 1) +
   ggtitle("Post-infection")+ #Title plot
   labs(x = paste("PCoA 1 (", d1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", d1_axis2,"%)", sep = ""))+
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
 
 
@@ -481,3 +488,4 @@ rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>%
   write_tsv("data/process/adonis_dn1_source.tsv") %>% 
   #Also write results to supplemental table excel file
   write_xlsx("submission/table_S7_PERMANOVA_dn1_source.xlsx", format_headers = FALSE)
+

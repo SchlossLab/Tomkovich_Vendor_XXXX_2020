@@ -145,9 +145,10 @@ mothur code/d0_dist_PCoA
 mothur code/d1_dist_PCoA
 mothur code/d-1_vendors_dist_PCoA
 ```
-Perform PCoA analysis and create plots.
+Perform PCoA analysis and create plots. Compare relative distances within and between vendors and plot data.
 ```
 Rscript code/pcoa_stats.R
+Rscript code/relative_distance_comparisons.R
 ```
 Perform taxonomic analysis and create plots.
 ```

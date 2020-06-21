@@ -9,18 +9,22 @@ weight_data %>% group_by(day) %>% count() %>% arrange(n)
 
 #Plot weight data as Weight change (g)----
 
-#Function to summarize weight change data (calculate the mean for each group) and plot the data
+#Function to summarize weight change data (calculate the median for each group) and plot the data
 summarize_plot <- function(df){
-  mean_summary <- df %>% 
+  median_summary <- df %>% 
     group_by(vendor, day) %>% 
-    summarize(mean_weight_change = mean(weight_change, na.rm = TRUE))
+    summarize(median_weight_change = median(weight_change, na.rm = TRUE))
   ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
-    geom_line(mean_summary, mapping = aes(x = day, y = mean_weight_change, color = vendor), size = 1) +
+    geom_point(df, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+    geom_line(median_summary, mapping = aes(x = day, y = median_weight_change, color = vendor), size = 1) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name=NULL,
+                       values=shape_scheme,
+                       breaks=shape_experiment,
+                       labels=shape_experiment) +
     labs(x = "Days Post-Infection", y = "Weight Change (g)") +
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
                        limits = c(-1.5, 9.5)) +
@@ -79,6 +83,14 @@ weight_stats_pairwise <- weight_kruskal_stats %>%
   select(-data, -parameter, -statistic) %>% 
   write_tsv("data/process/weight_stats_sig_days.tsv")
 
+#Format pairwise stats to use with ggpubr package
+plot_format_stats <- weight_stats_pairwise %>%
+  #Remove all columns except pairwise comparisons and day
+  select(-p.value, -method,-Schloss, -Young, -Jackson, -`Charles River`, -Taconic, -Envigo) %>% 
+  group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
+  lapply(tidy_pairwise) %>% 
+  bind_rows()
+
 #Weight over time plot with astericks on days where weight varied significantly across sources of mice using annotate()----
 #List significant days after BH adjustment of p-values:
 #Annotation labels determined by what days were significant
@@ -88,24 +100,25 @@ label <- weight_kruskal_stats_adjust %>%
   mutate(p.value.adj=round(p.value.adj, digits = 4)) %>% 
   filter(p.value.adj <= 0.05) %>%
   mutate(p.signif = case_when(
-    p.value.adj <= 0.0001 ~ "****",
-    p.value.adj <= 0.001 ~ "***",
-    p.value.adj <= 0.01 ~ "**",
     p.value.adj > 0.05 ~ "NS",
     p.value.adj <= 0.05 ~ "*"
   )) %>% 
   pull(p.signif)
 
-mean_summary <- weight_data %>% 
+median_summary <- weight_data %>% 
     group_by(vendor, day) %>% 
-    summarize(mean_weight_change = mean(weight_change, na.rm = TRUE))
+    summarize(median_weight_change = median(weight_change, na.rm = TRUE))
 weight_stats <-  ggplot(NULL) +
-    geom_point(weight_data, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor), alpha = .2, size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
-    geom_line(mean_summary, mapping = aes(x = day, y = mean_weight_change, color = vendor), size = 1.5) +
+    geom_point(weight_data, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+    geom_line(median_summary, mapping = aes(x = day, y = median_weight_change, color = vendor), size = 1.5) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name=NULL,
+                        values=shape_scheme,
+                        breaks=shape_experiment,
+                        labels=shape_experiment) +
     labs(x = "Days Post-Infection", y = "Weight Change (g)") +
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
                        limits = c(-1.5, 9.5)) +
@@ -114,4 +127,38 @@ weight_stats <-  ggplot(NULL) +
     theme_classic()
 save_plot(filename = paste0("results/figures/weight_over_time.png"), plot = weight_stats, base_aspect_ratio = 2)
 
+#Add p.value manually to timepoints of interest with ggpubr stat_pvalue_manual() function: 2 ----
+#Figure out y.position via log transformation to match y-axis scale
+y <- max(weight_data$weight_change)
+
+pairwise_wilcox_day2_plot <- plot_format_stats %>% 
+  filter(day == 2) %>% 
+  filter(p.adj <= 0.05)  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+#No pairwise comparisons were significant on day 2
+
+#Plot of Day 2 weight change data with p values added manually----
+median_d2 <- weight_data %>% 
+  filter(day == 2) %>% 
+  group_by(vendor) %>% 
+  mutate(median_weight = median(weight_change, na.rm = TRUE)) %>% #create a column of median_cfu
+  ungroup()
+plot_weight_D2 <- median_d2 %>% 
+  ggplot(aes(x= vendor, y=weight_change, color=vendor))+
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  geom_errorbar(aes(ymax = median_weight, ymin = median_weight), color = "gray50", size = 2)+ #Add lines to indicate the median for each group to the plot. Median calculated before y axis transformation
+  geom_jitter(aes(shape=experiment, size=2, alpha=0.6)) +
+  scale_shape_manual(name=NULL,
+                     values=shape_scheme,
+                     breaks=shape_experiment,
+                     labels=shape_experiment) +
+  labs(title = "Day 2 Post-infection", x = NULL, y = "Weight Change (g)") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+  
+  theme_classic()+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(legend.position = "none") + #Get rid of legend 
+  theme(text = element_text(size = 16)) # Change font size for entire plot
+save_plot(filename = paste0("results/figures/weight_D2.png"), plot_weight_D2, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
 

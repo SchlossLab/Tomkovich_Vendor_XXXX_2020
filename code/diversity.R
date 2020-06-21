@@ -6,7 +6,7 @@ diversity_data <- read_tsv("data/process/vendors.diversity.summary") %>%
   inner_join(metadata, by = c("group" = "id")) %>% #Match only the samples we have sequence data for
   mutate(day=factor(day, levels=c("-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"))) # Treat day as a factor
 
-#Boxplots of diversity metrics (shannon and richness) for all sources of mice at all timepoints:
+#Plots of diversity metrics (shannon and richness) for all sources of mice at all timepoints:
 shannon_all <- diversity_data %>% 
   ggplot(aes(x=vendor, y = shannon, colour= vendor))+
   scale_colour_manual(name=NULL,
@@ -74,8 +74,8 @@ shannon_stats <- diversity_data %>%
     group_by(day) %>% 
     nest() %>% 
     mutate(model=map(data, ~kruskal.test(x=.x$shannon, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_shannon_mean_vendor)) %>% 
-    unnest(c(model, mean)) %>% 
+    mutate(median = map(data, get_shannon_median_vendor)) %>% 
+    unnest(c(model, median)) %>% 
     ungroup() 
 
 #Adjust p-values for testing multiple days and write results to table
@@ -123,8 +123,8 @@ richness_stats <- diversity_data %>%
   group_by(day) %>% 
   nest() %>% 
   mutate(model=map(data, ~kruskal.test(x=.x$sobs, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-  mutate(mean = map(data, get_sobs_mean_vendor)) %>% 
-  unnest(c(model, mean)) %>% 
+  mutate(median = map(data, get_sobs_median_vendor)) %>% 
+  unnest(c(model, median)) %>% 
   ungroup() 
 
 #Adjust p-values for testing multiple days and write results to table
@@ -182,20 +182,27 @@ plot_format_richness <- richness_stats_pairwise %>%
   lapply(tidy_pairwise) %>% 
   bind_rows()
 
-#Function to make boxplots of shannon for all sources of mice on a specific experimental day----
+#Function to make plots of shannon values for all sources of mice on a specific experimental day----
 #Arguments: 
 #  timepoint = day of the experiment
 shannon_dx_plot <- function(timepoint){
   diversity_data %>% 
     filter(day == timepoint) %>% 
+    group_by(vendor) %>% 
+    mutate(median_shannon = median(shannon)) %>% #create a column of median values for each group
+    ungroup() %>% 
     ggplot(aes(x=vendor, y =shannon, colour= vendor))+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name=NULL,
+                       values=shape_scheme,
+                       breaks=shape_experiment,
+                       labels=shape_experiment) +
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-    geom_boxplot(outlier.shape = NA, size = 1.2)+
-    geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
+    geom_errorbar(aes(ymax = median_shannon, ymin = median_shannon), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+    geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
     labs(title=NULL, 
          x="Source",
          y="Shannon Diversity Index")+
@@ -205,10 +212,10 @@ shannon_dx_plot <- function(timepoint){
           text = element_text(size = 16)) # Change font size for entire plot
 }
 
-#Boxplots of shannon for all sources of mice on day -1, the baseline microbiota community for each mouse----
+#Plots of shannon for all sources of mice on day -1, the baseline microbiota community for each mouse----
 shannon_dn1 <- shannon_dx_plot(-1) +
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 #There was no overall significant difference in Shannon index at this timepoint across sources of mice.  
 save_plot("results/figures/shannon_dn1.png", shannon_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
@@ -217,43 +224,50 @@ save_plot("results/figures/shannon_dn1.png", shannon_dn1) #Use save_plot instead
 pairwise_shannon_day0_plot <- plot_format_shannon %>% 
   filter(day == 0) %>%  
   filter(p.adj <= 0.05) %>% #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = c(3.5, 4, 3, 2.5))
 #4 pairwise comparisons were significant at day 0. 
 #Day 0 Plot with stats for pairwise comparisons:
 shannon_d0 <- shannon_dx_plot(0) +
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) +#Center plot titile
-  stat_pvalue_manual(data = pairwise_shannon_day0_plot, label = "p.adj", y.position = "y.position") 
+  theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
+  stat_pvalue_manual(data = pairwise_shannon_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/shannon_d0.png", shannon_d0)
 
 #Data frames of day 1 p.values to add manually
 pairwise_shannon_day1_plot <- plot_format_shannon %>% 
   filter(day == 1) %>%  
   filter(p.adj <= 0.05) %>% #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
-  mutate(y.position = c(4.7, 5.3, 3.8, 5, 3.1, 4.2, 4.5, 3.55))
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = c(4.7, 5.3, 3.75, 5, 3.1, 4.225, 4.5, 3.55))
 #8 pairwise comparisons were significant at day 0. 
 shannon_d1 <- shannon_dx_plot(1) +
   ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) +#Center plot titile
-  stat_pvalue_manual(data = pairwise_shannon_day1_plot, label = "p.adj", y.position = "y.position") 
+  theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
+  stat_pvalue_manual(data = pairwise_shannon_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/shannon_d1.png", shannon_d1)
 
-#Function to make boxplots of sobs (richness) for all sources of mice on a specific experimental day----
+#Function to make plots of sobs (richness) for all sources of mice on a specific experimental day----
 #Arguments: 
 #  timepoint = day of the experiment
 sobs_dx_plot <- function(timepoint){
   diversity_data %>% 
   filter(day == timepoint) %>% 
+  group_by(vendor) %>% 
+  mutate(median_sobs = median(sobs)) %>% #create a column of median values for each group
+  ungroup() %>% 
   ggplot(aes(x=vendor, y =sobs, colour= vendor))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
-  geom_boxplot(outlier.shape = NA, size = 1.2)+
+  scale_shape_manual(name=NULL,
+                     values=shape_scheme,
+                     breaks=shape_experiment,
+                     labels=shape_experiment) +  
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
+  geom_errorbar(aes(ymax = median_sobs, ymin = median_sobs), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+  geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   labs(title=NULL, 
        x="Source",
        y="Number of Observed OTUs")+
@@ -263,7 +277,7 @@ sobs_dx_plot <- function(timepoint){
         text = element_text(size = 16)) # Change font size for entire plot
 }
   
-#Boxplots of sobs (richness) for all sources of mice on day -1, the baseline microbiota community for each mouse----
+#Plots of sobs (richness) for all sources of mice on day -1, the baseline microbiota community for each mouse----
 #Add p.value manually to timepoints of interest with ggpubr stat_pvalue_manual() function: ----
 #Data frame of day -1 p.values to add manually
 pairwise_sobs_dayn1_plot <- plot_format_richness %>% 
@@ -273,35 +287,35 @@ pairwise_sobs_dayn1_plot <- plot_format_richness %>%
 # Plot of richness across sources of mice on day -1
 sobs_dn1 <- sobs_dx_plot(-1)+
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/richness_dn1.png", sobs_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 0 p.values to add manually
 pairwise_sobs_day0_plot <- plot_format_richness %>% 
   filter(day == 0) %>%  
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = c(150, 200, 250))
   #3 significant pairwise
 # Plot of richness across sources of mice on day 0 with significant pairwise comparison p values
 sobs_d0 <- sobs_dx_plot(0) +
-  stat_pvalue_manual(data = pairwise_sobs_day0_plot, label = "p.adj", y.position = "y.position") +
+  stat_pvalue_manual(data = pairwise_sobs_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) +
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/richness_d0.png", sobs_d0) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 1 p.values to add manually
 pairwise_sobs_day1_plot <- plot_format_richness %>% 
   filter(day == 1) %>%  
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj=round(p.adj, digits = 4)) %>% 
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = c(250, 200, 150, 300))
 #4 significant pairwise
 
 # Plot of richness across sources of mice on day 1 with significant pairwise comparison p values
 sobs_d1 <- sobs_dx_plot(1) +
-  stat_pvalue_manual(data = pairwise_sobs_day1_plot, label = "p.adj", y.position = "y.position") +
+  stat_pvalue_manual(data = pairwise_sobs_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) +
   ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/richness_d1.png", sobs_d1) #Use save_plot instead of ggsave because it works better with cowplot
 

@@ -87,8 +87,8 @@ kruskal_wallis_f <- function(timepoint){
   group_by(family) %>% 
   nest() %>% 
   mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-  mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
-  unnest(c(model, mean)) %>% 
+  mutate(median = map(data, get_rel_abund_median_vendor)) %>% 
+  unnest(c(model, median)) %>% 
   ungroup() 
   #Adjust p-values for testing multiple families
   family_stats_adjust <- family_stats %>% 
@@ -119,14 +119,22 @@ plot_families_dx <- function(families, timepoint){
   filter(day == timepoint) %>% 
   mutate(family=factor(family, levels=families)) %>% 
   mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
-  ggplot(aes(x= family, y=agg_rel_abund, color=vendor))+
+#  group_by(vendor, family) %>%   
+#  mutate(median = median(agg_rel_abund)) %>% #create a column of median_cfu
+#  ungroup() %>%      
+  ggplot(aes(x = family, y=agg_rel_abund, color=vendor))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_hline(yintercept=1/5437, color="gray")+
-  geom_boxplot(outlier.shape = NA, size = 1.2)+
-#  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+  geom_boxplot(outlier.shape = NA, size = 1.2)+  
+#  geom_errorbar(aes(ymax = median, ymin = median))+ #Add lines to indicate the median for each group to the plot. Median calculated before y axis transformation
+#  geom_jitter(aes(shape = experiment), size=2, alpha=0.6, position=position_dodge(1.6)) +
+#  scale_shape_manual(name=NULL,
+#                     values=shape_scheme,
+#                     breaks=shape_experiment,
+#                     labels=shape_experiment) +
   labs(title=NULL, 
        x=NULL,
        y="Relative abundance (%)")+
@@ -142,15 +150,15 @@ plot_families_dx <- function(families, timepoint){
 #Plots of the relative abundances of families that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_families_dn1 <- plot_families_dx(shared_sig_families_Dn1toD1, -1) +
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_families_dn1.png", Dn1toD1_families_dn1, base_height = 6, base_width = 8)
 Dn1toD1_families_d0 <- plot_families_dx(shared_sig_families_Dn1toD1, 0) +
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_families_d0.png", Dn1toD1_families_d0, base_height = 6, base_width = 8)
 Dn1toD1_families_d1 <- plot_families_dx(shared_sig_families_Dn1toD1, 1) +
   ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_families_d1.png", Dn1toD1_families_d1, base_height = 6, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for families that were significantly different across sources of mice on a series of days----
@@ -161,8 +169,8 @@ pairwise_day_family <- function(timepoint, sig_family_dayX){
     group_by(family) %>% 
     nest() %>% 
     mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
-    unnest(c(model, mean)) %>% 
+    mutate(median = map(data, get_rel_abund_median_vendor)) %>% 
+    unnest(c(model, median)) %>% 
     ungroup()
   pairwise_stats <- family_stats %>% 
     filter(family %in% sig_family_dayX) %>% 
@@ -289,8 +297,8 @@ kruskal_wallis_otu <- function(timepoint){
     group_by(otu) %>% 
     nest() %>% 
     mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
-    unnest(c(model, mean)) %>% 
+    mutate(median = map(data, get_rel_abund_median_vendor)) %>% 
+    unnest(c(model, median)) %>% 
     ungroup() 
   #Adjust p-values for testing multiple OTUs
   otu_stats_adjust <- otu_stats %>% 
@@ -346,15 +354,15 @@ plot_otus_dx <- function(otus, timepoint){
 #Plots of the relative abundances of OTUs that significantly varied across sources of mice from day -1 to day 1----
 Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1)+
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 7, base_width = 8)
 Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) +
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 7, base_width = 8)
 Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
   ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
 
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
@@ -365,8 +373,8 @@ pairwise_day_otu <- function(timepoint, sig_otu_dayX){
     group_by(otu) %>% 
     nest() %>% 
     mutate(model=map(data, ~kruskal.test(x=.x$agg_rel_abund, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_vendor)) %>% 
-    unnest(c(model, mean)) %>% 
+    mutate(median = map(data, get_rel_abund_median_vendor)) %>% 
+    unnest(c(model, median)) %>% 
     ungroup()
   pairwise_stats <- otu_stats %>% 
     filter(otu %in% sig_otu_dayX) %>% 
@@ -504,17 +512,17 @@ f_dn1to0_pairs <- paired_family %>%
   group_by(family) %>% 
   nest() %>% 
   mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
-  mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-  unnest(c(model, mean)) %>% 
+  mutate(median = map(data, get_rel_abund_median_day)) %>% 
+  unnest(c(model, median)) %>% 
   ungroup() 
 #Adjust p-values for testing multiple families
 f_dn1to0_pairs_stats_adjust <- f_dn1to0_pairs %>% 
   select(family, statistic, p.value, method, alternative, `-1`, `0`) %>% 
   mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
   arrange(p.value.adj) %>% 
-  write_tsv(path = "data/process/family_stats_dn1to0.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S11_family_stats_dn1to0.xlsx", format_headers = FALSE)
+  write_tsv(path = "data/process/family_stats_dn1to0.tsv")  
+#Also write results to supplemental table excel file
+write_xlsx(f_dn1to0_pairs_stats_adjust, "submission/table_S11_family_stats_dn1to0.xlsx", format_headers = FALSE)
 
 #Make a list of significant families impacted by clindamycin treatment  
 sig_family_pairs <- pull_significant_taxa(f_dn1to0_pairs_stats_adjust, family)
@@ -552,11 +560,11 @@ clind_impacted_families_plot_dx <- function(timepoint){
 
 clind_impacted_families_plot_dn1 <- clind_impacted_families_plot_dx(-1)+
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/clind_impacted_families_plot_dn1.png"), clind_impacted_families_plot_dn1, base_height = 12, base_width = 7)
 clind_impacted_families_plot_d0 <- clind_impacted_families_plot_dx(0)+
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/clind_impacted_families_plot_d0.png"), clind_impacted_families_plot_d0, base_height = 12, base_width = 7)
 
 #Dataframe for statistical test at the OTU level
@@ -571,17 +579,17 @@ o_dn1to0_pairs <- paired_otu %>%
   group_by(otu) %>% 
     nest() %>% 
     mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$day, paired = TRUE) %>% tidy())) %>% 
-    mutate(mean = map(data, get_rel_abund_mean_day)) %>% 
-    unnest(c(model, mean)) %>% 
+    mutate(median = map(data, get_rel_abund_median_day)) %>% 
+    unnest(c(model, median)) %>% 
     ungroup() 
 #Adjust p-values for testing multiple families
 o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>% 
     select(otu, statistic, p.value, method, alternative, `-1`, `0`) %>% 
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
-  write_tsv(path = "data/process/otu_stats_dn1to0.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S10_otu_stats_dn1to0.xlsx", format_headers = FALSE)
+  write_tsv(path = "data/process/otu_stats_dn1to0.tsv") 
+#Also write results to supplemental table excel file
+write_xlsx(o_dn1to0_pairs_stats_adjust, "submission/table_S10_otu_stats_dn1to0.xlsx", format_headers = FALSE)
 
 #Make a list of significant OTUs impacted by clindamycin treatment----  
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
@@ -619,11 +627,11 @@ clind_impacted_otus_plot_dx <- function(timepoint){
 
 clind_impacted_otus_plot_dn1 <- clind_impacted_otus_plot_dx(-1)+
   ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_dn1.png"), clind_impacted_otus_plot_dn1, base_height = 12, base_width = 7)
 clind_impacted_otus_plot_d0 <- clind_impacted_otus_plot_dx(0)+
   ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_d0.png"), clind_impacted_otus_plot_d0, base_height = 12, base_width = 7)
 
 #Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
@@ -639,22 +647,27 @@ Fig4_v_all_clind <- intersect_all(`shared_sig_families_Dn1toD1`, `sig_family_pai
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models----
 #Customize the x_annotation, y_position, and label argument values for each OTU prior to running the function
 otu_over_time <- function(otu_plot, x_annotation, y_position, label){
-  otu_mean <- agg_otu_data %>% 
+  otu_median <- agg_otu_data %>% 
     filter(otu == otu_plot) %>% 
     group_by(vendor, day) %>% 
-    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    summarize(median=(median(agg_rel_abund + 1/10874))) %>% 
     ungroup
-  otu_mice <-  agg_otu_data %>% 
+  otu_mice <- agg_otu_data %>% 
     filter(otu == otu_plot) %>% 
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
-    select(vendor, day, agg_rel_abund, otu)
+    select(vendor, day, agg_rel_abund, otu, experiment, clearance_status_d7)
   otu_time <- ggplot(NULL)+
-    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
-    geom_line(otu_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, shape=clearance_status_d7), alpha = .8, size  = 1.5, position = position_dodge(width = 0.6))+
+    geom_line(otu_median, mapping = aes(x=day, y=median, color=vendor), size = 1, show.legend = FALSE)+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name="Cleared by Day 7",
+                        values=c(4, 19),
+                        breaks=c("colonized", "not_detectable"),
+                        labels=c("no", "yes"), 
+                        drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
     labs(title=otu_plot,
          x="Day",
@@ -665,7 +678,6 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5, face = "italic"),
-          legend.title=element_blank(),
           text = element_text(size = 16)) # Change font size for entire plot
   save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
 }
@@ -676,9 +688,6 @@ plot_otu_stats_dn1to9 <- otu_stats_dn1to9_combined %>%
   mutate(p.value.adj=round(p.value.adj, digits = 4)) %>% 
   filter(p.value.adj <= 0.05) %>%
   mutate(p.signif = case_when(
-    p.value.adj <= 0.0001 ~ "****",
-    p.value.adj <= 0.001 ~ "***",
-    p.value.adj <= 0.01 ~ "**",
     p.value.adj > 0.05 ~ "NS",
     p.value.adj <= 0.05 ~ "*"
   )) 
@@ -717,22 +726,27 @@ otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = 
 #Function to plot families of interest that overlap with top 20 OTUs in 3 logistic regression models 
 #Customize the x_annoation, y_position, and label argument values for each family prior to running the function
 family_over_time <- function(family_plot, x_annotation, y_position, label){
-  family_mean <- agg_family_data %>% 
+  family_median <- agg_family_data %>% 
     filter(family == family_plot) %>% 
     group_by(vendor, day) %>% 
-    summarize(mean=(mean(agg_rel_abund + 1/10874))) %>% 
+    summarize(median=(median(agg_rel_abund + 1/10874))) %>% 
     ungroup
   family_mice <-  agg_family_data %>% 
     filter(family == family_plot) %>% 
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
-    select(vendor, day, agg_rel_abund, family)
+    select(vendor, day, agg_rel_abund, family, experiment, clearance_status_d7)
   family_time <- ggplot(NULL)+
-    geom_point(family_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, alpha = .2), size  = .5, show.legend = FALSE, position = position_dodge(width = 0.6))+
-    geom_line(family_mean, mapping = aes(x=day, y=mean, color=vendor), size = 1)+
+    geom_point(family_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, shape=clearance_status_d7), alpha = .8, size  = 1.5, position = position_dodge(width = 0.6))+
+    geom_line(family_median, mapping = aes(x=day, y=median, color=vendor), size = 1, show.legend = FALSE)+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
+    scale_shape_manual(name="Cleared by Day 7",
+                       values=c(4, 19),
+                       breaks=c("colonized", "not_detectable"),
+                       labels=c("no", "yes"), 
+                       drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
     labs(title=family_plot,
          x="Day",
@@ -743,7 +757,6 @@ family_over_time <- function(family_plot, x_annotation, y_position, label){
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5, face = "italic"),
-          legend.title=element_blank(),
           text = element_text(size = 16)) # Change font size for entire plot
   save_plot(filename = paste0("results/figures/", family_plot,"_time.png"), family_time, base_aspect_ratio = 2)
 }
@@ -753,9 +766,6 @@ plot_family_stats_dn1to9 <- family_stats_dn1to9_combined %>%
   mutate(p.value.adj=round(p.value.adj, digits = 4)) %>% 
   filter(p.value.adj <= 0.05) %>%
   mutate(p.signif = case_when(
-    p.value.adj <= 0.0001 ~ "****",
-    p.value.adj <= 0.001 ~ "***",
-    p.value.adj <= 0.01 ~ "**",
     p.value.adj > 0.05 ~ "NS",
     p.value.adj <= 0.05 ~ "*"
   )) 
@@ -777,14 +787,14 @@ family_over_time("Bacteroidaceae", x_annotation = x_Bacteroidaceae, y_position =
 #Set up statistical annotation arguments for "Deferribacteraceae":
 x_Deferribacteraceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Deferribacteraceae") %>% pull(day)
-y_Deferribacteraceae <- c(.4, .2, .4, .2, .4, .2, .4, .2, .4, .2)
+y_Deferribacteraceae <- .4
 label_Deferribacteraceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Deferribacteraceae") %>% pull(p.signif)
 family_over_time("Deferribacteraceae", x_annotation = x_Deferribacteraceae, y_position = y_Deferribacteraceae, label = label_Deferribacteraceae)
 #Set up statistical annotation arguments for "Enterococcaceae":
 x_Enterococcaceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Enterococcaceae") %>% pull(day)
-y_Enterococcaceae <- c(.4, .4, .2, .4, .4, .4, .4, .4)
+y_Enterococcaceae <- .4
 label_Enterococcaceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Enterococcaceae") %>% pull(p.signif)
 family_over_time("Enterococcaceae",  x_annotation = x_Enterococcaceae, y_position = y_Enterococcaceae, label = label_Enterococcaceae) 
@@ -800,7 +810,7 @@ family_over_time("Lachnospiraceae",  x_annotation = x_Lachnospiraceae, y_positio
 #Set up statistical annotation arguments for "Bifidobacteriaceae":
 x_Bifidobacteriaceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Bifidobacteriaceae") %>% pull(day)
-y_Bifidobacteriaceae <- c(.4, .2, .4, .2, .4, .2, .4, .2, .4)
+y_Bifidobacteriaceae <- .4
 label_Bifidobacteriaceae <- plot_family_stats_dn1to9 %>% 
   filter(family == "Bifidobacteriaceae") %>% pull(p.signif)
 family_over_time("Bifidobacteriaceae", x_annotation = x_Bifidobacteriaceae, y_position = y_Bifidobacteriaceae, label = label_Bifidobacteriaceae)
@@ -906,4 +916,213 @@ y_OTU467 <- .4
 label_OTU467 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Ruminococcaceae (OTU 467)") %>% pull(p.signif)
 otu_over_time("Ruminococcaceae (OTU 467)", x_annotation = x_OTU467, y_position = y_OTU467, label = label_OTU467)
+
+#Examine which taxa have different relative abundances between experiments for Schloss, Young, and Envigo mice at baseline----
+#Function to test for differences in relative abundances at the otu level according to experiment within specific sources of mice:
+baseline_exp_o <- function(vendor_name){
+  otu_stats <- agg_otu_data %>% 
+    filter(day == -1) %>% 
+    filter(vendor == vendor_name) %>% 
+    select(experiment, otu, agg_rel_abund) %>% 
+    group_by(otu) %>% 
+    nest() %>% 
+    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$experiment, paired = FALSE) %>% tidy())) %>% 
+    mutate(median = map(data, get_rel_abund_median_experiment)) %>% 
+    unnest(c(model, median)) %>% 
+    ungroup() 
+  #Adjust p-values for testing multiple families
+  otu_stats_adjust <- otu_stats %>% 
+    select(otu, statistic, p.value, method, alternative, `1`, `2`) %>% 
+    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
+    arrange(p.value.adj) %>% 
+    write_tsv(path = paste0("data/process/otu_stats_experiment_", vendor_name, ".tsv"))
+}
+
+#Test only for days where input communities were used to create classification models (Day -1, 0, 1):
+test_sources <- c("Schloss", "Young", "Envigo")
+for (v in test_sources){
+  baseline_exp_o(v)
+  #Make a list of significant OTUs that differ according to experiment for a specific source of mice 
+  stats <- read_tsv(file = paste0("data/process/otu_stats_experiment_", v, ".tsv"))
+  name <- paste("sig_otu_experiment_", v, sep = "") 
+  assign(name, pull_significant_taxa(stats, otu))
+}
+
+sig_otu_experiment_Schloss #No significant OTUs
+sig_otu_experiment_Young #No significant OTUs
+sig_otu_experiment_Envigo #No significant OTUs
+
+#Since no OTUs were significant after multiple hypothesis correction. Check if any OTUs had p.value < 0.05
+#Function to pull different taxa (p value < 0.05) before BH adjustment
+pull_different_taxa <- function(dataframe, taxonomic_level){
+  dataframe %>% 
+    filter(p.value <= 0.05) %>% 
+    pull({{ taxonomic_level }}) #Embracing to transform of taxonomic_level argument into a column name
+}
+test_sources <- c("Schloss", "Young", "Envigo")
+for (v in test_sources){
+  #Make a list of OTUs that differ according to experiment for a specific source of mice and had p.value < 0.05 before BH adjustment
+  stats <- read_tsv(file = paste0("data/process/otu_stats_experiment_", v, ".tsv"))
+  name <- paste("diff_otu_experiment_", v, sep = "") 
+  assign(name, pull_different_taxa(stats, otu))
+}
+
+diff_otu_experiment_Schloss #0
+diff_otu_experiment_Young #58
+diff_otu_experiment_Envigo #3
+  #Porphyromonadaceae OTU 52 and 139, Deltaproteobacteria OTU 174
+
+#Examine top 20 taxa from logistic regression model that performed the best: Communities after clindamycin treatment at the OTU level----
+
+#List of top 20 taxa from day 0 OTU logistic regression model
+interp_otus_d0 <- interp_otus  %>% filter(model_input_day == 0) %>% pull(OTU)
+
+#Split plotting of taxa up by relative abundance
+
+#Function to plot specific OTUs
+plot_interp_otus_d0 <- function(otu_name, otu_stats){
+  d0_otu_model_plot <- agg_otu_data %>% 
+    filter(day == 0) %>% 
+    filter(otu == otu_name) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
+    group_by(vendor) %>% 
+    mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
+    ungroup() %>% 
+    ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+    geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+    geom_jitter(aes(shape = clearance_status_d7), size=2, alpha=0.6, show.legend = FALSE) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    scale_shape_manual(name="Cleared by Day 7",
+                       values=c(4, 19),
+                       breaks=c("colonized", "not_detectable"),
+                       labels=c("no", "yes"), 
+                       drop=FALSE, na.translate = TRUE, na.value = 1)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    labs(title=otu_name,
+         x=NULL,
+         y="Relative abundance (%)") +
+    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+    theme_classic()+
+    theme(plot.title=element_text(hjust=0.5, face = "italic"),
+          text = element_text(size = 16)) +# Change font size for entire plot
+    stat_pvalue_manual(data = otu_stats, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) #Add manual p values to taxa that were also significantly different across vendors
+    save_plot(filename = paste0("results/figures/d0_model_otu_", otu_name, ".png"), d0_otu_model_plot, base_aspect_ratio = 2)
+}
+
+#OTUs with high relative abundances in at least one group
+#Check for significant pairwise comparisons:
+otu1_stats <- otu_day0_stats %>% 
+  filter(otu == "Enterobacteriaceae (OTU 1)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = c(.3, .9, 1.8, 2.1, 2.4, .6, 1.2, 1.5, .6))
+plot_interp_otus_d0("Enterobacteriaceae (OTU 1)", otu1_stats)
+otu2_stats <- otu_day0_stats %>% 
+  filter(otu == "Bacteroides (OTU 2)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = (1:n())*.3)
+plot_interp_otus_d0("Bacteroides (OTU 2)", otu2_stats)
+otu16_stats <- otu_day0_stats %>% 
+  filter(otu == "Proteus (OTU 16)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = (1:n())*.3)
+plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)
+
+# 1% or less relative abundances:
+otu18_stats <- otu_day0_stats %>% 
+  filter(otu == "Lactobacillus (OTU 18)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = 0) #No significant pairwise comparisons
+plot_interp_otus_d0("Lactobacillus (OTU 18)", otu18_stats)
+otu99_stats <- otu_day0_stats %>% 
+  filter(otu == "Clostridium (OTU 99)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = 0) #No significant pairwise comparisons
+plot_interp_otus_d0("Clostridium (OTU 99)", otu99_stats)
+otu9_stats <- otu_day0_stats %>% 
+  filter(otu == "Lachnospiraceae (OTU 9)") %>% 
+  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
+  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
+  mutate(y.position = 0) #No significant pairwise comparisons
+plot_interp_otus_d0("Lachnospiraceae (OTU 9)", otu9_stats)
+
+#Placeholder stats dataframe that is empty, will not plot stats for rest of taxa
+otu_stats_placeholder <- otu9_stats
+#Close to undetectable except a few mice:
+plot_interp_otus_d0("Alishewanella (OTU 776)", otu_stats_placeholder)
+plot_interp_otus_d0("Clostridium (OTU 226)", otu_stats_placeholder)
+plot_interp_otus_d0("Eisenbergiella (OTU 164)", otu_stats_placeholder)
+plot_interp_otus_d0("Erysipelotrichaceae (OTU 234)", otu_stats_placeholder)
+plot_interp_otus_d0("Lachnospiraceae (OTU 33)", otu_stats_placeholder)
+plot_interp_otus_d0("Lachnospiraceae (OTU 38)", otu_stats_placeholder)
+plot_interp_otus_d0("Lachnospiraceae (OTU 56)", otu_stats_placeholder)
+plot_interp_otus_d0("Lactobacillus (OTU 834)", otu_stats_placeholder)
+plot_interp_otus_d0("Porphyromonadaceae (OTU 7)", otu_stats_placeholder)
+plot_interp_otus_d0("Porphyromonadaceae (OTU 22)", otu_stats_placeholder)
+plot_interp_otus_d0("Porphyromonadaceae (OTU 54)", otu_stats_placeholder)
+plot_interp_otus_d0("Ruminococcaceae (OTU 60)", otu_stats_placeholder)
+plot_interp_otus_d0("Ruminococcaceae (OTU 520)", otu_stats_placeholder)
+plot_interp_otus_d0("Escherichia/Shigella (OTU 610)", otu_stats_placeholder)# Have to do this one separately because of the slash
+d0_escherichia_model_plot <- agg_otu_data %>% 
+  filter(day == 0) %>% 
+  filter(otu == "Escherichia/Shigella (OTU 610)") %>% 
+  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
+  group_by(vendor) %>% 
+  mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
+  ungroup() %>% 
+  ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+  geom_jitter(aes(shape = clearance_status_d7), size=2, alpha=0.6, show.legend = FALSE) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  scale_shape_manual(name="Cleared by Day 7",
+                     values=c(4, 19),
+                     breaks=c("colonized", "not_detectable"),
+                     labels=c("no", "yes"), 
+                     drop=FALSE, na.translate = TRUE, na.value = 1)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  labs(title="Escherichia/Shigella (OTU 610)",
+       x=NULL,
+       y="Relative abundance (%)") +
+  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+  theme_classic()+
+  theme(plot.title=element_text(hjust=0.5, face = "italic"),
+        text = element_text(size = 16)) # Change font size for entire plot
+save_plot(filename = paste0("results/figures/d0_model_otu_escherichia-shigella.png"), d0_escherichia_model_plot, base_aspect_ratio = 2)
+
+#Plot of all 20 OTus together using facet_wrap
+d0_otu_model_taxa <- agg_otu_data %>% 
+    filter(day == 0) %>% 
+    filter(otu %in% interp_otus_d0) %>% 
+    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
+    group_by(vendor, otu) %>% 
+    mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
+    ungroup() %>% 
+    ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+    geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+    geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
+    scale_colour_manual(name=NULL,
+                        values=color_scheme,
+                        breaks=color_vendors,
+                        labels=color_vendors)+
+    scale_shape_manual(name="Cleared by Day 7",
+                       values=c(4, 19),
+                       breaks=c("colonized", "not_detectable"),
+                       labels=c("no", "yes"), 
+                       drop=FALSE, na.translate = TRUE, na.value = 1)+
+    geom_hline(yintercept=1/5437, color="gray")+
+    facet_wrap(~ otu)
+
 

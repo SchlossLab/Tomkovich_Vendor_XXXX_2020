@@ -128,19 +128,19 @@ venn_families <- function(source_comp, clind_comp, title){
 }
 
 # Venn diagram of Day -1 overlapping families----
-dn1_families_venn_plot <- venn_families(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f, "Day -1 model key taxa comparisons")
+dn1_families_venn_plot <- venn_families(dayn1_and_interp_dn1_f, paired_and_interp_dn1_f, "Day -1 model key family comparisons")
 save_plot("results/figures/venn_dn1_families.png", dn1_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day 0 overlapping families----
-d0_families_venn_plot <- venn_families(day0_and_interp_d0_f, paired_and_interp_d0_f, "Day 0 model key taxa comparisons")
+d0_families_venn_plot <- venn_families(day0_and_interp_d0_f, paired_and_interp_d0_f, "Day 0 model key family comparisons")
 save_plot("results/figures/venn_d0_families.png", d0_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day 1 overlapping families----
-d1_families_venn_plot <- venn_families(day1_and_interp_d1_f, paired_and_interp_d1_f, "Day 1 model key taxa comparisons")
+d1_families_venn_plot <- venn_families(day1_and_interp_d1_f, paired_and_interp_d1_f, "Day 1 model key family comparisons")
 save_plot("results/figures/venn_d1_families.png", d1_families_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of overlapping families for all days combined----
-combined_families_venn_plot <- venn_families(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f, "Key taxa comparisons for day -1, 0, and 1 models")
+combined_families_venn_plot <- venn_families(dayn1to1_and_interp_combined_f, paired_and_interp_combined_f, "Key family comparisons for day -1, 0, and 1 models")
 save_plot("results/figures/venn_overall_families.png", combined_families_venn_plot, base_aspect_ratio = 1.8)
 
 #OTUs identified in logistic regression classification models (20 OTUs with the highest ranking for each model)
@@ -201,7 +201,7 @@ key_otus <- unique(c(key_source_otus, key_clind_otus))
 #Arguments:
 # source_comp: overlap between variation by source and taxa that were important in classification model
 # clind_comp: overlap between variation by source and taxa that were important in classification model
-venn_otus <- function(source_comp, clind_comp){
+venn_otus <- function(source_comp, clind_comp, title){
   #Vector of numbers that represent the comparisons between source_comp and clind_comp OTUs
   otus <- c(length(setdiff(source_comp, clind_comp)), 
                 length(intersect(source_comp, clind_comp)), 
@@ -249,28 +249,29 @@ venn_otus <- function(source_comp, clind_comp){
     labs(fill = NULL) +
     annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
     annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-    geom_text(label = source_overlap, x = -19, y = 0, size = 2.8, aes(fontface="bold.italic"))+
+    geom_text(label = source_overlap, x = -19, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
     geom_text(label = source_unique, x = -19, y = -13, size = 2.8, aes(fontface="italic"))+
-    geom_text(label = clind_overlap, x = 19, y = 0, size = 2.8, aes(fontface="bold.italic"))+
+    geom_text(label = clind_overlap, x = 19, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
     geom_text(label = clind_unique, x = 19, y = -13, size = 2.8, aes(fontface="italic"))+
-    geom_text(label = intersect_overlap, x = 0, y = 0, size = 2.8, aes(fontface="bold.italic"))+
-    geom_text(label = intersect_unique, x = 0, y = -13, size = 2.8, aes(fontface="italic"))
+    geom_text(label = intersect_overlap, x = 0, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
+    geom_text(label = intersect_unique, x = 0, y = -13, size = 2.8, aes(fontface="italic"))+
+    annotate("text", x = 0, y = 14, label = title, size = 5)
 }
 
 # Venn diagram of Day -1 overlapping OTUs----
-dn1_otus_venn_plot <- venn_otus(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o)
+dn1_otus_venn_plot <- venn_otus(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o, "Day -1 model key OTU comparisons")
 save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day 0 overlapping OTUs----
-d0_otus_venn_plot <- venn_otus(day0_and_interp_d0_o, paired_and_interp_d0_o)
+d0_otus_venn_plot <- venn_otus(day0_and_interp_d0_o, paired_and_interp_d0_o, "Day 0 model key OTU comparisons")
 save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day -1 overlapping OTUs----
-d1_otus_venn_plot <- venn_otus(day1_and_interp_d1_o, paired_and_interp_d1_o)
+d1_otus_venn_plot <- venn_otus(day1_and_interp_d1_o, paired_and_interp_d1_o, "Day 1 model key OTU comparisons")
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of combined overlapping OTUs----
-combined_otus_venn_plot <- venn_otus(dayn1to1_and_interp_combined, paired_and_interp_combined)
+combined_otus_venn_plot <- venn_otus(dayn1to1_and_interp_combined, paired_and_interp_combined, "Key taxa comparisons for day -1, 0, and 1 models")
 save_plot("results/figures/venn_overall_otus.png", combined_otus_venn_plot, base_aspect_ratio = 1.8)
 
 #Comparison of combined Venn diagram OTUs to significant OTUs that varied by source on day -1, 0, and 1:
