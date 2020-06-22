@@ -52,6 +52,7 @@ within_exp <- dn1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -71,6 +72,7 @@ between_exp <- dn1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -89,6 +91,7 @@ intra_vendors <- dn1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -124,6 +127,7 @@ inter_all <- rbind(inter_schloss, inter_young, inter_jackson, inter_charles,
   ggplot(aes(x = vendor, y = distances, color = vendor)) +
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -169,6 +173,7 @@ within_exp_d0 <- d0_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -188,6 +193,7 @@ between_exp_d0 <- d0_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -206,6 +212,7 @@ intra_vendors_d0 <- d0_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -241,6 +248,7 @@ inter_all_d0 <- rbind(inter_schloss_d0, inter_young_d0, inter_jackson_d0, inter_
   ggplot(aes(x = vendor, y = distances, color = vendor)) +
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -286,6 +294,7 @@ within_exp_d1 <- d1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -305,6 +314,7 @@ between_exp_d1 <- d1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -323,6 +333,7 @@ intra_vendors_d1 <- d1_dist %>%
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -358,6 +369,7 @@ inter_all_d1 <- rbind(inter_schloss_d1, inter_young_d1, inter_jackson_d1, inter_
   ggplot(aes(x = vendor, y = distances, color = vendor)) +
   geom_boxplot(outlier.shape = NA, size = 1.2)+
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  ylim(0, 1.25)+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
