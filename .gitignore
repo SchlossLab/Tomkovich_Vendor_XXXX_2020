@@ -6,7 +6,9 @@
 .DS_Store
 
 data/*/*
+data/process/regression/*
 !data/process/*
+data/process/.DS_Store
 !README.md
 
 *.qsub*

@@ -1,0 +1,22 @@
+#Copies output files from mothur analysis needed for downstream analysis into process/
+#Shortens file names in process/
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.groups.ave-std.summary data/process/vendors.diversity.summary
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.groups.rarefaction data/process/vendors.subsample.rarefaction
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.shared data/process/vendors.subsample.shared
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist data/process/vendors.subsample.thetayc.ave.dist
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.nmds.axes data/process/vendors.subsample.thetayc.ave.nmds.axes
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.nmds.iters data/process/vendors.subsample.thetayc.ave.nmds.iters
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.nmds.stress data/process/vendors.subsample.thetayc.ave.nmds.stress
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.axes data/process/vendors.subsample.thetayc.ave.pcoa.axes
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings data/process/vendors.subsample.thetayc.ave.pcoa.loadings
+
+cp data/mothur/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.cons.taxonomy data/process/vendors.taxonomy

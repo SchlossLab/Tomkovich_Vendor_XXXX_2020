@@ -1,0 +1,34 @@
+#Copies output files from L2_Logistic_Regression analysis needed for downstream analysis into process/regression, giving them shorter names based on input Otu data used
+
+SEARCH_DIR=data/process/classification/dayn1_60
+FINAL_DIR=data/process/classification
+model="L2_Logistic_Regression"
+input="dayn1_60"
+
+cp $SEARCH_DIR/traintime_"$model".csv $FINAL_DIR/traintime_"$input".csv
+cp $SEARCH_DIR/combined_all_hp_results_"$model".csv $FINAL_DIR/combined_all_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_best_hp_results_"$model".csv $FINAL_DIR/combined_best_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_non_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_non_cor_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_cor_results_"$input".csv
+
+SEARCH_DIR=data/process/classification/day0_60
+FINAL_DIR=data/process/classification
+model="L2_Logistic_Regression"
+input="day0_60"
+
+cp $SEARCH_DIR/traintime_"$model".csv $FINAL_DIR/traintime_"$input".csv
+cp $SEARCH_DIR/combined_all_hp_results_"$model".csv $FINAL_DIR/combined_all_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_best_hp_results_"$model".csv $FINAL_DIR/combined_best_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_non_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_non_cor_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_cor_results_"$input".csv
+
+SEARCH_DIR=data/process/classification/day1_60
+FINAL_DIR=data/process/classification
+model="L2_Logistic_Regression"
+input="day1_60"
+
+cp $SEARCH_DIR/traintime_"$model".csv $FINAL_DIR/traintime_"$input".csv
+cp $SEARCH_DIR/combined_all_hp_results_"$model".csv $FINAL_DIR/combined_all_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_best_hp_results_"$model".csv $FINAL_DIR/combined_best_hp_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_non_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_non_cor_results_"$input".csv
+cp $SEARCH_DIR/combined_all_imp_features_cor_results_"$model".csv $FINAL_DIR/combined_all_imp_features_cor_results_"$input".csv

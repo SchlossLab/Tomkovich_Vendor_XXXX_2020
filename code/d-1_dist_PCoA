@@ -1,0 +1,6 @@
+#Create distance matrix and generate PCoA for samples collected on day -1 of the experiment
+set.dir(input=data/mothur, output=data/mothur/d-1, seed=19881117)
+#set.current(processors=8)
+dist.shared(shared=vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.shared, calc=thetayc-braycurtis, subsample=5437, groups=S11Dn1E2-S12Dn1E2-S22Dn1E2-Y11Dn1E2-Y12Dn1E2-Y21Dn1E2-Y22Dn1E2-J12Dn1E2-J21Dn1E2-J22Dn1E2-C11Dn1E2-C12Dn1E2-C21Dn1E2-C22Dn1E2-T11Dn1E2-T12Dn1E2-T21Dn1E2-T22Dn1E2-E11Dn1E2-E12Dn1E2-E21Dn1E2-E22Dn1E2-S11Dn1E1-S12Dn1E1-S21Dn1E1-Y11Dn1E1-Y12Dn1E1-Y21Dn1E1-Y22Dn1E1-J11Dn1E1-J12Dn1E1-C12Dn1E1-C22Dn1E1-T11Dn1E1-T12Dn1E1-T21Dn1E1-T22Dn1E1-E12Dn1E1-E21Dn1E1-E22Dn1E1)
+set.dir(input=data/mothur/d-1, output=data/mothur/d-1, seed=1988111)
+pcoa(phylip=vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist)
