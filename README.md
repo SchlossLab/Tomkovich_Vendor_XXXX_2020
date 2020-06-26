@@ -3,7 +3,7 @@ Download the [latest release](https://github.com/SchlossLab/new_project/releases
 
 ## Initial gut microbiota and response to antibiotic perturbation influence *Clostridioides difficile* colonization in mice
 
-The microbiota plays a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use a single university colony or vendor, which have lower inter-individual microbiota variation compared to humans. We treated mice from 6 different colony sources (2 University and 4 vendors) with a single clindamycin dose, followed by *C. difficile* challenge 1 day later and measured *C. difficile* colonization levels through 9 days post-infection. The microbiota was profiled throughout the experiment via 16S rRNA gene sequencing analysis to examine variation across colony sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all sources of mice were colonized 1-day post-infection, variation in *C. difficile* colonization levels emerged from days 3-7 post-infection with 3 sources tending to be colonized with *C. difficile* for longer and at higher levels. We identified bacterial taxa with different relative abundances across colony sources throughout the experiment, as well as taxa that were consistently impacted by clindamycin treatment. We created bacterial community-based logistic regression models that successfully classified mice based on their day 7 *C. difficile* colonization status. Importantly, after examining the taxa that were most important to the classification models, we identified a subset of key taxa that varied across colony sources (*Bacteroides*, *Deferribacteraceae*), were altered by clindamycin (*Porphyromonadaceae*, *Ruminococcaceae*), or both (*Enterobacteriaceae*, *Enterococcus*, *Bifidobacteriaceae*, *Coriobacteriaceae*, *Lachnospiraceae*, and *Verrucomicrobiaceae*). These results suggest the response of the initial gut microbiota to clindamycin treatment influences *C. difficile* 630 colonization dynamics. 
+The microbiota plays a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use a single university colony or vendor. We treated mice from 6 different colony sources (2 University of Michigan colonies and 4 vendors) with a single clindamycin dose, followed by *C. difficile* challenge 1 day later and measured *C. difficile* colonization levels through 9 days post-infection. The microbiota was profiled via 16S rRNA gene sequencing analysis to examine variation across colony sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all sources of mice were colonized 1-day post-infection, variation in *C. difficile* colonization levels emerged from days 3-7 post-infection with 3 sources colonized with *C. difficile* for slightly longer and at higher levels. We identified bacterial taxa with different relative abundances across colony sources throughout the experiment, as well as taxa that were consistently impacted by clindamycin treatment in all sources of mice. We created logistic regression models that successfully classified mice based on whether they cleared *C. difficile* by 7 days post-infection using baseline, post-clindamycin, and post-infection community composition data. After examining the taxa that were most important to the classification models, we identified a subset of key taxa that varied across colony sources (*Bacteroides*, *Deferribacteraceae*), were altered by clindamycin (*Porphyromonadaceae*, *Ruminococcaceae*), or both (*Enterobacteriaceae*, *Enterococcus*, *Bifidobacteriaceae*, *Coriobacteriaceae*, *Lachnospiraceae*, and *Verrucomicrobiaceae*). These results suggest the response of the initial gut microbiota to clindamycin treatment influences *C. difficile* 630 colonization dynamics.
 
 
 ### Overview
@@ -71,15 +71,14 @@ The microbiota plays a key role in determining susceptibility to *Clostridioides
 Download 16S rRNA sequencing dataset from the NCBI Sequence Read Archive (BioProject Accession no. PRJNA608529).
 ```
 git clone https://github.com/SchlossLab/Tomkovich_vendor_difs_XXXX_2020
-make write.paper
 ```
-Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_vendor_difs_XXX_2020/data/raw
+Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_vendor_difs_XXXX_2020/data/raw
 ```
 cd Tomkovich_vendor_difs_XXXX_2020
 ```
 Obtain the SILVA reference alignment from version 132 described at https://mothur.org/blog/2018/SILVA-v132-reference-files/. We will use the SEED v. 132, which contain 12,083 bacterial sequences. This also contains the reference taxonomy. We will limit the databases to only include bacterial sequences.
 ```
-wget -N https://mothur.org/w/images/7/71/Silva.seed_v132.tgz
+wget -N https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v132.tgz
 tar xvzf Silva.seed_v132.tgz silva.seed_v132.align silva.seed_v132.tax
 mothur "#get.lineage(fasta=silva.seed_v132.align, taxonomy=silva.seed_v132.tax, taxon=Bacteria);degap.seqs(fasta=silva.seed_v132.pick.align, processors=8)"
 mv silva.seed_v132.pick.align data/references/silva.seed.align
@@ -90,7 +89,7 @@ mv data/references/silva.seed.pcr.align data/references/silva.v4.align
 ```
 Obtain the RDP reference taxonomy. The current version is v11.5 and we use a "special" pds version of the database files, which are described at https://mothur.org/blog/2017/RDP-v16-reference_files/.
 ```
-wget -N https://www.mothur.org/w/images/c/c3/Trainset16_022016.pds.tgz
+wget -N https://mothur.s3.us-east-2.amazonaws.com/wiki/trainset16_022016.pds.tgz
 tar xvzf Trainset16_022016.pds.tgz trainset16_022016.pds
 mv trainset16_022016.pds/* data/references/
 rm -rf trainset16_022016.pds
@@ -240,5 +239,5 @@ cp results/pcoa_over_time.mov submission/movie_S1.mov
 
 #### Generate the paper.
 ```
-make write.paper
+open submission/manuscript.Rmd and knit to Word or PDF.
 ```
