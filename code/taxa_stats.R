@@ -128,13 +128,10 @@ plot_families_dx <- function(families, timepoint){
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_hline(yintercept=1/5437, color="gray")+
-  geom_boxplot(outlier.shape = NA, size = 1.2)+  
-#  geom_errorbar(aes(ymax = median, ymin = median))+ #Add lines to indicate the median for each group to the plot. Median calculated before y axis transformation
-#  geom_jitter(aes(shape = experiment), size=2, alpha=0.6, position=position_dodge(1.6)) +
-#  scale_shape_manual(name=NULL,
-#                     values=shape_scheme,
-#                     breaks=shape_experiment,
-#                     labels=shape_experiment) +
+  stat_summary(fun = 'median', 
+               fun.max = function(x) quantile(x, 0.75), 
+               fun.min = function(x) quantile(x, 0.25),
+               position = position_dodge(width = 1)) +  
   labs(title=NULL, 
        x=NULL,
        y="Relative abundance (%)")+
@@ -337,8 +334,10 @@ plot_otus_dx <- function(otus, timepoint){
                         breaks=color_vendors,
                         labels=color_vendors)+
     geom_hline(yintercept=1/5437, color="gray")+
-    geom_boxplot(outlier.shape = NA, size = 1.2)+
-    #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) + #Too busy when indiv. mice are shown
+    stat_summary(fun = 'median', 
+                 fun.max = function(x) quantile(x, 0.75), 
+                 fun.min = function(x) quantile(x, 0.25),
+                 position = position_dodge(width = 1)) +
     labs(title=NULL, 
          x=NULL,
          y="Relative abundance (%)")+
@@ -543,9 +542,11 @@ clind_impacted_families_plot_dx <- function(timepoint){
                         breaks=color_vendors,
                         labels=color_vendors)+
     geom_hline(yintercept=1/5437, color="gray")+
-    geom_boxplot(outlier.shape = NA, size = 1.2)+
-    #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
-    labs(title=NULL, 
+    stat_summary(fun = 'median', 
+                 fun.max = function(x) quantile(x, 0.75), 
+                 fun.min = function(x) quantile(x, 0.25),
+                 position = position_dodge(width = 1)) +
+        labs(title=NULL, 
          x=NULL,
          y="Relative abundance (%)")+
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
@@ -610,8 +611,10 @@ clind_impacted_otus_plot_dx <- function(timepoint){
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_hline(yintercept=1/5437, color="gray")+
-  geom_boxplot(outlier.shape = NA, size = 1.2)+
-  #  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.2)) +
+    stat_summary(fun = 'median', 
+                 fun.max = function(x) quantile(x, 0.75), 
+                 fun.min = function(x) quantile(x, 0.25),
+                 position = position_dodge(width = 1)) +  
   labs(title=NULL, 
        x=NULL,
        y="Relative abundance (%)")+
