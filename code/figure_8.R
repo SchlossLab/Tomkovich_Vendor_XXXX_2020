@@ -6,6 +6,6 @@ c <- ggdraw() + draw_image("results/figures/Enterobacteriaceae (OTU 1)_time.png"
 d <- ggdraw() + draw_image("results/figures/Porphyromonadaceae (OTU 7)_time.png")
 
 
-plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=1)+
-  ggsave("results/figures/figure_8.pdf", width=3, height=7)+
-  ggsave("submission/figure_8.pdf", width=3, height=7)
+plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=2)+
+  ggsave("results/figures/figure_8.pdf", width=6, height=4)+
+  ggsave("submission/figure_8.pdf", width=6, height=4)
