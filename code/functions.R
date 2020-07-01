@@ -5,7 +5,7 @@ library(magick)
 library(vegan)
 library(reshape2)
 library(knitr)
-library(rmarkdown) 
+library(rmarkdown)
 library(gtools)
 library(ggpubr)
 library(ggforce) #Use geom_circle to make venn diagrams
@@ -13,10 +13,10 @@ library(gganimate) #Use to create PCoA animation
 library(writexl) #For writing supplemental tables
 
 ### Load in metadata and make sure experiment and vendor columns are treated as factors
-metadata <- read_csv("data/process/vendor_metadata.csv") %>% 
+metadata <- read_csv("data/process/vendor_metadata.csv") %>%
   mutate(experiment=factor(experiment, levels=c("1", "2")), # Make sure experiment is treated as a factor
          cage=factor(cage, levels=c("1", "2")), #Make sure cage is treated as a factor
-         vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) %>% 
+         vendor=factor(vendor, levels=c("Schloss", "Young", "Jackson", "Charles River", "Taconic", "Envigo"))) %>%
   filter(!grepl("Mock", id), #Remove all 5 Mock controls
          !grepl("Water", id)) %>% #Remove all 5 water controls
   #Create a variable for mouse cage (has to combine exp., vendor, and cage)
@@ -25,11 +25,11 @@ metadata <- read_csv("data/process/vendor_metadata.csv") %>%
 #Quantify C. diff cfu based on the colonies counted from the 2 different dilutions plated. Formula based on protocol used by the Young lab----
 #0s should only be kept when the -1 dilution was checked, as that represents the limit of detection.
 # If -1 dilution was not plated, we can not say for sure whether C. diff CFU for a mouse is really zero. Thus, zeros for any dilutions greater than the -1 dilution were converted to NAs
-metadata <- metadata %>% 
+metadata <- metadata %>%
   mutate(cfu1 = count1 * 20 * 1 / (10 ^ dilution1), cfu2 = count2 * 20 * (1 / (10 ^ dilution2))) %>% # Quantify CFU/g for each dilution that was plated
   select(-starts_with("count")) # gets rid of count columns since these are now represented as cfu1 and cfu2 columns
 
-#Make sure 0s are true 0s, meaning the -1 dilution (which is the limit of detection) was plated. Any 0s for dilutions above the -1 dilution should be transformed to NAs. 
+#Make sure 0s are true 0s, meaning the -1 dilution (which is the limit of detection) was plated. Any 0s for dilutions above the -1 dilution should be transformed to NAs.
 #Number of 0s in cfu1 should equal number of -1s in dilution1. Since -1 dilution was never plated in dilution2 column, don't have to worry about counting any zeros from that column.
 #Quantify how many instances we have 0s for cfu1, cfu2, etc. so we can be sure we transformed data correctly in the next step.
 cfu1_0s <- metadata %>% filter(cfu1 == 0) #229/563 instances
@@ -41,7 +41,7 @@ cfu_nas <- map(metadata, ~sum(is.na(.))) #151 for cfu1, 234 for cfu2
 metadata <- metadata %>%
   mutate(cfu1 = ifelse(cfu1 == 0 & dilution1 != -1, NA, cfu1)) %>% #Keeps 0s for -1 dilution, replaces 0s from any other dilution with NA
   mutate_at(vars(cfu2), ~replace(., . == 0, NA)) %>% #Changes all 0s for cfu2 to NA since the -1 dilution (the limit of detection) was not plated.
-  group_by(id, experiment, mouse_id, day) %>% 
+  group_by(id, experiment, mouse_id, day) %>%
   mutate(cfu = mean(c(cfu1, cfu2), na.rm = TRUE)) %>% #Create a final cfu per ID (combination of mouse ID & date sample was collected) based on the average CFU/g for cfu1 and cfu2
   mutate(cfu = na_if(cfu, "NaN")) %>% #Changes the NaNs in cfu column back to Nas
   ungroup()
@@ -51,29 +51,29 @@ cfu_nas_final <- map(metadata, ~sum(is.na(.))) #196 for cfu1, 367 instances for 
 
 # Function to create columns for C. difficile CFU at Days 1-9
 cfu_dx <- function(timepoint){
-  metadata %>% 
-    filter(day == timepoint) %>% 
-    mutate("col_name" = cfu) %>% 
+  metadata %>%
+    filter(day == timepoint) %>%
+    mutate("col_name" = cfu) %>%
     select(mouse_id, "col_name")
 }
-cfu_d1 <- cfu_dx(1) %>% 
-  rename(cfu_d1 = col_name) 
-cfu_d2 <- cfu_dx(2) %>% 
-  rename(cfu_d2 = col_name) 
-cfu_d3 <- cfu_dx(3) %>% 
-  rename(cfu_d3 = col_name) 
-cfu_d4 <- cfu_dx(4) %>% 
-  rename(cfu_d4 = col_name) 
-cfu_d5 <- cfu_dx(5) %>% 
+cfu_d1 <- cfu_dx(1) %>%
+  rename(cfu_d1 = col_name)
+cfu_d2 <- cfu_dx(2) %>%
+  rename(cfu_d2 = col_name)
+cfu_d3 <- cfu_dx(3) %>%
+  rename(cfu_d3 = col_name)
+cfu_d4 <- cfu_dx(4) %>%
+  rename(cfu_d4 = col_name)
+cfu_d5 <- cfu_dx(5) %>%
   rename(cfu_d5 = col_name) #43 values with 6 NAs
-cfu_d6 <- cfu_dx(6) %>% 
+cfu_d6 <- cfu_dx(6) %>%
   rename(cfu_d6 = col_name) #34 values with 15 NAs
-cfu_d7 <- cfu_dx(7) %>% 
-  rename(cfu_d7 = col_name) #40 values with 9 NAs 
-cfu_d8 <- cfu_dx(8) %>% 
+cfu_d7 <- cfu_dx(7) %>%
+  rename(cfu_d7 = col_name) #40 values with 9 NAs
+cfu_d8 <- cfu_dx(8) %>%
   rename(cfu_d8 = col_name)
-cfu_d9 <- cfu_dx(9) %>% 
-  rename(cfu_d9 = col_name) 
+cfu_d9 <- cfu_dx(9) %>%
+  rename(cfu_d9 = col_name)
 
 # add cfu_d1-9 columns to metadata----
 metadata <- full_join(metadata, cfu_d1, by = "mouse_id")
@@ -82,7 +82,7 @@ metadata <- full_join(metadata, cfu_d3, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d4, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d5, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d6, by = "mouse_id")
-metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>% 
+metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>%
   #Add a column denoting C. difficile clearance status at Day 7
   mutate(clearance_status_d7 = case_when(cfu_d7 > 0 ~ "colonized",
                                          cfu_d7 == 0 ~ "not_detectable",
@@ -92,30 +92,30 @@ metadata <- full_join(metadata, cfu_d9, by = "mouse_id")
 
 #Create a column to denote baseline_weight and weight_change from baseline_weight for each mouse----
 #Calculated based on the weight recorded on D-1 of the experiment
-baseline_weight <- metadata %>% select(mouse_id, weight, day) %>% 
-  filter(day == -1) %>% 
-  mutate(baseline_weight = weight) %>% 
+baseline_weight <- metadata %>% select(mouse_id, weight, day) %>%
+  filter(day == -1) %>%
+  mutate(baseline_weight = weight) %>%
   select(mouse_id, baseline_weight)
 #Join baseline data frame to main metadata
-metadata <- inner_join(metadata, baseline_weight, by = "mouse_id") %>% 
+metadata <- inner_join(metadata, baseline_weight, by = "mouse_id") %>%
   #Calculate weight change(g) for each mouse based on D-1 weight.
-  group_by(mouse_id, day) %>% 
-  mutate(weight_change = weight-baseline_weight) %>% 
+  group_by(mouse_id, day) %>%
+  mutate(weight_change = weight-baseline_weight) %>%
   ungroup()
-  
+
 #Check to make sure sample ids on shared file match the sample ids in the metadata file----
 #Figure out number of samples that were sequenced:
-shared_sample_names <- read.table('data/process/vendors.subsample.shared', 
-                                  sep = '\t', header = T, stringsAsFactors = F) %>% 
+shared_sample_names <- read.table('data/process/vendors.subsample.shared',
+                                  sep = '\t', header = T, stringsAsFactors = F) %>%
   select(Group) # select column with sample names of shared file which we will need to match our metadata to
-#404 samples with sequence data. 
+#404 samples with sequence data.
 
 #Figure out which samples match/don't match between the shared and metadata files
 matching <- inner_join(metadata, shared_sample_names, by = c('id' = 'Group'))
 #404 samples match between metadata & shared file.
 
 #Check for any duplicate ids in final metadata data frame:
-duplicated <- metadata %>% 
+duplicated <- metadata %>%
   filter(duplicated(id))
 #0 duplicated samples in metadata
 
@@ -124,8 +124,8 @@ duplicated <- duplicated(shared_sample_names)
 #0 duplicated samples in shared_sample_names
 
 #Dataframe of just the samples that were sequenced on the MiSeq
-sequenced <- metadata %>% 
-  filter(!is.na(run)) 
+sequenced <- metadata %>%
+  filter(!is.na(run))
 #423 samples were sequenced on the MiSeq
 
 dropped_by_miseq <- nrow(sequenced)-nrow(matching)
@@ -173,7 +173,7 @@ fancy_scientific <- function(l) {
   parse(text=l)
 }
 
-#Function to find which significant otus/genera/families are shared 
+#Function to find which significant otus/genera/families are shared
 intersect_all <- function(a,b,...){
   Reduce(intersect, list(a,b,...))
 }
@@ -206,7 +206,7 @@ read_files <- function(filenames){
 }
 # -------------------------------------------------------------------->
 
-#Function to calculate the mean cfu values from a dataframe (x) 
+#Function to calculate the median cfu values from a dataframe (x)
 get_cfu_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
@@ -214,7 +214,7 @@ get_cfu_median_vendor <- function(x){
     spread(key=vendor, value=median)
 }
 
-#Function to calculate the median weight_change values from a dataframe (x) 
+#Function to calculate the median weight_change values from a dataframe (x)
 get_weight_median_vendor <- function(x){
   x %>%
     group_by(vendor) %>%
@@ -255,22 +255,15 @@ get_rel_abund_median_experiment <- function(x){
 }
 #Function to tidy pairwise comparisons to use for adding stats to plots----
 tidy_pairwise <- function(spread_pairwise){
-  spread_pairwise %>% 
-    pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>% 
+  spread_pairwise %>%
+    pivot_longer(-day, names_to = "compare", values_to = "p.adj") %>%
     separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
 
 #Function to tidy pairwise comparisons to use for adding stats to otu plots----
 tidy_pairwise_otu <- function(spread_pairwise){
-  spread_pairwise %>% 
-    pivot_longer(-otu, names_to = "compare", values_to = "p.adj") %>% 
-    separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
-}
-
-#Function to tidy pairwise comparisons to use for adding stats to family plots----
-tidy_pairwise_family <- function(spread_pairwise){
-  spread_pairwise %>% 
-    pivot_longer(-family, names_to = "compare", values_to = "p.adj") %>% 
+  spread_pairwise %>%
+    pivot_longer(-otu, names_to = "compare", values_to = "p.adj") %>%
     separate(col = compare, c("group1", "group2"), sep = "-", remove = TRUE)
 }
 

@@ -153,12 +153,11 @@ Perform taxonomic analysis and create plots.
 ```
 Rscript code/taxa_stats.R
 ```
-For L2 Logistic regression analysis, use the following script to generate the input data at the OTU and family levels:
+For L2 Logistic regression analysis, use the following script to generate the input data at the OTU level:
 ```
-Rscript code/l2_classification_family_input_data.R
 Rscript code/l2_classification_input_data.R
 ```
-Use [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis. Modify model_pipeline.R to specify outcomes and a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_vendor_difs_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data (this will capture input data at both OTU and family level). Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
+Use [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis. Modify model_pipeline.R to specify outcomes and a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_vendor_difs_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
 ```
 mkdir data/process/dayn1 data/process/day0 data/process/day1
 sbatch code/slurm/L2_log_Regression_dn1.sh
@@ -167,43 +166,27 @@ sbatch code/slurm/L2_log_Regression_d0.sh
 bash code/bash/d0_cat_csv_files.sh
 sbatch code/slurm/L2_log_Regression_d1.sh
 bash code/bash/d1_cat_csv_files.sh
-mkdir data/process/dayn1_family data/process/day0_family data/process/day1_family
-sbatch code/slurm/L2_log_Regression_dn1_family.sh
-bash code/bash/family_dn1_cat_csv_files.sh
-sbatch code/slurm/L2_log_Regression_d0_family.sh
-bash code/bash/family_d0_cat_csv_files.sh
-sbatch code/slurm/L2_log_Regression_d1_family.sh
-bash code/bash/family_d1_cat_csv_files.sh
 
 ```
 Copy the 6 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_vendor_difs_XXXX_2020/data/process/classification/
 ML_pipeline_microbiome/data/process/dayn1
 ML_pipeline_microbiome/data/process/day0
 ML_pipeline_microbiome/data/process/day1
-ML_pipeline_microbiome/data/process/dayn1_family
-ML_pipeline_microbiome/data/process/day0_family
-ML_pipeline_microbiome/data/process/day1_family
 
-Rename classification output files to indicate which day of the experiment relative abundances from either the OTU or family level were used to train the models to predict *C. difficile* colonization status on day 7.
+Rename classification output files to indicate which day of the experiment relative abundances were used to train the models to predict *C. difficile* colonization status on day 7.
 ```
 bash code/rename_classification_outputs_60
-bash code/rename_classification_outputs_60_family
 ```
-Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (OTUs from Day -1, 0, and 1) and make plots to interpret which OTUs are contributing to the 3 models.
+Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (OTUs from Day -1, 0, and 1) and make plots and supplemental table of the top 20 OTUs that were contributing to the 3 models.
 ```
 Rscript code/class._60-40_analysis.R
 Rscript code/class_interpretation.R
 ```
-Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (bacterial families from Day -1, 0, and 1) and supplemental tables of the top 20 taxa that were contributing to the 6 models.
-```
-Rscript code/class._family_analysis.R
-Rscript code/class_interpretation_family.R
-```
-Perform statistical analysis of 6 classification models.
+Perform statistical analysis of the 3 classification models.
 ```
 Rscript code/compare_models.R
 ```
-Compare classification model taxa to the taxa that varied across sources and/or were altered by clindamycin treatment.
+Compare classification model OTUs to the OTUs that varied across sources and/or were altered by clindamycin treatment.
 ```
 Rscript code/venn_diagram_comparisons.R
 ```
@@ -222,9 +205,6 @@ Rscript code/figure_S1.R
 Rscript code/figure_S2.R
 Rscript code/figure_S3.R
 Rscript code/figure_S4.R
-Rscript code/figure_S5.R
-Rscript code/figure_S6.R
-Rscript code/figure_S7.R
 ```
 
 Make supplemental movie for the paper. Note conversion of gif generated from code/pcoa_stats.R requires [FFmpeg](http://ffmpeg.org/). Install FFmpeg using homebrew.

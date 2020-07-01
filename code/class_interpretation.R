@@ -295,9 +295,9 @@ day1_model_top20 <- get_table_of_top_20(interp_D1_60) %>%
   mutate(model_input_day = 1)
 
 combined_top20_all_models <- rbind(dayn1_model_top20, day0_model_top20, day1_model_top20) 
-write_tsv(combined_top20_all_models, path = "data/process/combined_top20_otus_all_models.tsv") %>% 
+write_tsv(combined_top20_all_models, path = "data/process/combined_top20_otus_all_models.tsv") 
 #Also write results to supplemental table excel file
-combined_top20_all_models %>% write_xlsx("submission/table_S14_combined_top20_otus_each_model.xlsx", format_headers = FALSE)
+combined_top20_all_models %>% write_xlsx("submission/table_S12_combined_top20_otus_each_model.xlsx", format_headers = FALSE)
 
 #OTUs important across models (found within at least 2 models):
 overlapping_across_models <- combined_top20_all_models %>% 

@@ -1,7 +1,4 @@
 model_name	statistic	p.value	method	alternative	minimum	q1	median	mean	q3	maximum
-family_day0	4774	4.223961711315321e-17	Wilcoxon signed rank test with continuity correction	greater	0.3888888888888889	0.5833333333333334	0.6666666666666666	0.6611111111111111	0.7291666666666667	1
-family_day1	4768.5	4.942858937165942e-17	Wilcoxon signed rank test with continuity correction	greater	0.4375	0.5625	0.625	0.646875	0.7135416666666666	0.9166666666666666
-family_dayn1	4608	5.0206527944774376e-15	Wilcoxon signed rank test with continuity correction	greater	0.4	0.55	0.625	0.61775	0.7	1
 otu_day0	44458	1.467576089504663e-50	Wilcoxon signed rank test with continuity correction	greater	0.3888888888888889	0.6666666666666666	0.75	0.7488888888888889	0.8333333333333334	1
 otu_day1	19227.5	1.3317462817444615e-32	Wilcoxon signed rank test with continuity correction	greater	0.3958333333333333	0.5833333333333334	0.6666666666666666	0.6635416666666667	0.75	0.9166666666666666
 otu_dayn1	18978	5.19251501128541e-31	Wilcoxon signed rank test with continuity correction	greater	0.39999999999999997	0.575	0.675	0.668375	0.75	1
