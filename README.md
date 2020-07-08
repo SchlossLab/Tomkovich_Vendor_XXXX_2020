@@ -64,6 +64,8 @@ The microbiota plays a key role in determining susceptibility to *Clostridioides
     * ggforce v0.1.3
     * gganimate v1.0.5
     * writexl v1.1
+    * glue v1.3.1
+    * ggtext v0.1.0
 * Analysis assumes the use of 8 processors  
 
 

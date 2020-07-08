@@ -11,6 +11,8 @@ library(ggpubr)
 library(ggforce) #Use geom_circle to make venn diagrams
 library(gganimate) #Use to create PCoA animation
 library(writexl) #For writing supplemental tables
+library(ggtext)
+library(glue)
 
 ### Load in metadata and make sure experiment and vendor columns are treated as factors
 metadata <- read_csv("data/process/vendor_metadata.csv") %>%
