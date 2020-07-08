@@ -136,9 +136,8 @@ dropped_by_miseq <- nrow(sequenced)-nrow(matching)
 #IDs of the 19 samples that were dropped after subsampling to 5437 sequences
 dropped_by_miseq_ids <- anti_join(sequenced, matching, by = "id") %>% pull(id)
 
-
 #Define color scheme----
-color_scheme <- c("#1f78b4", "#e6ab02", "#d95f02", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
+color_scheme <- c("#1f78b4", "#e6ab02", "#323232", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6. Previous color for Jackson mice: #d95f02
 color_vendors <- levels(metadata$vendor)
 
 #Define shape scheme to differentiate experiment 1 and 2----
