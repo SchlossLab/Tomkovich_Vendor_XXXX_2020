@@ -62,13 +62,13 @@ summarize_plot <- function(df){
     group_by(vendor, day) %>% 
     summarize(median_cfu = median(cfu, na.rm = TRUE))
   ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
-    geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), size = 1.5) +
+    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, position = position_dodge(width = 0.6)) +
+    geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), show.legend = FALSE, size = 1.5) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
-    scale_shape_manual(name=NULL,
+    scale_shape_manual(name="Experiment",
                        values=shape_scheme,
                        breaks=shape_experiment,
                        labels=shape_experiment) +
@@ -92,7 +92,7 @@ save_plot(filename = paste0("results/figures/exp1_cfu_time.png"), plot = exp1_cf
 exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))+
   ggtitle("2nd experiment")+ #Title plot
   theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") #Center plot titile
+        legend.position = "none") #Center plot titile
 save_plot(filename = paste0("results/figures/exp2_cfu_time.png"), plot = exp2_cfu, base_aspect_ratio = 2)
 
 #CFU over time plot with astericks on days where cfu varied significantly across sources of mice using annotate()----
@@ -114,13 +114,13 @@ median_summary <- cfu_data_final %>%
   group_by(vendor, day) %>% 
   summarize(median_cfu = median(cfu, na.rm = TRUE))
 cfu_stats <- ggplot(NULL) +
-  geom_point(cfu_data_final, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
-  geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), size = 1.5) +
+  geom_point(cfu_data_final, mapping = aes(x = day, y = cfu, color= vendor, shape = experiment), alpha = .2, size = 1.5, position = position_dodge(width = 0.6)) +
+  geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), size = 1.5, show.legend = FALSE) +
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
-  scale_shape_manual(name=NULL,
+  scale_shape_manual(name="Experiment",
                      values=shape_scheme,
                      breaks=shape_experiment,
                      labels=shape_experiment) +
@@ -133,7 +133,7 @@ cfu_stats <- ggplot(NULL) +
   theme(text = element_text(size = 16))+  # Change font size for entire plot
   annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
   theme_classic() +
-  theme(legend.position = c(.92, .8), #(0,0) bottom left (1,1) top right
+  theme(legend.position = "bottom", #(0,0) bottom left (1,1) top right. #Previous: c(.92, .8)
         legend.key= element_rect(colour = "transparent", fill = "transparent"))
 save_plot(filename = paste0("results/figures/cfu_over_time.png"), plot = cfu_stats, base_aspect_ratio = 2)
 

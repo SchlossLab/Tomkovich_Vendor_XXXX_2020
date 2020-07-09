@@ -7,5 +7,5 @@ d <- ggdraw() + draw_image("results/figures/Porphyromonadaceae (OTU 7)_time.png"
 
 
 plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=2)+
-  ggsave("results/figures/figure_8.pdf", width=6, height=4)+
-  ggsave("submission/figure_8.pdf", width=6, height=4)
+  ggsave("results/figures/figure_8.pdf", width=7.5, height=4)+
+  ggsave("submission/figure_8.pdf", width=7.5, height=4)

@@ -59,16 +59,17 @@ agg_otu_data <- inner_join(agg_otu, taxa_info, by="key") %>%
   mutate(key = paste(key,")", sep="")) %>% 
   select(-otu, -Taxonomy) %>% 
   rename(otu=key) %>% 
-  mutate(otu=paste0(gsub('TU0*', 'TU ', otu))) 
+  mutate(otu=paste0(gsub('TU0*', 'TU ', otu))) %>% 
+  separate(otu, into = c("bactname", "OTUnumber"), sep = "\\ [(]", remove = FALSE) %>% #Add columns to separate bacteria name from OTU number to utilize ggtext so that only bacteria name is italicized
+  mutate(otu_name = glue("*{bactname}* ({OTUnumber}")) #Markdown notation so that only bacteria name is italicized
 
 #Hypothesis testing & plotting----
 
 #Function to pull significant taxa (adjusted p value < 0.05) after statistical analysis
 pull_significant_taxa <- function(dataframe, taxonomic_level){
-  taxonomic_level <- enquo(taxonomic_level) #Part of transformation of taxonomic_level argument into a column name
   dataframe %>% 
     filter(p.value.adj <= 0.05) %>% 
-    pull(!!taxonomic_level) #!!Completes the transformation of taxonomic_level argument into a column name
+    pull({{ taxonomic_level }}) #Embracing transforms taxonomic_level argument into a column name
 }
 
 #List of days with sequence data----
@@ -117,9 +118,8 @@ plot_otus_dx <- function(otus, timepoint){
   agg_otu_data %>% 
     filter(otu %in% otus) %>% 
     filter(day == timepoint) %>% 
-    mutate(otu=factor(otu, levels=otus)) %>% 
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
-    ggplot(aes(x= otu, y=agg_rel_abund, color=vendor))+
+    ggplot(aes(x= otu_name, y=agg_rel_abund, color=vendor))+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
@@ -137,7 +137,7 @@ plot_otus_dx <- function(otus, timepoint){
     theme_classic()+
     theme(plot.title=element_text(hjust=0.5),
           legend.position = "bottom",
-          axis.text.y = element_text(face = "italic"), #Have the OTUs show up as italics
+          axis.text.y = element_markdown(), #Have only the OTU names show up as italics
           text = element_text(size = 16)) # Change font size for entire plot
 }
 
@@ -320,14 +320,16 @@ sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
 sig_otu_pairs_top10 <- sig_otu_pairs[1:10]
 
 #Plot of the otus with significantly different relative abundances post clindamycin treatment across all sources of mice:----
-clind_impacted_otus_plot_dx <- function(timepoint){ 
-  agg_otu_data %>% 
+#Facet plot by day with the following label names:
+facet_labels <- c("Baseline", "Clindamycin")
+names(facet_labels) <- c("-1", "0")
+clind_impacted_otus_plot_dn1_0 <- agg_otu_data %>% 
   filter(mouse_id %in% mice_seq_dn1_0_pairs) %>% #Only select pairs with data for day -1 & day 0
   filter(otu %in% sig_otu_pairs_top10) %>% 
-  filter(day == timepoint) %>% 
+  filter(day %in% c(-1, 0)) %>% #Select baseline and post-clindamycin timepoints
   mutate(otu=factor(otu, levels=sig_otu_pairs_top10)) %>% 
   mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% # 10,874 is 2 times the subsampling parameter of 5437
-  ggplot(aes(x= otu, y=agg_rel_abund, color=vendor))+
+  ggplot(aes(x= otu_name, y=agg_rel_abund, color=vendor))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
@@ -343,21 +345,13 @@ clind_impacted_otus_plot_dx <- function(timepoint){
   scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
   coord_flip()+
   theme_classic()+
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels), scales = "fixed")+
   theme(plot.title=element_text(hjust=0.5),
         text = element_text(size = 16),# Change font size for entire plot
-        axis.text.y = element_text(face = "italic", size = 18), #Have the OTUs show up as italics
+        axis.text.y = element_markdown(), #Have only the OTU names show up as italics
         strip.background = element_blank(),
         legend.position = "bottom") 
-} 
-
-clind_impacted_otus_plot_dn1 <- clind_impacted_otus_plot_dx(-1)+
-  ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_dn1.png"), clind_impacted_otus_plot_dn1, base_height = 12, base_width = 7)
-clind_impacted_otus_plot_d0 <- clind_impacted_otus_plot_dx(0)+
-  ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-save_plot(filename = paste0("results/figures/clind_impacted_otus_plot_d0.png"), clind_impacted_otus_plot_d0, base_height = 12, base_width = 7)
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot_dn1_0, base_height = 9, base_width = 10)
 
 #Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
 Fig4_v_5_otus <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs_top10`)
@@ -368,6 +362,9 @@ Fig4_v_all_clind <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs`)
 #Function to plot OTUs of interest that overlap with top 20 OTUs in 3 logistic regression models----
 #Customize the x_annotation, y_position, and label argument values for each OTU prior to running the function
 otu_over_time <- function(otu_plot, x_annotation, y_position, label){
+  specify_otu_name <- agg_otu_data %>% 
+    filter(otu == otu_plot) %>% 
+    pull(otu_name)
   otu_median <- agg_otu_data %>% 
     filter(otu == otu_plot) %>% 
     group_by(vendor, day) %>% 
@@ -390,7 +387,7 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
                         labels=c("no", "yes"), 
                         drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=otu_plot,
+    labs(title=specify_otu_name,
          x="Day",
          y="Relative abundance (%)") +
     scale_x_continuous(breaks = c(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
@@ -398,9 +395,8 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"),
+    theme(plot.title=element_markdown(hjust = 0.5),
           text = element_text(size = 16)) # Change font size for entire plot
-  save_plot(filename = paste0("results/figures/", otu_plot,"_time.png"), otu_time, base_aspect_ratio = 2)
 }
 
 #OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models----
@@ -418,31 +414,41 @@ x_OTU2 <- plot_otu_stats_dn1to9 %>%
 y_OTU2 <- 1.5
 label_OTU2 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Bacteroides (OTU 2)") %>% pull(p.signif)
-otu_over_time(otu_plot = "Bacteroides (OTU 2)", x_annotation = x_OTU2, y_position = y_OTU2, label = label_OTU2)
+otu2 <- otu_over_time(otu_plot = "Bacteroides (OTU 2)", x_annotation = x_OTU2, y_position = y_OTU2, label = label_OTU2)+
+  theme(legend.position = "none")
+save_plot(filename = paste0("results/figures/Bacteroides (OTU 2)_time.png"), otu2, base_aspect_ratio = 2.5)
+
+#OTUs that vary across sources, are impacted by clindamycin and were important in at least 2/3 logistic regression models:
 #Set up statistical annotation arguments for Enterococcus (OTU 23):
 x_OTU23 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Enterococcus (OTU 23)") %>% pull(day)
 y_OTU23 <- .4
 label_OTU23 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Enterococcus (OTU 23)") %>% pull(p.signif)
-otu_over_time("Enterococcus (OTU 23)", x_annotation = x_OTU23, y_position = y_OTU23, label = label_OTU23)
+otu23 <- otu_over_time("Enterococcus (OTU 23)", x_annotation = x_OTU23, y_position = y_OTU23, label = label_OTU23)+
+  theme(legend.position = "none")
+save_plot(filename = paste0("results/figures/Enterococcus (OTU 23)_time.png"), otu23, base_aspect_ratio = 2.5)
 
-#OTUs impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models---- 
 #Set up statistical annotation arguments for Enterobacteriaceae (OTU 1):
 x_OTU1 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Enterobacteriaceae (OTU 1)") %>% pull(day)
 y_OTU1 <- 1.5
 label_OTU1 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Enterobacteriaceae (OTU 1)") %>% pull(p.signif)
-otu_over_time("Enterobacteriaceae (OTU 1)", x_annotation = x_OTU1, y_position = y_OTU1, label = label_OTU1)
-otu_over_time("Enterococcus (OTU 23)", x_annotation = x_OTU23, y_position = y_OTU23, label = label_OTU23) #Also varies across mouse sources
+otu1 <- otu_over_time("Enterobacteriaceae (OTU 1)", x_annotation = x_OTU1, y_position = y_OTU1, label = label_OTU1)+
+  theme(legend.position = "none")
+save_plot(filename = paste0("results/figures/Enterobacteriaceae (OTU 1)_time.png"), otu1, base_aspect_ratio = 2.5)
+
+#OTUs impacted by clindamycin treatment and are important features in at least 2/3 logistic regresssion models---- 
 #Set up statistical annotation arguments for Porphyromonadaceae (OTU 7):
 x_OTU7 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(day)
 y_OTU7 <- .4
 label_OTU7 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(p.signif)
-otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)
+otu7 <- otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)+
+  theme(legend.position = "bottom")
+save_plot(filename = paste0("results/figures/Porphyromonadaceae (OTU 7)_time.png"), otu7, base_aspect_ratio = 2.5)
 
 #Do shared taxa associated with d7 cleared/colonized status?
 #Function to test for differences in relative abundances at the OTU level according to day 7 colonization status:
@@ -551,18 +557,21 @@ interp_otus_d0 <- interp_otus  %>% filter(model_input_day == 0) %>% pull(OTU)
 #Split plotting of taxa up by relative abundance
 
 #Function to plot specific OTUs
-plot_interp_otus_d0 <- function(otu_name, otu_stats){
+plot_interp_otus_d0 <- function(specify_otu, otu_stats){
+  specify_otu_name <- agg_otu_data %>% 
+    filter(otu == specify_otu) %>% 
+    pull(otu_name)
   d0_otu_model_plot <- agg_otu_data %>% 
     filter(day == 0) %>% 
-    filter(otu == otu_name) %>% 
+    filter(otu == specify_otu) %>% 
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
     group_by(vendor) %>% 
     mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
     ungroup() %>% 
     ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-    geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
-    geom_jitter(aes(shape = clearance_status_d7), size=2, alpha=0.6, show.legend = FALSE) +
+    geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1, show.legend = FALSE)+ #Add lines to indicate the median for each group to the plot
+    geom_jitter(aes(shape = clearance_status_d7), size=3, alpha=0.6) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
@@ -573,15 +582,14 @@ plot_interp_otus_d0 <- function(otu_name, otu_stats){
                        labels=c("no", "yes"), 
                        drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=otu_name,
+    labs(title=specify_otu_name,
          x=NULL,
          y="Relative abundance (%)") +
     scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
     theme_classic()+
-    theme(plot.title=element_text(hjust=0.5, face = "italic"),
+    theme(plot.title=element_markdown(hjust = 0.5), #ggtext to have only bacteria name in italics, hjust to center plot title
           text = element_text(size = 16)) +# Change font size for entire plot
     stat_pvalue_manual(data = otu_stats, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) #Add manual p values to taxa that were also significantly different across vendors
-    save_plot(filename = paste0("results/figures/d0_model_otu_", otu_name, ".png"), d0_otu_model_plot, base_aspect_ratio = 2)
 }
 
 #OTUs with high relative abundances in at least one group
@@ -591,16 +599,23 @@ otu1_stats <- otu_day0_stats %>%
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
   mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = c(.3, .9, 1.8, 2.1, 2.4, .6, 1.2, 1.5, .6))
-plot_interp_otus_d0("Enterobacteriaceae (OTU 1)", otu1_stats)
+d0model_otu1 <- plot_interp_otus_d0("Enterobacteriaceae (OTU 1)", otu1_stats)+
+  theme(legend.position = "bottom")
+save_plot(filename = paste0("results/figures/d0_model_otu_Enterobacteriaceae (OTU 1).png"), d0model_otu1, base_aspect_ratio = 3.5)
 otu2_stats <- otu_day0_stats %>% 
   filter(otu == "Bacteroides (OTU 2)") %>% 
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
   mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = (1:n())*.3)
-plot_interp_otus_d0("Bacteroides (OTU 2)", otu2_stats)
+d0model_otu2 <- plot_interp_otus_d0("Bacteroides (OTU 2)", otu2_stats)+
+  theme(legend.position = "none")
+save_plot(filename = paste0("results/figures/d0_model_otu_Bacteroides (OTU 2).png"), d0model_otu2, base_aspect_ratio = 3.5)
 otu16_stats <- otu_day0_stats %>% 
   filter(otu == "Proteus (OTU 16)") %>% 
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
   mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
   mutate(y.position = (1:n())*.3)
-plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)
+d0model_otu16 <- plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)+
+  theme(legend.position = "none")
+save_plot(filename = paste0("results/figures/d0_model_otu_Proteus (OTU 16).png"), d0model_otu16, base_aspect_ratio = 3.5)
+

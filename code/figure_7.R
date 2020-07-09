@@ -8,6 +8,6 @@ top_half <- plot_grid(a, labels = c("A"), label_size = 12, ncol=1)
 b <- ggdraw() + draw_image("results/figures/venn_overall_otus.png")
 
 plot_grid(top_half, b, labels = c("", "B"), label_size = 12, ncol=1)+
-  ggsave("results/figures/figure_7.pdf", width=6, height=8)+
-  ggsave("submission/figure_7.pdf", width=6, height=8)
+  ggsave("results/figures/figure_7.pdf", width=6, height=9)+
+  ggsave("submission/figure_7.pdf", width=6, height=9)
 

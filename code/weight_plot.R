@@ -124,7 +124,8 @@ weight_stats <-  ggplot(NULL) +
                        limits = c(-1.5, 9.5)) +
     theme(text = element_text(size = 16))+  # Change font size for entire plot
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
-    theme_classic()
+    theme_classic()+
+    theme(legend.position = "none") #Get rid of legend 
 save_plot(filename = paste0("results/figures/weight_over_time.png"), plot = weight_stats, base_aspect_ratio = 2)
 
 #Add p.value manually to timepoints of interest with ggpubr stat_pvalue_manual() function: 2 ----

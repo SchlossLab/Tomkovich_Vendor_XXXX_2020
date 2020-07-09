@@ -12,23 +12,44 @@ ggplot(df.venn, aes(x0 = x, y0 = y, r = 19, fill = labels)) +
 
 #OTUs identified in logistic regression classification models (20 OTUs with the highest ranking for each model)
 interp_otus <- read_tsv("data/process/combined_top20_otus_all_models.tsv")
-interp_otus_dn1 <- interp_otus  %>% filter(model_input_day == -1) %>% pull(OTU)
-interp_otus_d0 <- interp_otus  %>% filter(model_input_day == 0) %>% pull(OTU)
-interp_otus_d1 <- interp_otus  %>% filter(model_input_day == 1) %>% pull(OTU)
+
+#Function to get top 20 OTUs from each model:
+get_interp_otus <- function(timepoint){
+  otus <- interp_otus  %>% filter(model_input_day == timepoint) %>% 
+    separate(OTU, into = c("bactname", "OTUnumber"), sep = "\\ [(]", remove = FALSE) %>% #Add columns to separate bacteria name from OTU number to utilize ggtext so that only bacteria name is italicized
+    mutate(otu_name = glue("*{bactname}* ({OTUnumber}")) %>% #Markdown notation so that only bacteria name is italicized
+    pull(otu_name)
+}
+#format_otus <- (paste(otus, collapse = "<br>")) #Format so that there's line breaks separating each OTU
+#return(format_otus)
+
+interp_otus_dn1 <- get_interp_otus(-1)
+interp_otus_d0 <- get_interp_otus(0)
+interp_otus_d1 <- get_interp_otus(1)
 interp_combined <- c(interp_otus_dn1, interp_otus_d0, interp_otus_d1)
 
 #OTUs that vary across sources of mice on day -1, 0, or 1
 sig_otu_source <- read_tsv("data/process/otu_stats_dn1to1_combined.tsv")
-`sig_otu_day-1` <- sig_otu_source %>% filter(day == -1) %>% pull(otu)
-`sig_otu_day0` <- sig_otu_source %>% filter(day == 0) %>% pull(otu)
-`sig_otu_day1` <- sig_otu_source %>% filter(day == 1) %>% pull(otu)
+#Function to get OTUs that vary across sources for each timepoint:
+get_source_otus <- function(timepoint){
+  otus <- sig_otu_source  %>% filter(day == timepoint) %>% 
+    separate(otu, into = c("bactname", "OTUnumber"), sep = "\\ [(]", remove = FALSE) %>% #Add columns to separate bacteria name from OTU number to utilize ggtext so that only bacteria name is italicized
+    mutate(otu_name = glue("*{bactname}* ({OTUnumber}")) %>% #Markdown notation so that only bacteria name is italicized
+    pull(otu_name)
+}
+`sig_otu_day-1` <- get_source_otus(-1) 
+`sig_otu_day0` <- get_source_otus(0) 
+`sig_otu_day1` <- get_source_otus(1)
 #OTUs that consistently vary across sources of mice on day-1, 0, or 1
 shared_sig_otus_Dn1toD1 <- intersect_all(`sig_otu_day-1`, sig_otu_day0, sig_otu_day1)
 
 
 #OTUs that were impacted by clindamycin treatment
 `sig_otu_pairs` <- read_tsv("data/process/otu_stats_dn1to0.tsv") %>% 
-  filter(p.value.adj < 0.05) %>% pull(otu)
+  filter(p.value.adj < 0.05) %>% 
+  separate(otu, into = c("bactname", "OTUnumber"), sep = "\\ [(]", remove = FALSE) %>% #Add columns to separate bacteria name from OTU number to utilize ggtext so that only bacteria name is italicized
+  mutate(otu_name = glue("*{bactname}* ({OTUnumber}")) %>% #Markdown notation so that only bacteria name is italicized
+  pull(otu_name)
 
 # Day -1 overlapping OTUs----
 # Overlap between OTUs that varied across sources of mice on day -1 and top 20 taxa from logistic regression model based on day -1 community:
@@ -99,15 +120,17 @@ venn_otus <- function(source_comp, clind_comp, title){
     arrange(otus)
   
   #Annotations for each set of taxa that overlap with key_otus or don't overlap for each part of the venn diagram
-  source_overlap <- paste(source_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="\n")
-  source_unique <- paste(source_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="\n")
-  clind_overlap <- paste(clind_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="\n")
-  clind_unique <- paste(clind_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="\n")
-  intersect_overlap <- paste(overlap_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="\n")
-  intersect_unique <- paste(overlap_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="\n")
+  source_overlap <- paste(source_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
+#  source_overlap <- source_df %>% filter(overlap == TRUE) %>% select(otus)
+  source_unique <- paste(source_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
+  clind_overlap <- paste(clind_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
+  clind_unique <- paste(clind_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
+#  clind_unique <- clind_df %>% filter(overlap == FALSE) %>% select(otus)
+  intersect_overlap <- paste(overlap_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
+  intersect_unique <- paste(overlap_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
   
   otus_venn_plot <- ggplot(df.venn) +
-    geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .3, size = 1, colour = 'grey') +
+    geom_circle(aes(x0 = x, y0 = y, r = 19, fill = labels), alpha = .1, size = 1, colour = 'grey') +
     coord_fixed() +
     theme_void() +
     theme(legend.position = 'none') +
@@ -116,12 +139,12 @@ venn_otus <- function(source_comp, clind_comp, title){
     labs(fill = NULL) +
     annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
     annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-    geom_text(label = source_overlap, x = -19, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
-    geom_text(label = source_unique, x = -19, y = -13, size = 2.8, aes(fontface="italic"))+
-    geom_text(label = clind_overlap, x = 19, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
-    geom_text(label = clind_unique, x = 19, y = -13, size = 2.8, aes(fontface="italic"))+
-    geom_text(label = intersect_overlap, x = 0, y = 0.5, size = 2.8, aes(fontface="bold.italic"))+
-    geom_text(label = intersect_unique, x = 0, y = -13, size = 2.8, aes(fontface="italic"))+
+    annotate(geom='richtext', label = source_overlap, x = -19, y = 0.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
+    annotate(geom='richtext', label = source_unique, x = -19, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
+    annotate(geom='richtext', label = clind_overlap, x = 19, y = 0.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
+    annotate(geom='richtext', label = clind_unique, x = 19, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
+    annotate(geom='richtext', label = intersect_overlap, x = 0, y = -7.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
+    annotate(geom='richtext', label = intersect_unique, x = 0, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
     annotate("text", x = 0, y = 14, label = title, size = 5)
 }
 

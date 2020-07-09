@@ -156,7 +156,9 @@ plot_pcoa <- function(df, timepoint){
                        values=shape_scheme,
                        breaks=shape_experiment,
                        labels=shape_experiment) +
-    coord_fixed() + 
+    coord_fixed() +
+    xlim(-0.7, 0.5)+
+    ylim(-0.6, 0.7)+
     labs(x="PCoA 1",
          y="PCoA 2",
          color= "Source") +
@@ -279,8 +281,14 @@ write_tsv("data/process/adonis_dn1-1.tsv") %>%
 #Function to plot pcoa data for each source of mice at day -1, colored according to experiment with shapes to differentiate cage----
 pcoa_vendor <- function(df, label){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = experiment, shape = cage)) +
-    geom_point(size=4, alpha = 0.4) +
+    geom_point(size=4, alpha = 0.4, fill = "white", stroke = 1.5) +
     coord_fixed() + 
+    xlim(-0.55, 0.5)+
+    ylim(-0.45, 0.52)+
+    scale_shape_manual(name="Cage",
+                       values=c(21, 24),
+                       breaks=c(1, 2),
+                       labels=c(1, 2)) +
     labs(title = label,
          x="PCoA 1",
          y="PCoA 2",
@@ -320,7 +328,8 @@ s_dn1_axis2 <- s_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% rou
 
 s_dn1 <- pcoa_vendor(s_dn1_pcoa, "Schloss")+
   labs(x = paste("PCoA 1 (", s_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
-       y = paste("PCoA 2 (", s_dn1_axis2,"%)", sep = ""))
+       y = paste("PCoA 2 (", s_dn1_axis2,"%)", sep = ""))+
+  theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/pcoa_dn1_schloss.png"), s_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Young samples----
@@ -352,7 +361,8 @@ y_dn1_axis2 <- y_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% rou
 
 y_dn1 <- pcoa_vendor(y_dn1_pcoa, "Young")+
   labs(x = paste("PCoA 1 (", y_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
-       y = paste("PCoA 2 (", y_dn1_axis2,"%)", sep = ""))
+       y = paste("PCoA 2 (", y_dn1_axis2,"%)", sep = ""))+
+  theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/pcoa_dn1_young.png"), y_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Jackson samples----
@@ -384,7 +394,8 @@ j_dn1_axis2 <- j_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% rou
 
 j_dn1 <- pcoa_vendor(j_dn1_pcoa, "Jackson")+
   labs(x = paste("PCoA 1 (", j_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
-       y = paste("PCoA 2 (", j_dn1_axis2,"%)", sep = ""))
+       y = paste("PCoA 2 (", j_dn1_axis2,"%)", sep = ""))+
+  theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/pcoa_dn1_jackson.png"), j_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Charles River samples----
@@ -416,7 +427,8 @@ c_dn1_axis2 <- c_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% rou
 
 c_dn1 <- pcoa_vendor(c_dn1_pcoa, "Charles River")+
   labs(x = paste("PCoA 1 (", c_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
-       y = paste("PCoA 2 (", c_dn1_axis2,"%)", sep = ""))
+       y = paste("PCoA 2 (", c_dn1_axis2,"%)", sep = ""))+
+  theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/pcoa_dn1_charles_river.png"), c_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Taconic samples----
@@ -448,7 +460,8 @@ t_dn1_axis2 <- t_dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% rou
 
 t_dn1 <- pcoa_vendor(t_dn1_pcoa, "Taconic")+
   labs(x = paste("PCoA 1 (", t_dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
-       y = paste("PCoA 2 (", t_dn1_axis2,"%)", sep = ""))
+       y = paste("PCoA 2 (", t_dn1_axis2,"%)", sep = ""))+
+  theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/pcoa_dn1_taconic.png"), t_dn1)
 
 # Read in thetayc distance matrix that represents Day -1 Envigo samples----
