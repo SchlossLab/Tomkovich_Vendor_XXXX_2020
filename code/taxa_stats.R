@@ -335,6 +335,12 @@ sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
 # 153 OTUs
 sig_otu_pairs_top10 <- sig_otu_pairs[1:10]
 
+#OTUs that overlap between Fig. 3D and E----
+Fig3D_vs_E_overlap <- intersect_all(sig_otu_day0[1:18], sig_otu_pairs[1:10])
+#"Enterobacteriaceae (OTU 1)"
+Clind_vs_source_D0 <- intersect_all(sig_otu_day0, sig_otu_pairs)
+#4 OTUs: "Enterobacteriaceae (OTU 1)","Enterococcus (OTU 23)","Lactobacillus (OTU 6)","Lachnospiraceae (OTU 130)"
+
 #Plot of the otus with significantly different relative abundances post clindamycin treatment across all sources of mice:----
 #Facet plot by day with the following label names:
 facet_labels <- c("Baseline", "Clindamycin")
