@@ -18,14 +18,12 @@ all <- rbind(otu_dayn1, otu_day0, otu_day1) %>%
 #Statistical analysis:
 set.seed(19881117) #Same seed used for mothur analysis
 #Compare test AUCs for each model to 0.5. Wilcoxan signed rank test. Null hypothesis is the distribution of test AUCs for each model is symmetric about mu (0.5)
-all %>% 
+all_vs_random <- all %>% 
   group_by(model_name) %>% 
   summarize(test=list(tidy(wilcox.test(test_aucs, mu=0.5, paired = FALSE, alternative="greater"))), 
             summary=list(tidy(summary(test_aucs)))) %>% 
   unnest() %>% 
   write_tsv("data/process/classification_to_random.tsv") 
-  #Also write results to supplemental table excel file
-write_xlsx(all, "submission/table_S10_classification_to_random.xlsx", format_headers = FALSE)
 #All models perform significantly better than random (AUC of 0.5)
 
 #Kruskal-wallis test comparing test AUCs from all 3 models: 
@@ -41,9 +39,7 @@ model_stats_pairwise <-
   select(compare, p.value.adj) %>% 
   rename(comparison = compare) %>% 
   arrange(p.value.adj) %>% 
-  write_tsv("data/process/classification_model_pairwise_stats.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S11_classification_model_pairwise_stats.xlsx", format_headers = FALSE)
+  write_tsv("data/process/classification_model_pairwise_stats.tsv") 
 
 #Compare each model's cv and test AUCs  
 all %>% 
@@ -67,3 +63,9 @@ all %>%
   ) %>%
   unnest() %>%
   write_tsv("data/process/classification_cv_test_compare.tsv")
+
+
+#Write statistical analysis results to excel file with each data frame saved as a separate sheet:
+table_S7_sheets <- (list("vs_random" = all_vs_random, "pairwise" = model_stats_pairwise))
+write_xlsx(table_S7_sheets, "submission/table_S7_classification_model_stats.xlsx", format_headers = FALSE)
+

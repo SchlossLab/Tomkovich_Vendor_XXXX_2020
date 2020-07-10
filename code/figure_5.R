@@ -1,10 +1,13 @@
 source("code/functions.R")
 
-a <- ggdraw() + draw_image("results/figures/Dn1toD1_otus_dn1.png")
-b <- ggdraw() + draw_image("results/figures/Dn1toD1_otus_d0.png")
-c <- ggdraw() + draw_image("results/figures/Dn1toD1_otus_d1.png")
+a1 <- ggdraw() + draw_image("results/figures/d0_model_otu_Enterobacteriaceae (OTU 1).png")
+a2 <- ggdraw() + draw_image("results/figures/d0_model_otu_Bacteroides (OTU 2).png")
+a3 <- ggdraw() + draw_image("results/figures/d0_model_otu_Proteus (OTU 16).png")
+a <- plot_grid(a1, a2, a3, labels = NULL, ncol = 1)
+top_half <- plot_grid(a, labels = c("A"), label_size = 12, ncol=1)
+b <- ggdraw() + draw_image("results/figures/venn_overall_otus.png")
 
-plot_grid(a, b, c, labels = "AUTO", label_size = 12, ncol=3)+
-  ggsave("results/figures/figure_5.pdf", width=8, height=3)+
-  ggsave("submission/figure_5.pdf", width=8, height=3)
+plot_grid(top_half, b, labels = c("", "B"), label_size = 12, ncol=1)+
+  ggsave("results/figures/figure_5.pdf", width=6, height=9)+
+  ggsave("submission/figure_5.pdf", width=6, height=9)
 

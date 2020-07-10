@@ -26,7 +26,7 @@ cfu_kruskal_stats_adjust <- cfu_kruskal_stats %>%
   arrange(p.value.adj) %>% 
   write_tsv("data/process/cfu_stats_all_days.tsv")
 #Also write to supplemental table excel file
-cfu_kruskal_stats_adjust %>% write_xlsx("submission/table_S1_cfu_kruskal-wallis.xlsx", format_headers = FALSE)
+cfu_kruskal_stats_adjust %>% write_xlsx("submission/table_S4_cfu_kruskal-wallis.xlsx", format_headers = FALSE)
 
 #List significant days after BH adjustment of p-values:
 sig_cfu_days <- cfu_kruskal_stats_adjust %>% 

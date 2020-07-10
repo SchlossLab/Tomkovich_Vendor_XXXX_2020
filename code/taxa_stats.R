@@ -155,6 +155,21 @@ Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
   theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
 
+#Plots of the top 18-20 OTUs that varied across sources at each timepoint (only 18 OTUs varied significantly across sources post-clindamycin treatment)
+#Baseline: top 20 OTUs that vary across sources
+Dn1top20_otus <- plot_otus_dx(`sig_otu_day-1`[1:20], -1) #Pick top 20 significant OTUs
+save_plot("results/figures/Dn1top20_otus.png", Dn1top20_otus, base_height = 9, base_width = 7)
+#Post-clindamycin: top 18 OTUs that vary across sources
+D0top18_otus <- plot_otus_dx(`sig_otu_day0`[1:18], 0) #Pick top 20 significant OTUs
+save_plot("results/figures/D0top18_otus.png", D0top18_otus, base_height = 9, base_width = 7)
+#Post-infection: top 20 OTUs that vary across sources
+D1top20_otus <- plot_otus_dx(`sig_otu_day1`[1:20], 1) #Pick top 20 significant OTUs
+save_plot("results/figures/D1top20_otus.png", D1top20_otus, base_height = 9, base_width = 7)
+
+#Overlap between the top 18-20 OTUs that varied across sources at each timepoints
+shared_top_otus_Dn1toD1 <- intersect_all(`sig_otu_day-1`[1:20], sig_otu_day0[1:18], sig_otu_day1[1:20])
+#5 OTUs: 1] "Parasutterella (OTU 26)", "Burkholderiales (OTU 34)", "Betaproteobacteria (OTU 58)","Lactobacillus (OTU 49)","Parabacteroides (OTU 5)"  
+
 # Perform pairwise Wilcoxan rank sum tests for otus that were significantly different across sources of mice on a series of days----
 pairwise_day_otu <- function(timepoint, sig_otu_dayX){
   otu_stats <- agg_otu_data %>% 
@@ -223,11 +238,12 @@ kw_w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%
   mutate(day = 1) %>% #Add experiment day for statistics
   arrange(p.value.adj) #Arrange by adjusted p.values
 
-#Combine OTU statistics for differences across souces of mice for days -1, 0 and 1:
+#Combine OTU statistics for differences across sources of mice for days -1, 0 and 1:
 otu_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
-  write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv")) %>%  #Save combined dataframe as a .tsv
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S8_otu_stats_dn1to1.xlsx", format_headers = FALSE)
+  write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv"))  #Save combined dataframe as a .tsv
+#Write OTU statistics for differences across sources of mice for days -1, 0 and 1 to separate sheets of an excel file:
+table_S3_sheets <- list("day_-1" = kw_w_sig_dn1, "day_0" = kw_w_sig_d0, "day_1" = kw_w_sig_d1)
+write_xlsx(table_S3_sheets, "submission/table_S3_otu_stats_dn1to1.xlsx", format_headers = FALSE)
 
 #Read in just Kruskal Wallis results for the rest of the days:
 kw_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1.tsv") %>%  
@@ -280,7 +296,7 @@ otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, 
   filter(p.value.adj <= 0.05) %>% #Select only significant rows
   write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
 #Also write results to supplemental table excel file
-write_xlsx(otu_stats_dn1to9_combined, "submission/table_S13_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
+write_xlsx(otu_stats_dn1to9_combined, "submission/table_S9_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 #Wilcoxan Signed rank test for relative abundance differences after clindamycin treatment (for all mice with paired data for day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
 #Pull mice ids that have sequence data for both day -1 and day 0:
@@ -312,7 +328,7 @@ o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>%
     arrange(p.value.adj) %>% 
   write_tsv(path = "data/process/otu_stats_dn1to0.tsv") 
 #Also write results to supplemental table excel file
-write_xlsx(o_dn1to0_pairs_stats_adjust, "submission/table_S9_otu_stats_dn1to0.xlsx", format_headers = FALSE)
+write_xlsx(o_dn1to0_pairs_stats_adjust, "submission/table_S6_otu_stats_clindamycin.xlsx", format_headers = FALSE)
 
 #Make a list of significant OTUs impacted by clindamycin treatment----  
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)
@@ -351,7 +367,7 @@ clind_impacted_otus_plot_dn1_0 <- agg_otu_data %>%
         axis.text.y = element_markdown(), #Have only the OTU names show up as italics
         strip.background = element_blank(),
         legend.position = "bottom") 
-save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot_dn1_0, base_height = 9, base_width = 10)
+save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot_dn1_0, base_height = 9, base_width = 7)
 
 #Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
 Fig4_v_5_otus <- intersect_all(`shared_sig_otus_Dn1toD1`, `sig_otu_pairs_top10`)

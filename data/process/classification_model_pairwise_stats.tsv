@@ -1,4 +1,4 @@
 comparison	p.value.adj
-otu_day1-otu_day0	4.455271523769397e-14
-otu_dayn1-otu_day0	3.1070827525148945e-11
-otu_dayn1-otu_day1	0.6202315759596984
+otu_day1-otu_day0	1.9573752577849977e-14
+otu_dayn1-otu_day0	3.348449314331482e-6
+otu_dayn1-otu_day1	0.008417935970808341

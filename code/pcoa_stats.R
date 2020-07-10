@@ -85,12 +85,10 @@ day_adonis <- adonis(all_dist~ day, strata = variables$mouse_id, data = variable
 
 all_adonis <- adonis(all_dist~(source/(unique_cage*experiment*run))*day, strata = variables$mouse_id, data = variables, permutations = 9999)
 
-tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:day", "source:unique_cage:run", "source:unique_cage:day"),
+adonis_all_samples <- tibble(effects = c("source", "day", "source:unique_cage", "source:run", "source:day", "source:unique_cage:run", "source:unique_cage:day"),
         r_sq = all_adonis$aov.tab$R2[1:7],
         p = all_adonis$aov.tab$Pr[1:7]) %>% 
-  write_tsv("data/process/adonis_all.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S5_PERMANOVA_all.xlsx", format_headers = FALSE)
+  write_tsv("data/process/adonis_all.tsv") 
 
 #Function to plot pcoa data for all vendors----
 plot_pcoa <- function(df){
@@ -195,7 +193,6 @@ dn1_axis1 <- dn1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(d
 dn1_axis2 <- dn1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
 
 dn1 <- plot_pcoa(dn1_pcoa, -1)+
-  ggtitle("Baseline")+ #Title plot
   labs(x = paste("PCoA 1 (", dn1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", dn1_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot title
@@ -229,7 +226,6 @@ d0_axis1 <- d0_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(dig
 d0_axis2 <- d0_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
 
 d0 <- plot_pcoa(d0_pcoa, 0)+
-  ggtitle("Clindamycin")+ #Title plot
   labs(x = paste("PCoA 1 (", d0_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", d0_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot title
@@ -263,7 +259,6 @@ d1_axis1 <- d1_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(dig
 d1_axis2 <- d1_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
 
 d1 <- plot_pcoa(d1_pcoa, 1) +
-  ggtitle("Post-infection")+ #Title plot
   labs(x = paste("PCoA 1 (", d1_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
        y = paste("PCoA 2 (", d1_axis2,"%)", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5)) #Center plot title
@@ -271,10 +266,8 @@ save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
 
 
 #Make combined table of adonis results for D-1, 0, and 1
-rbind(dn1_results, d0_results, d1_results) %>% 
-write_tsv("data/process/adonis_dn1-1.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S6_PERMANOVA_dn1-1.xlsx", format_headers = FALSE)
+adonis_dn1_to_0 <- rbind(dn1_results, d0_results, d1_results) %>% 
+write_tsv("data/process/adonis_dn1-1.tsv") 
 
 #Examine initial day -1 vendor communities separately----
 
@@ -497,8 +490,11 @@ e_dn1 <- pcoa_vendor(e_dn1_pcoa, "Envigo")+
 save_plot(filename = paste0("results/figures/pcoa_dn1_envigo.png"), e_dn1)
 
 #Merge adonis results for each source of mice together to create one final results table
-rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
-  write_tsv("data/process/adonis_dn1_source.tsv") %>% 
-  #Also write results to supplemental table excel file
-  write_xlsx("submission/table_S7_PERMANOVA_dn1_source.xlsx", format_headers = FALSE)
+dn1_source <- rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
+  write_tsv("data/process/adonis_dn1_source.tsv") 
+
+#Also write PERMANOVA results to supplemental table excel file. 
+#Save each set of results as own sheet in the excel file
+table_S2_sheets <- list("dn1_d0_d1_PERMANOVA" = adonis_dn1_to_0, "source_dn1_PERMANOVA"  = dn1_source, "all_timepoints" = adonis_all_samples)
+write_xlsx(table_S2_sheets, "submission/table_S2_PERMANOVA.xlsx", format_headers = FALSE)
 

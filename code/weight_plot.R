@@ -49,8 +49,8 @@ weight_kruskal_stats <- weight_data %>%
   group_by(day) %>% 
   nest() %>% 
   mutate(model=map(data, ~kruskal.test(x=.x$weight_change, g=as.factor(.x$vendor)) %>% tidy())) %>% 
-  mutate(mean = map(data, get_weight_mean_vendor)) %>% 
-  unnest(c(model, mean)) %>% 
+  mutate(median = map(data, get_weight_median_vendor)) %>% 
+  unnest(c(model, median)) %>% 
   ungroup() #Ungroup before adjusting p values
 
 #Adjust p-values for testing multiple days and write results to table
@@ -60,7 +60,7 @@ weight_kruskal_stats_adjust <- weight_kruskal_stats %>%
   arrange(p.value.adj) %>% 
   write_tsv("data/process/weight_stats_all_days.tsv")
 #Also write to supplemental table excel file
-weight_kruskal_stats_adjust %>% write_xlsx("submission/table_S2_weight_kruskal-wallis.xlsx", format_headers = FALSE)
+weight_kruskal_stats_adjust %>% write_xlsx("submission/table_S5_weight_kruskal-wallis.xlsx", format_headers = FALSE)
 
 #Timepoints where weight_change is significantly different across the sources of mice
 sig_weight_days <- weight_kruskal_stats_adjust %>% 

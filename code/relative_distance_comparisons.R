@@ -49,7 +49,7 @@ within_exp <- dn1_dist %>%
   group_by(vendor) %>% 
 #  summarize(median_dist = median(distances), n = n()) %>% 
   ggplot(aes(x = vendor, y = distances, color = vendor)) +
-  geom_boxplot(outlier.shape = NA, size = 1.2)+
+  geom_boxplot(outlier.shape = NA, size = 1.2, show.legend = FALSE)+
   geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
   ylim(0, 1.25)+
@@ -57,8 +57,8 @@ within_exp <- dn1_dist %>%
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
-  labs(title = "Baseline: within experiment", x = NULL, y = "Theta YC Distance")+
-  theme(plot.title = element_text(hjust = 0.5))+ #Center plot title
+  labs(title = "Within experiment", x = NULL, y = "Theta YC Distance")+
+  theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
   theme_classic()
 save_plot("results/figures/within_exp_dn1.png", within_exp)
 
@@ -77,7 +77,7 @@ between_exp <- dn1_dist %>%
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
-  labs(title = "Baseline: between experiments", x = NULL, y = "Theta YC Distance")+
+  labs(title = "Between experiments", x = NULL, y = "Theta YC Distance")+
   theme(plot.title = element_text(hjust = 0.5))+ #Center plot title
   theme_classic()
 save_plot("results/figures/between_exp_dn1.png", between_exp)

@@ -1,7 +1,11 @@
 source("code/functions.R")
 
-a <- ggdraw() + draw_image("results/figures/clind_impacted_otus_plot.png")
+a <- ggdraw() + draw_image("results/figures/Bacteroides (OTU 2)_time.png")
+b <- ggdraw() + draw_image("results/figures/Enterobacteriaceae (OTU 1)_time.png")
+c <- ggdraw() + draw_image("results/figures/Enterococcus (OTU 23)_time.png")
+d <- ggdraw() + draw_image("results/figures/Porphyromonadaceae (OTU 7)_time.png")
 
-plot_grid(a, labels = "", label_size = 12, ncol=1)+
-  ggsave("results/figures/figure_6.pdf", width=8, height=5.5)+
-  ggsave("submission/figure_6.pdf", width=8, height=5.5)
+
+plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=2)+
+  ggsave("results/figures/figure_6.pdf", width=7.5, height=4)+
+  ggsave("submission/figure_6.pdf", width=7.5, height=4)

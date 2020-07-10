@@ -139,8 +139,8 @@ shannon_results <- shannon_kruskal_stats_adjust %>%
   mutate(diversity_metric = "Shannon Diversity")
 richness_results <- richness_kruskal_stats_adjust %>% 
   mutate(diversity_metric = "Richness")
-diversity_kruskal_stats_adjust <- rbind(shannon_results, richness_results) %>% 
-  write_xlsx("submission/table_S3_diversity_kruskal-wallis.xlsx", format_headers = FALSE)
+#Kruskal-Wallis test results with adjusted P values----
+diversity_kruskal_stats_adjust <- rbind(shannon_results, richness_results)
 
 #List significant days after BH adjustment of p-values:
 sig_richness_days <- richness_kruskal_stats_adjust %>% 
@@ -171,8 +171,11 @@ shannon_pairwise_results <- shannon_stats_pairwise %>%
   mutate(diversity_metric = "Shannon Diversity")
 richness_pairwise_results <- richness_stats_pairwise %>% 
   mutate(diversity_metric = "Richness")
-diversity_pairwise_results <- rbind(shannon_pairwise_results, richness_pairwise_results) %>% 
-  write_xlsx("submission/table_S4_diversity_pairwise.xlsx", format_headers = FALSE)
+diversity_pairwise_results <- rbind(shannon_pairwise_results, richness_pairwise_results)
+
+#Combine Kruskal-Wallis and pairwise Wilcoxon results into one excel file----
+table_S1_sheets <- list("Kruskal_Wallis" = diversity_kruskal_stats_adjust, "pairwise_Wilcoxon" = diversity_pairwise_results)
+write_xlsx(table_S1_sheets, "submission/table_S1_diversity_stats.xlsx", format_headers = FALSE)
 
 #Format richness pairwise stats to use with ggpubr package
 plot_format_richness <- richness_stats_pairwise %>%
@@ -213,9 +216,7 @@ shannon_dx_plot <- function(timepoint){
 }
 
 #Plots of shannon for all sources of mice on day -1, the baseline microbiota community for each mouse----
-shannon_dn1 <- shannon_dx_plot(-1) +
-  ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
+shannon_dn1 <- shannon_dx_plot(-1)
 #There was no overall significant difference in Shannon index at this timepoint across sources of mice.  
 save_plot("results/figures/shannon_dn1.png", shannon_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
@@ -229,8 +230,6 @@ pairwise_shannon_day0_plot <- plot_format_shannon %>%
 #4 pairwise comparisons were significant at day 0. 
 #Day 0 Plot with stats for pairwise comparisons:
 shannon_d0 <- shannon_dx_plot(0) +
-  ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
   stat_pvalue_manual(data = pairwise_shannon_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/shannon_d0.png", shannon_d0)
 
@@ -242,8 +241,6 @@ pairwise_shannon_day1_plot <- plot_format_shannon %>%
   mutate(y.position = c(4.7, 5.3, 3.75, 5, 3.1, 4.225, 4.5, 3.55))
 #8 pairwise comparisons were significant at day 0. 
 shannon_d1 <- shannon_dx_plot(1) +
-  ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
   stat_pvalue_manual(data = pairwise_shannon_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/shannon_d1.png", shannon_d1)
 
@@ -285,9 +282,7 @@ pairwise_sobs_dayn1_plot <- plot_format_richness %>%
   filter(p.adj <= 0.05)  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
 #No pairwise comparisons were significant at day -1.  
 # Plot of richness across sources of mice on day -1
-sobs_dn1 <- sobs_dx_plot(-1)+
-  ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
+sobs_dn1 <- sobs_dx_plot(-1)
 save_plot("results/figures/richness_dn1.png", sobs_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 0 p.values to add manually
@@ -299,9 +294,7 @@ pairwise_sobs_day0_plot <- plot_format_richness %>%
   #3 significant pairwise
 # Plot of richness across sources of mice on day 0 with significant pairwise comparison p values
 sobs_d0 <- sobs_dx_plot(0) +
-  stat_pvalue_manual(data = pairwise_sobs_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) +
-  ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
+  stat_pvalue_manual(data = pairwise_sobs_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/richness_d0.png", sobs_d0) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 1 p.values to add manually
@@ -314,8 +307,6 @@ pairwise_sobs_day1_plot <- plot_format_richness %>%
 
 # Plot of richness across sources of mice on day 1 with significant pairwise comparison p values
 sobs_d1 <- sobs_dx_plot(1) +
-  stat_pvalue_manual(data = pairwise_sobs_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) +
-  ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
+  stat_pvalue_manual(data = pairwise_sobs_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
 save_plot("results/figures/richness_d1.png", sobs_d1) #Use save_plot instead of ggsave because it works better with cowplot
 
