@@ -63,9 +63,3 @@ all %>%
   ) %>%
   unnest() %>%
   write_tsv("data/process/classification_cv_test_compare.tsv")
-
-
-#Write statistical analysis results to excel file with each data frame saved as a separate sheet:
-table_S7_sheets <- (list("vs_random" = all_vs_random, "pairwise" = model_stats_pairwise))
-write_xlsx(table_S7_sheets, "submission/table_S7_classification_model_stats.xlsx", format_headers = FALSE)
-

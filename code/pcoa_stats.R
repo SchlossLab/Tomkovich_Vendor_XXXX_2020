@@ -492,9 +492,3 @@ save_plot(filename = paste0("results/figures/pcoa_dn1_envigo.png"), e_dn1)
 #Merge adonis results for each source of mice together to create one final results table
 dn1_source <- rbind(s_results, y_results, j_results, c_results, t_results, e_results) %>% 
   write_tsv("data/process/adonis_dn1_source.tsv") 
-
-#Also write PERMANOVA results to supplemental table excel file. 
-#Save each set of results as own sheet in the excel file
-table_S2_sheets <- list("dn1_d0_d1_PERMANOVA" = adonis_dn1_to_0, "source_dn1_PERMANOVA"  = dn1_source, "all_timepoints" = adonis_all_samples)
-write_xlsx(table_S2_sheets, "submission/table_S2_PERMANOVA.xlsx", format_headers = FALSE)
-

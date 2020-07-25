@@ -241,9 +241,6 @@ kw_w_sig_d1 <- read_tsv(file="data/process/otu_stats_day_1.tsv") %>%
 #Combine OTU statistics for differences across sources of mice for days -1, 0 and 1:
 otu_stats_dn1to1_combined <- rbind(kw_w_sig_dn1, kw_w_sig_d0, kw_w_sig_d1) %>% 
   write_tsv(path = paste0("data/process/otu_stats_dn1to1_combined.tsv"))  #Save combined dataframe as a .tsv
-#Write OTU statistics for differences across sources of mice for days -1, 0 and 1 to separate sheets of an excel file:
-table_S3_sheets <- list("day_-1" = kw_w_sig_dn1, "day_0" = kw_w_sig_d0, "day_1" = kw_w_sig_d1)
-write_xlsx(table_S3_sheets, "submission/table_S3_otu_stats_dn1to1.xlsx", format_headers = FALSE)
 
 #Read in just Kruskal Wallis results for the rest of the days:
 kw_sig_dn1 <- read_tsv(file="data/process/otu_stats_day_-1.tsv") %>%  
@@ -295,8 +292,6 @@ otu_stats_dn1to9_combined <- rbind(kw_sig_dn1, kw_sig_d0, kw_sig_d1, kw_sig_d2, 
                                       kw_sig_d5, kw_sig_d6, kw_sig_d7, kw_sig_d8, kw_sig_d9) %>% 
   filter(p.value.adj <= 0.05) %>% #Select only significant rows
   write_tsv(path = paste0("data/process/otu_kw_stats_dn1to9.tsv")) #Save combined dataframe as a .tsv
-#Also write results to supplemental table excel file
-write_xlsx(otu_stats_dn1to9_combined, "submission/table_S9_otu_kw_stats_dn1to9.xlsx", format_headers = FALSE)
 
 #Wilcoxan Signed rank test for relative abundance differences after clindamycin treatment (for all mice with paired data for day -1 versus day 0) at different taxonomic levels with Benjamini-Hochburg correction----
 #Pull mice ids that have sequence data for both day -1 and day 0:
@@ -327,8 +322,6 @@ o_dn1to0_pairs_stats_adjust <- o_dn1to0_pairs %>%
     mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
     arrange(p.value.adj) %>% 
   write_tsv(path = "data/process/otu_stats_dn1to0.tsv") 
-#Also write results to supplemental table excel file
-write_xlsx(o_dn1to0_pairs_stats_adjust, "submission/table_S6_otu_stats_clindamycin.xlsx", format_headers = FALSE)
 
 #Make a list of significant OTUs impacted by clindamycin treatment----  
 sig_otu_pairs <- pull_significant_taxa(o_dn1to0_pairs_stats_adjust, otu)

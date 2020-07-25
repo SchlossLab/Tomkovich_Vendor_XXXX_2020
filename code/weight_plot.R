@@ -59,8 +59,6 @@ weight_kruskal_stats_adjust <- weight_kruskal_stats %>%
   mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
   arrange(p.value.adj) %>% 
   write_tsv("data/process/weight_stats_all_days.tsv")
-#Also write to supplemental table excel file
-weight_kruskal_stats_adjust %>% write_xlsx("submission/table_S5_weight_kruskal-wallis.xlsx", format_headers = FALSE)
 
 #Timepoints where weight_change is significantly different across the sources of mice
 sig_weight_days <- weight_kruskal_stats_adjust %>% 
