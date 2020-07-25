@@ -483,7 +483,7 @@ w_d7status_o <- function(timepoint){
     group_by(otu) %>% 
     nest() %>% 
     mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$clearance_status_d7, paired = FALSE) %>% tidy())) %>% 
-    mutate(mean = map(data,  get_rel_abund_mean_d7status)) %>% 
+    mutate(median = map(data,  get_rel_abund_median_d7status)) %>% 
     unnest(c(model, mean)) %>% 
     ungroup() 
   #Adjust p-values for testing multiple OTus
@@ -572,6 +572,7 @@ diff_otu_experiment_Envigo #3
   #Porphyromonadaceae OTU 52 and 139, Deltaproteobacteria OTU 174
 
 #Examine top 20 taxa from logistic regression model that performed the best: Communities after clindamycin treatment at the OTU level----
+interp_otus <- read_tsv("data/process/combined_top20_otus_all_models.tsv")
 
 #List of top 20 taxa from day 0 OTU logistic regression model
 interp_otus_d0 <- interp_otus  %>% filter(model_input_day == 0) %>% pull(OTU)
@@ -640,4 +641,44 @@ otu16_stats <- otu_day0_stats %>%
 d0model_otu16 <- plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)+
   theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/d0_model_otu_Proteus (OTU 16).png"), d0model_otu16, base_aspect_ratio = 3.5)
+
+interp_otus_d0_low_abund <- interp_otus  %>% filter(model_input_day == 0) %>% 
+  filter(!OTU == "Enterobacteriaceae (OTU 1)", #remove 3 OTUs with higher relative abundances plotted above
+         !OTU == "Bacteroides (OTU 2)",
+         !OTU == "Proteus (OTU 16)") %>% 
+  pull(OTU)
+  
+#Plot the other 17 OTUs that were important to Day 0 model and 
+#had low relative abundances together using facet_wrap
+low_abund_d0_otu_model_taxa <- agg_otu_data %>% 
+  filter(day == 0) %>% 
+  filter(otu %in% interp_otus_d0_low_abund) %>% 
+  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
+  group_by(vendor, otu) %>% 
+  mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
+  ungroup() %>% 
+  ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+  geom_jitter(aes(shape = clearance_status_d7), size=2, show.legend = TRUE) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  scale_shape_manual(name="Cleared by Day 7",
+                     values=c(4, 19),
+                     breaks=c("colonized", "not_detectable"),
+                     labels=c("no", "yes"), 
+                     drop=FALSE, na.translate = TRUE, na.value = 1)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  facet_wrap(~ otu_name)+
+  labs(title=NULL,
+       x=NULL,
+       y="Relative abundance (%)") +
+  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+  theme_classic()+
+  theme(strip.text = element_markdown(hjust = 0.5, size = 6),
+        axis.text.x = element_blank(),
+        legend.position = "bottom")
+save_plot(filename = paste0("results/figures/d0_low_abund_otus.png"), low_abund_d0_otu_model_taxa, base_height = 5, base_width = 8)
 
