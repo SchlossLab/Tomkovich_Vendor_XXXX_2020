@@ -112,7 +112,7 @@ median_summary <- cfu_data_final %>%
   group_by(vendor, day) %>% 
   summarize(median_cfu = median(cfu, na.rm = TRUE))
 cfu_stats <- ggplot(NULL) +
-  geom_point(cfu_data_final, mapping = aes(x = day, y = cfu, color= vendor, shape = experiment), alpha = .2, size = 1.5, position = position_dodge(width = 0.6)) +
+  geom_point(cfu_data_final, mapping = aes(x = day, y = cfu, color= vendor, shape = experiment), size = 1.5, position = position_dodge(width = 0.6)) +
   geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), size = 1.5, show.legend = FALSE) +
   scale_colour_manual(name=NULL,
                       values=color_scheme,

@@ -137,8 +137,15 @@ dropped_by_miseq <- nrow(sequenced)-nrow(matching)
 dropped_by_miseq_ids <- anti_join(sequenced, matching, by = "id") %>% pull(id)
 
 #Define color scheme----
-color_scheme <- c("#1f78b4", "#e6ab02", "#323232", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6. Previous color for Jackson mice: #d95f02
+#Original colors
+color_scheme <- c("#1f78b4", "#e6ab02", "#323232", "#e7298a", "#7570b3", "#1b9e77") #Adapted from http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6. Previous color for Jackson mice: #d95f02 
 color_vendors <- levels(metadata$vendor)
+#Test 1
+#color_scheme <- c("#609bce", "#b3953e", "#ca5d48", "#c85994", "#8d68ca", "#60a75b") #Adapted from http://medialab.github.io/iwanthue/
+#Test 2
+#color_scheme <- c("#4363d8", "#ffe119", "#000000", "#f032e6", "#911eb4", "#3cb445") #Adapted from https://sashamaps.net/docs/tools/20-colors/
+#Test 3
+#color_scheme <- c("#396AB1", "#948B3D", "#535154", "#CC2529", "#6B4C9A", "#3E9651") #Adapted from http://ksrowell.com/blog-visualizing-data/2012/02/02/optimal-colors-for-graphs/
 
 #Define shape scheme to differentiate experiment 1 and 2----
 shape_scheme <- c(19, 17)

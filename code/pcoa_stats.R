@@ -145,7 +145,7 @@ anim_save(animation = pcoa_gif, filename = 'results/pcoa_over_time.gif')
 #Function to plot pcoa data for all sources of mice at a specific timepoint----
 plot_pcoa <- function(df, timepoint){
   plot <- ggplot(df, aes(x=axis1, y=axis2, color = vendor, shape = experiment)) +
-    geom_point(size=4, alpha = 0.4) +
+    geom_point(size=4) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
