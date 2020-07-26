@@ -675,3 +675,36 @@ low_abund_d0_otu_model_taxa <- agg_otu_data %>%
         legend.position = "bottom")
 save_plot(filename = paste0("results/figures/d0_low_abund_otus.png"), low_abund_d0_otu_model_taxa, base_height = 5, base_width = 8)
 
+#Plot the 20 OTUs that were important to Day 0 model using facet_wrap
+d0_model_top20_OTU <- agg_otu_data %>% 
+  filter(day == 0) %>% 
+  filter(otu %in% interp_otus_d0) %>% 
+  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
+  group_by(vendor, otu) %>% 
+  mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
+  ungroup() %>% 
+  ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
+  geom_jitter(aes(shape = clearance_status_d7), size=2, show.legend = TRUE) +
+  scale_colour_manual(name=NULL,
+                      values=color_scheme,
+                      breaks=color_vendors,
+                      labels=color_vendors)+
+  scale_shape_manual(name="Cleared by Day 7",
+                     values=c(4, 19),
+                     breaks=c("colonized", "not_detectable"),
+                     labels=c("no", "yes"), 
+                     drop=FALSE, na.translate = TRUE, na.value = 1)+
+  geom_hline(yintercept=1/5437, color="gray")+
+  facet_wrap(~ otu_name)+
+  labs(title=NULL,
+       x=NULL,
+       y="Relative abundance (%)") +
+  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
+  theme_classic()+
+  theme(strip.text = element_markdown(hjust = 0.5, size = 6),
+        axis.text.x = element_blank(),
+        legend.position = "bottom")
+save_plot(filename = paste0("results/figures/d0_top20_otus.png"), d0_model_top20_OTU, base_height = 5, base_width = 8)
+
