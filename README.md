@@ -49,22 +49,22 @@ The gut microbiota has a key role in determining susceptibility to *Clostridioid
 * Gnu Make should be located in the user's PATH
 * mothur (v1.43.0) should be located in the user's PATH
 * FFmpeg should be located in the user's PATH
-* R (v. 3.5.2) should be located in the user's PATH
+* R (v. 4.0.2) should be located in the user's PATH
 * R packages:
-    * broom v0.5.5
+    * broom v0.7.0
     * tidyverse_1.3.0
-    * cowplot v0.9.3
-    * magick v2.0
-    * vegan v2.5-2
-    * reshape2 v1.4.3
-    * knitr v1.20
-    * rmarkdown v1.10
-    * gtools v3.8.1
-    * ggpubr v.0.2.4
-    * ggforce v0.1.3
-    * gganimate v1.0.5
-    * writexl v1.1
-    * glue v1.3.1
+    * cowplot v1.0.0
+    * magick v2.4.0
+    * vegan v2.5-6
+    * reshape2 v1.4.4
+    * knitr v1.29
+    * rmarkdown v2.3
+    * gtools v3.8.2
+    * ggpubr v.0.4.0
+    * ggforce v0.3.2
+    * gganimate v1.0.6
+    * writexl v1.3
+    * glue v1.4.1
     * ggtext v0.1.0
 * Analysis assumes the use of 8 processors  
 
