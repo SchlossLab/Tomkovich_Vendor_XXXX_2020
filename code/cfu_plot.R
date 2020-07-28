@@ -60,7 +60,7 @@ summarize_plot <- function(df){
     group_by(vendor, day) %>% 
     summarize(median_cfu = median(cfu, na.rm = TRUE))
   ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, position = position_dodge(width = 0.6)) +
+    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), size = 1.5, position = position_dodge(width = 0.6)) +
     geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), show.legend = FALSE, size = 1.5) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -278,7 +278,7 @@ plot_CFU_D7 <- median_d7 %>%
   geom_hline(yintercept = 100, linetype=2) +
   geom_text(x = 11, y = 104, color = "black", label = "LOD")+
   geom_errorbar(aes(ymax = median_cfu, ymin = median_cfu), color = "gray50", size = 2)+ #Add lines to indicate the median for each group to the plot. Median calculated before y axis transformation
-  geom_jitter(aes(shape=experiment, size=2, alpha=0.6)) +
+  geom_jitter(aes(shape=experiment, size=2)) +
   scale_shape_manual(name=NULL,
                      values=shape_scheme,
                      breaks=shape_experiment,
