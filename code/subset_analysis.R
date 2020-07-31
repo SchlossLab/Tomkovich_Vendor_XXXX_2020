@@ -99,3 +99,15 @@ d1_ids <- (paste(pcoa_d1, collapse = "-"))
 #Day1 ids:
 #Output with the quotes removed, which is what we'll use for groups argument for the dist.shared command in mothur
 #S11D1E2-S12D1E2-S21D1E2-S22D1E2-Y11D1E2-Y12D1E2-J11D1E2-J12D1E2-J22D1E2-C11D1E2-C12D1E2-C21D1E2-C22D1E2-T11D1E2-T21D1E2-T22D1E2-E11D1E2-E12D1E2-E21D1E2-E22D1E2-S11D1E1-S12D1E1-S21D1E1-S22D1E1-Y11D1E1-Y12D1E1-Y13D1E1-Y21D1E1-Y22D1E1-J21D1E1-J22D1E1-C11D1E1-C12D1E1-C21D1E1-C22D1E1-T11D1E1-T12D1E1-T21D1E1-E11D1E1-E12D1E1-E21D1E1-E22D1E1
+
+#Day 7 samples----
+pcoa_d7 <- pcoa_data %>% 
+  filter(day == 7) %>% 
+  pull(id) %>% 
+  noquote() #Remove quotations from the characters
+
+#Concatenate output and add - between each sample.
+d7_ids <- (paste(pcoa_d7, collapse = "-"))
+#Day7 ids:
+#Output with the quotes removed, which is what we'll use for groups argument for the dist.shared command in mothur
+#C11D7E1-C11D7E2-C12D7E1-C12D7E2-C21D7E1-C21D7E2-C22D7E1-E11D7E1-E12D7E1-E12D7E2-E21D7E1-E21D7E2-E22D7E1-E22D7E2-J11D7E1-J11D7E2-J12D7E2-J22D7E1-J22D7E2-S11D7E2-S12D7E1-S12D7E2-S21D7E2-S22D7E2-T11D7E1-T12D7E1-T12D7E2-T21D7E2-Y11D7E1-Y11D7E2-Y12D7E1-Y12D7E2-Y13D7E1-Y21D7E1-Y21D7E2-Y22D7E1-Y22D7E2

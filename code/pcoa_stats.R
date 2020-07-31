@@ -264,9 +264,41 @@ d1 <- plot_pcoa(d1_pcoa, 1) +
   theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/pcoa_day1.png"), d1)
 
+# Read in thetayc distance matrix that represents day 7 sequenced samples----
+d7_dist <- read_dist("data/mothur/d7/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.dist")
 
-#Make combined table of adonis results for D-1, 0, and 1
-adonis_dn1_to_0 <- rbind(dn1_results, d0_results, d1_results) %>% 
+#Extract sample ids from distance matrix and join to metadata in order to test relevant variables
+d7_variables <- tibble(id = attr(d7_dist, "Labels")) %>% 
+  left_join(variables, by = "id") 
+
+#Unique cage & source are not completely independent so these variables should be nested along with experiment, which cage is nested within
+#All of these samples were on the same MiSeq run so that variable does not need to be examined
+d7_adonis <- adonis(d7_dist~source/(unique_cage*experiment), data = d7_variables, permutations = 9999)
+
+d7_results <- tibble(effects = c("source", "source:unique_cage"),
+                     r_sq = d7_adonis$aov.tab$R2[1:2],
+                     p = d7_adonis$aov.tab$Pr[1:2]) %>% 
+  mutate(day = 7)
+
+d7_pcoa <- read_tsv("data/mothur/d7/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.axes") %>%
+  select(group, axis1, axis2) %>% #Limit to 2 PCoA axes
+  rename(id = group) %>% #group is the same as id in the metadata data frame
+  right_join(metadata, by= "id") %>% #merge metadata and PCoA data frames
+  filter(!is.na(axis1)) #Remove all samples that weren't sequenced or were sequenced and didn't make the subsampling cutoff
+
+#Read in .loadings file to add percent variation represented by PCoA axis
+d7_axis_labels <- read_tsv("data/mothur/d1/vendors.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.thetayc.0.03.lt.ave.pcoa.loadings")
+d7_axis1 <- d7_axis_labels %>% filter(axis == 1) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+d7_axis2 <- d7_axis_labels %>% filter(axis == 2) %>% pull(loading) %>% round(digits = 1) #Pull value & round to 1 decimal
+
+d7 <- plot_pcoa(d7_pcoa, 7) +
+  labs(x = paste("PCoA 1 (", d7_axis1, "%)", sep = ""), #Anotations for each axis from loadings file
+       y = paste("PCoA 2 (", d7_axis2,"%)", sep = ""))+
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
+save_plot(filename = paste0("results/figures/pcoa_day7.png"), d7)
+
+#Make combined table of adonis results for D-1, 0, 1, and 7
+adonis_dn1_to_0 <- rbind(dn1_results, d0_results, d1_results, d7_results) %>% 
 write_tsv("data/process/adonis_dn1-1.tsv") 
 
 #Examine initial day -1 vendor communities separately----
