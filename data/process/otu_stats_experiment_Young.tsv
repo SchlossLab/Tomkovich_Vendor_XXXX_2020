@@ -1,23 +1,23 @@
 otu	statistic	p.value	method	alternative	1	2	p.value.adj
 Bacteroides (OTU 3)	0	0.026518721959430742	Wilcoxon rank sum test with continuity correction	two.sided	0	0.05343020047820489	0.1600095507281947
-Akkermansia (OTU 4)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.1308626080559132	0.025933419164980688	0.1600095507281947
-Lachnospiraceae (OTU 9)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.04313040279565937	0.011403347434246827	0.1600095507281947
+Akkermansia (OTU 4)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.1308626080559132	0.025933419164980688	0.1600095507281947
+Lachnospiraceae (OTU 9)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.04313040279565937	0.011403347434246827	0.1600095507281947
 Porphyromonadaceae (OTU 10)	0	0.02107057013437866	Wilcoxon rank sum test with continuity correction	two.sided	0	0.025749494206363802	0.1600095507281947
-Lachnospiraceae (OTU 13)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.03586536693029244	8.276623137759794e-4	0.1600095507281947
+Lachnospiraceae (OTU 13)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.03586536693029244	8.276623137759794e-4	0.1600095507281947
 Turicibacter (OTU 14)	0	0.029401048190339663	Wilcoxon rank sum test with continuity correction	two.sided	0.007081110906750046	0.050579363619643186	0.1600095507281947
 Lachnospiraceae (OTU 17)	16	0.028429535998796548	Wilcoxon rank sum test with continuity correction	two.sided	0.004965973882655877	2.758874379253265e-4	0.1600095507281947
 Porphyromonadaceae (OTU 22)	0	0.026518721959430742	Wilcoxon rank sum test with continuity correction	two.sided	0	0.09012322972227331	0.1600095507281947
 Lachnospiraceae (OTU 27)	16	0.029401048190339663	Wilcoxon rank sum test with continuity correction	two.sided	0.010115872723928637	1.839249586168843e-4	0.1600095507281947
-Lachnospiraceae (OTU 38)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.012598859665256576	0.0019312120654772853	0.1600095507281947
+Lachnospiraceae (OTU 38)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.012598859665256576	0.0019312120654772853	0.1600095507281947
 Lachnospiraceae (OTU 42)	16	0.029401048190339663	Wilcoxon rank sum test with continuity correction	two.sided	0.013886334375574766	0.0032186867757954757	0.1600095507281947
-Bifidobacterium (OTU 46)	0	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.0012874747103181902	0.011403347434246827	0.1600095507281947
+Bifidobacterium (OTU 46)	0	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.0012874747103181902	0.011403347434246827	0.1600095507281947
 Lachnospiraceae (OTU 48)	16	0.026518721959430742	Wilcoxon rank sum test with continuity correction	two.sided	0.008920360492918888	0	0.1600095507281947
-Lachnospiraceae (OTU 50)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.003678499172337686	0.001103549751701306	0.1600095507281947
+Lachnospiraceae (OTU 50)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.003678499172337686	0.001103549751701306	0.1600095507281947
 Porphyromonadaceae (OTU 52)	0	0.020208004239389284	Wilcoxon rank sum test with continuity correction	two.sided	0	0.08359389369137392	0.1600095507281947
 Lachnospiraceae (OTU 72)	16	0.028429535998796548	Wilcoxon rank sum test with continuity correction	two.sided	0.001195512231009748	9.196247930844215e-5	0.1600095507281947
 Lachnospiraceae (OTU 73)	16	0.029401048190339663	Wilcoxon rank sum test with continuity correction	two.sided	0.001103549751701306	9.196247930844215e-5	0.1600095507281947
 Bacteria (OTU 75)	0	0.026518721959430742	Wilcoxon rank sum test with continuity correction	two.sided	0	0.008644473054993562	0.1600095507281947
-Lachnospiraceae (OTU 78)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.004506161486113666	5.51774875850653e-4	0.1600095507281947
+Lachnospiraceae (OTU 78)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.004506161486113666	5.51774875850653e-4	0.1600095507281947
 Porphyromonadaceae (OTU 87)	0	0.02107057013437866	Wilcoxon rank sum test with continuity correction	two.sided	0	0.06989148427441604	0.1600095507281947
 Porphyromonadaceae (OTU 88)	0	0.02107057013437866	Wilcoxon rank sum test with continuity correction	two.sided	0	0.04874011403347434	0.1600095507281947
 Ruminococcaceae (OTU 94)	16	0.028429535998796548	Wilcoxon rank sum test with continuity correction	two.sided	0.0017472871068604009	1.839249586168843e-4	0.1600095507281947
@@ -27,7 +27,7 @@ Lachnospiraceae (OTU 110)	16	0.028429535998796548	Wilcoxon rank sum test with co
 Porphyromonadaceae (OTU 112)	0	0.02107057013437866	Wilcoxon rank sum test with continuity correction	two.sided	0	6.437373551590951e-4	0.1600095507281947
 Lachnospiraceae (OTU 113)	16	0.029401048190339663	Wilcoxon rank sum test with continuity correction	two.sided	0.002391024462019496	9.196247930844216e-4	0.1600095507281947
 Ruminococcaceae (OTU 115)	16	0.017706065807366618	Wilcoxon rank sum test with continuity correction	two.sided	1.839249586168843e-4	0	0.1600095507281947
-Lachnospiraceae (OTU 116)	16	0.02857142857142857	Wilcoxon rank sum test	two.sided	0.004046349089571455	7.356998344675372e-4	0.1600095507281947
+Lachnospiraceae (OTU 116)	16	0.02857142857142857	Wilcoxon rank sum exact test	two.sided	0.004046349089571455	7.356998344675372e-4	0.1600095507281947
 Bacteria (OTU 129)	0	0.02107057013437866	Wilcoxon rank sum test with continuity correction	two.sided	0	0.012047084789405922	0.1600095507281947
 Acetatifactor (OTU 132)	16	0.026518721959430742	Wilcoxon rank sum test with continuity correction	two.sided	0.0014713996689350744	0	0.1600095507281947
 Ruminococcaceae (OTU 133)	0	0.02283621545128266	Wilcoxon rank sum test with continuity correction	two.sided	0	9.196247930844216e-4	0.1600095507281947
@@ -74,8 +74,8 @@ Clostridium (OTU 211)	14	0.0885419228404861	Wilcoxon rank sum test with continui
 Clostridia (OTU 86)	14	0.10375367752098565	Wilcoxon rank sum test with continuity correction	two.sided	0.0010115872723928637	1.839249586168843e-4	0.4022231608005334
 Lachnospiraceae (OTU 217)	14	0.10591109025490285	Wilcoxon rank sum test with continuity correction	two.sided	5.51774875850653e-4	1.839249586168843e-4	0.40503835867753385
 Erysipelotrichaceae (OTU 189)	2	0.11021018267342116	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	0.0031267242964870333	0.41585975595437585
-Lachnospiraceae (OTU 33)	14	0.11428571428571428	Wilcoxon rank sum test	two.sided	0.004782048924038992	3.678499172337686e-4	0.4200371057513914
-Clostridiales (OTU 51)	2	0.11428571428571428	Wilcoxon rank sum test	two.sided	0.002299061982711054	0.0061614861136656245	0.4200371057513914
+Lachnospiraceae (OTU 33)	14	0.11428571428571428	Wilcoxon rank sum exact test	two.sided	0.004782048924038992	3.678499172337686e-4	0.4200371057513914
+Clostridiales (OTU 51)	2	0.11428571428571428	Wilcoxon rank sum exact test	two.sided	0.002299061982711054	0.0061614861136656245	0.4200371057513914
 Lachnospiraceae (OTU 127)	13.5	0.12409465882825224	Wilcoxon rank sum test with continuity correction	two.sided	0.0034026117344123597	0	0.4445416259290555
 Lachnospiraceae (OTU 177)	13.5	0.12409465882825224	Wilcoxon rank sum test with continuity correction	two.sided	0.0010115872723928637	0	0.4445416259290555
 Lachnospiraceae (OTU 93)	13	0.18040266628975615	Wilcoxon rank sum test with continuity correction	two.sided	0.001195512231009748	9.196247930844215e-5	0.4825973877022286
@@ -123,7 +123,7 @@ Bacteroides (OTU 2)	10	0.45325470475373647	Wilcoxon rank sum test with continuit
 Parabacteroides (OTU 5)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Bacteroides (OTU 11)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Bacteroides (OTU 12)	10	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
-Alistipes (OTU 21)	12	0.34285714285714286	Wilcoxon rank sum test	two.sided	0.12368953466985469	0.03540555453375023	0.5910468610341365
+Alistipes (OTU 21)	12	0.34285714285714286	Wilcoxon rank sum exact test	two.sided	0.12368953466985469	0.03540555453375023	0.5910468610341365
 Enterococcus (OTU 23)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Parabacteroides (OTU 24)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Porphyromonadaceae (OTU 29)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
@@ -223,10 +223,10 @@ Lachnospiraceae (OTU 2856)	6	0.45325470475373647	Wilcoxon rank sum test with con
 Bacteroidetes (OTU 3246)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Bacteroidetes (OTU 3247)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
 Bacteroidetes (OTU 3259)	6	0.45325470475373647	Wilcoxon rank sum test with continuity correction	two.sided	0	0	0.5910468610341365
-Lactobacillus (OTU 6)	5	0.4857142857142857	Wilcoxon rank sum test	two.sided	0.008736435534302004	0.030899393047636566	0.6028822055137845
-Lactobacillus (OTU 31)	11	0.4857142857142857	Wilcoxon rank sum test	two.sided	0.01370240941695788	0.00855251057568512	0.6028822055137845
-Lachnospiraceae (OTU 122)	11	0.4857142857142857	Wilcoxon rank sum test	two.sided	0.00211513702409417	5.51774875850653e-4	0.6028822055137845
-Enterorhabdus (OTU 156)	5	0.4857142857142857	Wilcoxon rank sum test	two.sided	0.0010115872723928637	0.0014713996689350744	0.6028822055137845
+Lactobacillus (OTU 6)	5	0.4857142857142857	Wilcoxon rank sum exact test	two.sided	0.008736435534302004	0.030899393047636566	0.6028822055137845
+Lactobacillus (OTU 31)	11	0.4857142857142857	Wilcoxon rank sum exact test	two.sided	0.01370240941695788	0.00855251057568512	0.6028822055137845
+Lachnospiraceae (OTU 122)	11	0.4857142857142857	Wilcoxon rank sum exact test	two.sided	0.00211513702409417	5.51774875850653e-4	0.6028822055137845
+Enterorhabdus (OTU 156)	5	0.4857142857142857	Wilcoxon rank sum exact test	two.sided	0.0010115872723928637	0.0014713996689350744	0.6028822055137845
 Lachnospiraceae (OTU 106)	10.5	0.5049850750938458	Wilcoxon rank sum test with continuity correction	two.sided	1.839249586168843e-4	0	0.6133509710367312
 Ruminococcaceae (OTU 180)	10.5	0.5049850750938458	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	0	0.6133509710367312
 Firmicutes (OTU 259)	10.5	0.5049850750938458	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	0	0.6133509710367312
@@ -247,7 +247,7 @@ Lachnospiraceae (OTU 165)	10	0.6198391186854189	Wilcoxon rank sum test with cont
 Lachnospiraceae (OTU 97)	10	0.6422948221337781	Wilcoxon rank sum test with continuity correction	two.sided	0.001195512231009748	9.196247930844215e-5	0.7389001409099968
 Ruminococcaceae (OTU 84)	10	0.6631172453203823	Wilcoxon rank sum test with continuity correction	two.sided	6.437373551590951e-4	3.678499172337686e-4	0.7567023404260814
 Lachnospiraceae (OTU 274)	6	0.6611967079369339	Wilcoxon rank sum test with continuity correction	two.sided	0.0010115872723928637	0.0014713996689350744	0.7567023404260814
-Lachnospiraceae (OTU 68)	10	0.6857142857142857	Wilcoxon rank sum test	two.sided	8.276623137759794e-4	5.51774875850653e-4	0.7793459552495696
+Lachnospiraceae (OTU 68)	10	0.6857142857142857	Wilcoxon rank sum exact test	two.sided	8.276623137759794e-4	5.51774875850653e-4	0.7793459552495696
 Lachnospiraceae (OTU 197)	9.5	0.7388826803635273	Wilcoxon rank sum test with continuity correction	two.sided	1.839249586168843e-4	1.839249586168843e-4	0.8364151941715129
 Lachnospiraceae (OTU 126)	9.5	0.7659548296512902	Wilcoxon rank sum test with continuity correction	two.sided	0.0010115872723928637	0.0010115872723928637	0.8601794317115681
 Lachnospiraceae (OTU 167)	6.5	0.7659548296512902	Wilcoxon rank sum test with continuity correction	two.sided	2.758874379253265e-4	4.598123965422108e-4	0.8601794317115681
@@ -256,9 +256,9 @@ Ruminococcaceae (OTU 262)	7	0.8676323347781927	Wilcoxon rank sum test with conti
 Lachnospiraceae (OTU 85)	7	0.8793886590272973	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	1.839249586168843e-4	0.9683540486565182
 Firmicutes (OTU 147)	7	0.8793886590272973	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	1.839249586168843e-4	0.9683540486565182
 Ruminococcaceae (OTU 424)	7	0.8743670611628919	Wilcoxon rank sum test with continuity correction	two.sided	9.196247930844215e-5	9.196247930844215e-5	0.9683540486565182
-Lactobacillus (OTU 18)	7	0.8857142857142857	Wilcoxon rank sum test	two.sided	0.025657531727055365	0.027864631230457973	0.9715393133997784
+Lactobacillus (OTU 18)	7	0.8857142857142857	Wilcoxon rank sum exact test	two.sided	0.025657531727055365	0.027864631230457973	0.9715393133997784
 Porphyromonadaceae (OTU 7)	8	1	Wilcoxon rank sum test with continuity correction	two.sided	0.1402427809453743	0.03071546808901968	1
-Porphyromonadaceae (OTU 8)	8	1	Wilcoxon rank sum test	two.sided	0.10410152657715652	0.01710502115137024	1
+Porphyromonadaceae (OTU 8)	8	1	Wilcoxon rank sum exact test	two.sided	0.10410152657715652	0.01710502115137024	1
 Clostridium (OTU 41)	8.5	1	Wilcoxon rank sum test with continuity correction	two.sided	0.001195512231009748	9.196247930844216e-4	1
 Lachnospiraceae (OTU 56)	7.5	1	Wilcoxon rank sum test with continuity correction	two.sided	0	0	1
 Ruminococcaceae (OTU 63)	8	1	Wilcoxon rank sum test with continuity correction	two.sided	4.598123965422107e-4	3.678499172337686e-4	1

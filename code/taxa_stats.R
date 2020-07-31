@@ -390,17 +390,17 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>%
     select(vendor, day, agg_rel_abund, otu, experiment, clearance_status_d7)
   otu_time <- ggplot(NULL)+
-    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, shape=clearance_status_d7), alpha = .8, size  = 1.5, position = position_dodge(width = 0.6))+
+    geom_point(otu_mice, mapping = aes(x=day, y=agg_rel_abund, color=vendor, shape=clearance_status_d7), size  = 1.5, position = position_dodge(width = 0.6))+
     geom_line(otu_median, mapping = aes(x=day, y=median, color=vendor), size = 1, show.legend = FALSE)+
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
     scale_shape_manual(name="Cleared by Day 7",
-                        values=c(4, 19),
-                        breaks=c("colonized", "not_detectable"),
-                        labels=c("no", "yes"), 
-                        drop=FALSE, na.translate = TRUE, na.value = 1)+
+                       values=c(4, 19, 21),
+                       breaks=c("colonized", "not_detectable", "no_data"),
+                       labels=c("no", "yes", "no data"), 
+                       drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
     labs(title=specify_otu_name,
          x="Day",
@@ -587,15 +587,15 @@ plot_interp_otus_d0 <- function(specify_otu, otu_stats){
     ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
     geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1, show.legend = FALSE)+ #Add lines to indicate the median for each group to the plot
-    geom_jitter(aes(shape = clearance_status_d7), size=3, alpha=0.6) +
+    geom_jitter(aes(shape = clearance_status_d7), size=3) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
                         labels=color_vendors)+
     scale_shape_manual(name="Cleared by Day 7",
-                       values=c(4, 19),
-                       breaks=c("colonized", "not_detectable"),
-                       labels=c("no", "yes"), 
+                       values=c(4, 19, 21),
+                       breaks=c("colonized", "not_detectable", "no_data"),
+                       labels=c("no", "yes", "no data"), 
                        drop=FALSE, na.translate = TRUE, na.value = 1)+
     geom_hline(yintercept=1/5437, color="gray")+
     labs(title=specify_otu_name,
@@ -635,21 +635,28 @@ d0model_otu16 <- plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)+
   theme(legend.position = "none")
 save_plot(filename = paste0("results/figures/d0_model_otu_Proteus (OTU 16).png"), d0model_otu16, base_aspect_ratio = 3.5)
 
-interp_otus_d0_low_abund <- interp_otus  %>% filter(model_input_day == 0) %>% 
-  filter(!OTU == "Enterobacteriaceae (OTU 1)", #remove 3 OTUs with higher relative abundances plotted above
-         !OTU == "Bacteroides (OTU 2)",
-         !OTU == "Proteus (OTU 16)") %>% 
-  pull(OTU)
+#Create a data frame of just the top 10 most important OTUs for the Day 0 logistic regression model
+#Create a color column based on correlation coefficient sign.
+interp_otus_d0_top_10 <- interp_otus  %>% filter(model_input_day == 0) %>% 
+  arrange(median_rank) %>% 
+  slice(1:10) %>% #Pick top 10 OTUs based on median_rank
+  #Assign color to OTU based on correlation coefficient (- correlates with colonization, red; + correlates with clearance, dark blue)
+  mutate(color = case_when(median_feature_weight < 0 ~ "firebrick",
+                           median_feature_weight > 0 ~ "navyblue"))
   
-#Plot the other 17 OTUs that were important to Day 0 model and 
-#had low relative abundances together using facet_wrap
-low_abund_d0_otu_model_taxa <- agg_otu_data %>% 
+#Plot the top 10 OTUs that were important to Day 0 model and 
+#using facet_wrap, highlight the OTUs that correlate with colonization
+top10_d0_otu_model_taxa <- agg_otu_data %>% 
   filter(day == 0) %>% 
-  filter(otu %in% interp_otus_d0_low_abund) %>% 
+  filter(otu %in% (interp_otus_d0_top_10 %>% pull(OTU))) %>%
   mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
   group_by(vendor, otu) %>% 
+  left_join(interp_otus_d0_top_10, by = c("otu" = "OTU")) %>%  #Join to interp_otus_d0_top_10 to preserve coeffic.
+  #Modify ggtext formatted OTU label to incorp. color based on correlation coefficient sign in d0_model
+  mutate(otu_name = glue("<span style='color:{color}'>*{bactname}* ({OTUnumber}")) %>%  #Markdown notation so that only bacteria name is italicized
   mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
   ungroup() %>% 
+  arrange(median_rank) %>% 
   ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
   geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
@@ -659,12 +666,12 @@ low_abund_d0_otu_model_taxa <- agg_otu_data %>%
                       breaks=color_vendors,
                       labels=color_vendors)+
   scale_shape_manual(name="Cleared by Day 7",
-                     values=c(4, 19),
-                     breaks=c("colonized", "not_detectable"),
-                     labels=c("no", "yes"), 
+                     values=c(4, 19, 21),
+                     breaks=c("colonized", "not_detectable", "no_data"),
+                     labels=c("no", "yes", "no data"), 
                      drop=FALSE, na.translate = TRUE, na.value = 1)+
   geom_hline(yintercept=1/5437, color="gray")+
-  facet_wrap(~ otu_name)+
+  facet_wrap(~ otu_name, nrow=2)+
   labs(title=NULL,
        x=NULL,
        y="Relative abundance (%)") +
@@ -673,38 +680,6 @@ low_abund_d0_otu_model_taxa <- agg_otu_data %>%
   theme(strip.text = element_markdown(hjust = 0.5, size = 6),
         axis.text.x = element_blank(),
         legend.position = "bottom")
-save_plot(filename = paste0("results/figures/d0_low_abund_otus.png"), low_abund_d0_otu_model_taxa, base_height = 5, base_width = 8)
+save_plot(filename = paste0("results/figures/d0_top10_otus.png"), top10_d0_otu_model_taxa, base_height = 5, base_width = 8)
 
-#Plot the 20 OTUs that were important to Day 0 model using facet_wrap
-d0_model_top20_OTU <- agg_otu_data %>% 
-  filter(day == 0) %>% 
-  filter(otu %in% interp_otus_d0) %>% 
-  mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
-  group_by(vendor, otu) %>% 
-  mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
-  ungroup() %>% 
-  ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
-  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-  geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
-  geom_jitter(aes(shape = clearance_status_d7), size=2, show.legend = TRUE) +
-  scale_colour_manual(name=NULL,
-                      values=color_scheme,
-                      breaks=color_vendors,
-                      labels=color_vendors)+
-  scale_shape_manual(name="Cleared by Day 7",
-                     values=c(4, 19),
-                     breaks=c("colonized", "not_detectable"),
-                     labels=c("no", "yes"), 
-                     drop=FALSE, na.translate = TRUE, na.value = 1)+
-  geom_hline(yintercept=1/5437, color="gray")+
-  facet_wrap(~ otu_name)+
-  labs(title=NULL,
-       x=NULL,
-       y="Relative abundance (%)") +
-  scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-  theme_classic()+
-  theme(strip.text = element_markdown(hjust = 0.5, size = 6),
-        axis.text.x = element_blank(),
-        legend.position = "bottom")
-save_plot(filename = paste0("results/figures/d0_top20_otus.png"), d0_model_top20_OTU, base_height = 5, base_width = 8)
 
