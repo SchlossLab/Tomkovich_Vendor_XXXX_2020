@@ -88,7 +88,7 @@ metadata <- full_join(metadata, cfu_d7, by = "mouse_id") %>%
   #Add a column denoting C. difficile clearance status at Day 7
   mutate(clearance_status_d7 = case_when(cfu_d7 > 0 ~ "colonized",
                                          cfu_d7 == 0 ~ "not_detectable",
-                                         cfu_d7 == NA ~ "NA"))
+                                         is.na(cfu_d7) ~ "no_data")) #NA samples will be labeled no_data, meaning we did not have CFU data collected on day 7 for the mouse
 metadata <- full_join(metadata, cfu_d8, by = "mouse_id")
 metadata <- full_join(metadata, cfu_d9, by = "mouse_id")
 
