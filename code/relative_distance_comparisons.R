@@ -421,23 +421,23 @@ dn1_vs_d7 <- dn1vd7_dist %>%
   ungroup() %>% 
   ggplot(aes(x = vendor, y = distances, color = vendor)) +
   geom_errorbar(aes(ymax=median, ymin=median), color = "gray50", size = 1, show.legend = FALSE)+ #Add lines to indicate median 
-  geom_jitter(aes(shape = clearance_status_d7), size=2) +
+  geom_jitter(size=2) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
   scale_colour_manual(name=NULL,
                       values=color_scheme,
                       breaks=color_vendors,
                       labels=color_vendors)+
-  scale_shape_manual(name="Cleared by Day 7",
-                     values=c(4, 19, 21),
-                     breaks=c("colonized", "not_detectable", "no_data"),
-                     labels=c("no", "yes", "no data"), 
-                     drop=FALSE, na.translate = TRUE, na.value = 1)+
+#Scale for adding aes(shape = clearance_status_d7) to geom_jitter...  
+#  scale_shape_manual(name="Cleared by Day 7",
+#                     values=c(4, 19, 21),
+#                     breaks=c("colonized", "not_detectable", "no_data"),
+#                     labels=c("no", "yes", "no data"), 
+#                     drop=FALSE, na.translate = TRUE, na.value = 1)+
   labs(title = NULL, x = NULL, y = "Theta YC Distance relative to baseline")+
   theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
   theme_classic()+
   theme(axis.text.x = element_blank()) #Remove X-axis labels because they are redundant with our key
 save_plot("results/figures/dn1_vs_d7_thetayc.png", dn1_vs_d7)
-
 
 #Theta YC distances over time relative to baseline (dn1)
 
