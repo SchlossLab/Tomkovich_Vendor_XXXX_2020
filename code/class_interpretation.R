@@ -162,7 +162,7 @@ get_taxa_info_as_labels <- function(data){
     select(-OTU)
   
   taxa_otus <- inner_join(otus, taxa_info, by="key") %>% 
-    mutate_if(is.character, str_to_upper) %>%
+    mutate(key=str_to_upper(key)) %>%
     mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
     mutate(taxa=gsub("(.*)_.*","\\1",Taxonomy)) %>% 
     mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
@@ -173,8 +173,9 @@ get_taxa_info_as_labels <- function(data){
     select(key, taxa, imp) %>% 
     unite(key, taxa, key, sep=" (") %>% 
     mutate(key = paste(key,")", sep="")) %>% 
-    mutate(key=paste0(gsub('TU0*', 'TU ', key))) 
-  
+    mutate(key=paste0(gsub('TU0*', 'TU ', key)))  
+
+    
   
   return(taxa_otus$key)
 }
@@ -269,7 +270,7 @@ get_table_of_top_20 <- function(data){
     select(-OTU)
   
   taxa_otus <- inner_join(otus, taxa_info, by="key") %>% 
-    mutate_if(is.character, str_to_upper) %>%
+    mutate(key=str_to_upper(key)) %>%
     mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
     mutate(taxa=gsub("(.*)_.*","\\1",Taxonomy)) %>% 
     mutate(taxa=gsub("(.*);.*","\\1",Taxonomy)) %>% 
@@ -281,7 +282,7 @@ get_table_of_top_20 <- function(data){
     unite(key, taxa, key, sep=" (") %>% 
     mutate(key = paste(key,")", sep="")) %>% 
     mutate(key=paste0(gsub('TU0*', 'TU ', key))) %>% 
-    rename(OTU=key)
+    rename(OTU=key)  
   
   
   return(taxa_otus)
