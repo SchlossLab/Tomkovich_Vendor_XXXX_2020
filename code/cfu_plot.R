@@ -60,8 +60,8 @@ summarize_plot <- function(df){
     group_by(vendor, day) %>% 
     summarize(median_cfu = median(cfu, na.rm = TRUE))
   ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), size = 1.5, position = position_dodge(width = 0.6)) +
-    geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), show.legend = FALSE, size = 1.5) +
+    geom_point(df, mapping = aes(x = day, y = cfu, color= vendor, fill = vendor, shape = experiment), size = 1.5, position = position_dodge(width = 0.6), show.legend = FALSE) +
+    geom_line(median_summary, mapping = aes(x = day, y = median_cfu, color = vendor), size = 1.5) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
                         breaks=color_vendors,
@@ -76,21 +76,21 @@ summarize_plot <- function(df){
     geom_hline(yintercept = 100, linetype=2) +
     geom_text(x = 9.2, y = 102, color = "black", label = "LOD")+
     scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9), limits = c(40, 350000000))+
-    theme_classic()
+    theme_classic()+
+    theme(legend.position = "bottom")
 }
 
 #CFU plot for the 1st experiment----
 exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))+
   ggtitle("1st experiment")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
 save_plot(filename = paste0("results/figures/exp1_cfu_time.png"), plot = exp1_cfu, base_aspect_ratio = 2)
 
 #CFU plot for the 2nd experiment----
 exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))+
   ggtitle("2nd experiment")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "none") #Center plot titile
+  theme(plot.title = element_text(hjust = 0.5), #Center plot title
+        legend.position = "none") 
 save_plot(filename = paste0("results/figures/exp2_cfu_time.png"), plot = exp2_cfu, base_aspect_ratio = 2)
 
 #CFU over time plot with astericks on days where cfu varied significantly across sources of mice using annotate()----
@@ -245,7 +245,7 @@ plot_percent_colonized <- function(dataframe){
          y = "% of Mice Colonized")+
     theme_classic()+
     theme(text = element_text(size = 16)) + # Change font size for entire plot
-    theme(plot.title = element_text(hjust = 0.5)) #Center plot titile
+    theme(plot.title = element_text(hjust = 0.5)) #Center plot title
   
 }    
 percent_colonized_plot <- plot_percent_colonized(percent_colonized_day)

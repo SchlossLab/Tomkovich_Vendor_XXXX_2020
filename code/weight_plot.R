@@ -15,7 +15,7 @@ summarize_plot <- function(df){
     group_by(vendor, day) %>% 
     summarize(median_weight_change = median(weight_change, na.rm = TRUE))
   ggplot(NULL) +
-    geom_point(df, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+    geom_point(df, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), size = .5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
     geom_line(median_summary, mapping = aes(x = day, y = median_weight_change, color = vendor), size = 1) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -107,7 +107,7 @@ median_summary <- weight_data %>%
     group_by(vendor, day) %>% 
     summarize(median_weight_change = median(weight_change, na.rm = TRUE))
 weight_stats <-  ggplot(NULL) +
-    geom_point(weight_data, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), alpha = .2, size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
+    geom_point(weight_data, mapping = aes(x = day, y = weight_change, color= vendor, fill = vendor, shape = experiment), size = 1.5, show.legend = FALSE, position = position_dodge(width = 0.6)) +
     geom_line(median_summary, mapping = aes(x = day, y = median_weight_change, color = vendor), size = 1.5) +
     scale_colour_manual(name=NULL,
                         values=color_scheme,
@@ -148,7 +148,7 @@ plot_weight_D2 <- median_d2 %>%
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_errorbar(aes(ymax = median_weight, ymin = median_weight), color = "gray50", size = 2)+ #Add lines to indicate the median for each group to the plot. Median calculated before y axis transformation
-  geom_jitter(aes(shape=experiment, size=2, alpha=0.6)) +
+  geom_jitter(aes(shape=experiment, size=2)) +
   scale_shape_manual(name=NULL,
                      values=shape_scheme,
                      breaks=shape_experiment,
