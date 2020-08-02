@@ -21,6 +21,7 @@ select_timepoint <- function(timepoint){
     filter(day == timepoint) %>% 
     select(-id, -day) %>%
     drop_na() %>%
+    filter(clearance_status_d7 != "no_data") %>% #No cfu data on day 7 for these mice, exclude them
     select(clearance_status_d7, everything()) %>%
     rename(dx=clearance_status_d7) %>% #rename column, the clearance_status_d7 values are what we want to predict
     select(-Otu0020) %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is what we're predicting
@@ -36,6 +37,7 @@ input_ids <- function(timepoint){
   data <- inner_join(metadata, shared, by=c("id"="Group")) %>% 
     filter(day == timepoint) %>% 
     drop_na() %>%
+    filter(clearance_status_d7 != "no_data") %>% #No cfu data on day 7 for these mice, exclude them
     pull(id) 
 }
 input_ids_data_dn1 <- input_ids(-1)
