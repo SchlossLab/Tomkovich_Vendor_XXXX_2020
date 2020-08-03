@@ -149,19 +149,19 @@ venn_otus <- function(source_comp, clind_comp, title){
 }
 
 # Venn diagram of Day -1 overlapping OTUs----
-dn1_otus_venn_plot <- venn_otus(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o, "Day -1 model key OTU comparisons")
+dn1_otus_venn_plot <- venn_otus(dayn1_and_interp_dn1_o, paired_and_interp_dn1_o, "Day -1 model OTU comparisons")
 save_plot("results/figures/venn_dn1_otus.png", dn1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day 0 overlapping OTUs----
-d0_otus_venn_plot <- venn_otus(day0_and_interp_d0_o, paired_and_interp_d0_o, "Day 0 model key OTU comparisons")
+d0_otus_venn_plot <- venn_otus(day0_and_interp_d0_o, paired_and_interp_d0_o, "Day 0 model OTU comparisons")
 save_plot("results/figures/venn_d0_otus.png", d0_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of Day -1 overlapping OTUs----
-d1_otus_venn_plot <- venn_otus(day1_and_interp_d1_o, paired_and_interp_d1_o, "Day 1 model key OTU comparisons")
+d1_otus_venn_plot <- venn_otus(day1_and_interp_d1_o, paired_and_interp_d1_o, "Day 1 model OTU comparisons")
 save_plot("results/figures/venn_d1_otus.png", d1_otus_venn_plot, base_aspect_ratio = 1.8)
 
 # Venn diagram of combined overlapping OTUs----
-combined_otus_venn_plot <- venn_otus(dayn1to1_and_interp_combined, paired_and_interp_combined, "Key taxa comparisons for day -1, 0, and 1 models")
+combined_otus_venn_plot <- venn_otus(dayn1to1_and_interp_combined, paired_and_interp_combined, "OTU comparisons for day -1, 0, and 1 models")
 save_plot("results/figures/venn_overall_otus.png", combined_otus_venn_plot, base_aspect_ratio = 1.8)
 
 #Comparison of combined Venn diagram OTUs to significant OTUs that varied by source on day -1, 0, and 1:

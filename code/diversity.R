@@ -14,7 +14,7 @@ shannon_all <- diversity_data %>%
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_boxplot(outlier.shape = NA, size = 1.2)+
-  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
+  geom_jitter(shape=19, size=2, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
   labs(title=NULL, 
        x="Source",
        y="Shannon Diversity Index")+
@@ -30,7 +30,7 @@ richness_all <- diversity_data %>%
                       breaks=color_vendors,
                       labels=color_vendors)+
   geom_boxplot(outlier.shape = NA, size = 1.2)+
-  geom_jitter(shape=19, size=2, alpha=0.6, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
+  geom_jitter(shape=19, size=2, position=position_jitterdodge(dodge.width=0.7, jitter.width=0.1), show.legend = FALSE) +
   labs(title=NULL, 
        x="Source",
        y="Number of Observed OTUs")+
@@ -186,7 +186,7 @@ shannon_dx_plot <- function(timepoint){
                        labels=shape_experiment) +
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
     geom_errorbar(aes(ymax = median_shannon, ymin = median_shannon), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
-    geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
+    geom_jitter(aes(shape = experiment), size=2, show.legend = FALSE) +
     labs(title=NULL, 
          x="Source",
          y="Shannon Diversity Index")+
@@ -245,7 +245,7 @@ sobs_dx_plot <- function(timepoint){
                      labels=shape_experiment) +  
   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
   geom_errorbar(aes(ymax = median_sobs, ymin = median_sobs), color = "gray50", size = 1)+ #Add lines to indicate the median for each group to the plot
-  geom_jitter(aes(shape = experiment), size=2, alpha=0.6, show.legend = FALSE) +
+  geom_jitter(aes(shape = experiment), size=2, show.legend = FALSE) +
   labs(title=NULL, 
        x="Source",
        y="Number of Observed OTUs")+

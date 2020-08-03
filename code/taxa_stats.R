@@ -530,7 +530,7 @@ baseline_exp_o <- function(vendor_name){
     write_tsv(path = paste0("data/process/otu_stats_experiment_", vendor_name, ".tsv"))
 }
 
-#Test only for days where input communities were used to create classification models (Day -1, 0, 1):
+#Test only Schloss, Young, and Envigo mice
 test_sources <- c("Schloss", "Young", "Envigo")
 for (v in test_sources){
   baseline_exp_o(v)
@@ -563,6 +563,14 @@ diff_otu_experiment_Schloss #0
 diff_otu_experiment_Young #58
 diff_otu_experiment_Envigo #3
   #Porphyromonadaceae OTU 52 and 139, Deltaproteobacteria OTU 174
+
+#Check if any overlap with taxa that varied between sources at baseline
+Young_exp_baseline <- intersect_all(diff_otu_experiment_Young, `sig_otu_day-1`)
+#21 overlap
+Young_exp_baseline <- intersect_all(diff_otu_experiment_Young, `sig_otu_day-1`[1:20])
+#O overlap with top 20
+Envigo_exp_baseline <- intersect_all(diff_otu_experiment_Envigo, `sig_otu_day-1`)
+#Deltaproteobacteria (OTU 174) 
 
 #Examine top 20 taxa from logistic regression model that performed the best: Communities after clindamycin treatment at the OTU level----
 interp_otus <- read_tsv("data/process/combined_top20_otus_all_models.tsv")

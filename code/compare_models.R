@@ -61,5 +61,6 @@ all %>%
          cv_lci, cv_q1, cv_median, cv_q3, cv_uci,
          test_lci, test_q1, test_median, test_q3, test_uci
   ) %>%
-  unnest() %>%
+  unnest(cols = c(test, cv_lci, cv_q1, cv_median, cv_q3, cv_uci, test_lci, test_q1, 
+                  test_median, test_q3, test_uci)) %>%
   write_tsv("data/process/classification_cv_test_compare.tsv")
