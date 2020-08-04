@@ -85,6 +85,14 @@ key_clind_otus <- sort(clind_otus_w_duplicates[duplicated(clind_otus_w_duplicate
 #List of key OTUs from source and clindamycin varying OTUs:
 key_otus <- unique(c(key_source_otus, key_clind_otus))
 
+#Function to format OTUs into bold OTU numbers and bold italic bacterial names
+#Input: dataframe with otus column already formatted into Rmarkdown format so that only bacteria name is italicized
+bold_otus <- function(df){
+  df %>% filter(overlap == TRUE) %>%  #Only the OTUs that overlap between models need to be formatted in bold italic
+    separate(otus, into = c("bactname", "OTUnumber"), sep = "\\ [(]", remove = FALSE) %>% #Add columns to separate bacteria name from OTU number to utilize ggtext so that only bacteria name is italicized
+    mutate(otus = glue("**{bactname}** **({OTUnumber}**"))  #Markdown notation so that entire name will be bold and bacterial name will be bold italic
+}
+
 #Function to plot venn diagrams at the OTU level
 #Arguments:
 # source_comp: overlap between variation by source and taxa that were important in classification model
@@ -120,13 +128,14 @@ venn_otus <- function(source_comp, clind_comp, title){
     arrange(otus)
   
   #Annotations for each set of taxa that overlap with key_otus or don't overlap for each part of the venn diagram
-  source_overlap <- paste(source_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
-#  source_overlap <- source_df %>% filter(overlap == TRUE) %>% select(otus)
+  source_overlap_format <- bold_otus(source_df) #Update Rmarkdown formatting so that overlapping OTUs will appear in bold
+  source_overlap <- paste(source_overlap_format %>% pull(otus), collapse="<br>")
   source_unique <- paste(source_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
-  clind_overlap <- paste(clind_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
+  clind_overlap_format <- bold_otus(clind_df) #Update Rmarkdown formatting so that overlapping OTUs will appear in bold
+  clind_overlap <- paste(clind_overlap_format %>% pull(otus), collapse="<br>")
   clind_unique <- paste(clind_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
-#  clind_unique <- clind_df %>% filter(overlap == FALSE) %>% select(otus)
-  intersect_overlap <- paste(overlap_df %>% filter(overlap == TRUE) %>% pull(otus), collapse="<br>")
+  intersect_overlap_format <- bold_otus(overlap_df) #Update Rmarkdown formatting so that overlapping OTUs will appear in bold
+  intersect_overlap <- paste(intersect_overlap_format %>% pull(otus), collapse="<br>")
   intersect_unique <- paste(overlap_df %>% filter(overlap == FALSE) %>% pull(otus), collapse="<br>")
   
   otus_venn_plot <- ggplot(df.venn) +
@@ -139,12 +148,12 @@ venn_otus <- function(source_comp, clind_comp, title){
     labs(fill = NULL) +
     annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
     annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
-    annotate(geom='richtext', label = source_overlap, x = -19, y = 0.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
-    annotate(geom='richtext', label = source_unique, x = -19, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
-    annotate(geom='richtext', label = clind_overlap, x = 19, y = 0.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
-    annotate(geom='richtext', label = clind_unique, x = 19, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
-    annotate(geom='richtext', label = intersect_overlap, x = 0, y = -7.5, size = 2.8, fill = NA, label.color = NA, color = "firebrick")+
-    annotate(geom='richtext', label = intersect_unique, x = 0, y = -13, size = 2.8, fill = NA, label.color = NA, color = "grey27")+
+    annotate(geom='richtext', label = source_overlap, x = -16.5, y = 0.5, size = 2.7, fill = NA, label.color = NA, color = "black")+
+    annotate(geom='richtext', label = source_unique, x = -19, y = -13, size = 2.7, fill = NA, label.color = NA, color = "grey27")+
+    annotate(geom='richtext', label = clind_overlap, x = 16, y = 0.5, size = 2.7, fill = NA, label.color = NA, color = "black")+
+    annotate(geom='richtext', label = clind_unique, x = 19, y = -13, size = 2.7, fill = NA, label.color = NA, color = "grey27")+
+    annotate(geom='richtext', label = intersect_overlap, x = 0, y = -8.5, size = 2.7, fill = NA, label.color = NA, color = "black")+
+    annotate(geom='richtext', label = intersect_unique, x = 0, y = -14, size = 2.7, fill = NA, label.color = NA, color = "grey27")+
     annotate("text", x = 0, y = 14, label = title, size = 5)
 }
 
@@ -167,3 +176,4 @@ save_plot("results/figures/venn_overall_otus.png", combined_otus_venn_plot, base
 #Comparison of combined Venn diagram OTUs to significant OTUs that varied by source on day -1, 0, and 1:
 intersect_all(`shared_sig_otus_Dn1toD1`, `dayn1to1_and_interp_combined`)
 intersect_all(`shared_sig_otus_Dn1toD1`, `paired_and_interp_combined`)
+
