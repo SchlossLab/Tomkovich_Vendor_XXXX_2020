@@ -77,7 +77,8 @@ summarize_plot <- function(df){
     geom_text(x = 9.2, y = 102, color = "black", label = "LOD")+
     scale_y_log10(labels=fancy_scientific, breaks = c(10, 100, 10^3, 10^4, 10^5, 10^6, 10^7, 10^8, 10^9), limits = c(40, 350000000))+
     theme_classic()+
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom",
+          panel.grid.minor.x = element_line(size = 0.4, color = "grey"))  # Add gray lines to clearly separate symbols by days)
 }
 
 #CFU plot for the 1st experiment----
@@ -132,7 +133,8 @@ cfu_stats <- ggplot(NULL) +
   annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
   theme_classic() +
   theme(legend.position = "bottom", #(0,0) bottom left (1,1) top right. #Previous: c(.92, .8)
-        legend.key= element_rect(colour = "transparent", fill = "transparent"))
+        legend.key= element_rect(colour = "transparent", fill = "transparent"),
+        panel.grid.minor.x = element_line(size = 0.4, color = "grey"))  # Add gray lines to clearly separate symbols by days)
 save_plot(filename = paste0("results/figures/cfu_over_time.png"), plot = cfu_stats, base_aspect_ratio = 2)
 
 #Plot of colonization status at day 7, separated by mouse colony sources
@@ -292,7 +294,7 @@ plot_CFU_D7 <- median_d7 %>%
   theme(plot.title=element_text(hjust=0.5))+
   theme(legend.position = "none") + #Get rid of legend 
   stat_pvalue_manual(data = pairwise_wilcox_day7_plot, label = "p.adj", y.position = "y.position", size = 10, bracket.size = .8) +
-  theme(text = element_text(size = 16))  # Change font size for entire plot
+  theme(text = element_text(size = 16)) # Change font size for entire plot
 save_plot(filename = paste0("results/figures/C.diff_CFU_D7_stats.png"), plot_CFU_D7, base_height = 11, base_width = 8.5, base_aspect_ratio = 2)
 
 

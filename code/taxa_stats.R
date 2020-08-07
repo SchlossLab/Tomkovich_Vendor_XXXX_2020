@@ -141,29 +141,21 @@ plot_otus_dx <- function(otus, timepoint){
           text = element_text(size = 16)) # Change font size for entire plot
 }
 
-#Plots of the relative abundances of OTUs that significantly varied across sources of mice from day -1 to day 1----
-Dn1toD1_otus_dn1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, -1)+
-  ggtitle("Baseline")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-save_plot("results/figures/Dn1toD1_otus_dn1.png", Dn1toD1_otus_dn1, base_height = 7, base_width = 8)
-Dn1toD1_otus_d0 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 0) +
-  ggtitle("Clindamycin")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-save_plot("results/figures/Dn1toD1_otus_d0.png", Dn1toD1_otus_d0, base_height = 7, base_width = 8)
-Dn1toD1_otus_d1 <- plot_otus_dx(shared_sig_otus_Dn1toD1, 1) +
-  ggtitle("Post-infection")+ #Title plot
-  theme(plot.title = element_text(hjust = 0.5)) #Center plot title
-save_plot("results/figures/Dn1toD1_otus_d1.png", Dn1toD1_otus_d1, base_height = 7, base_width = 8)
-
 #Plots of the top 18-20 OTUs that varied across sources at each timepoint (only 18 OTUs varied significantly across sources post-clindamycin treatment)
 #Baseline: top 20 OTUs that vary across sources
-Dn1top20_otus <- plot_otus_dx(`sig_otu_day-1`[1:20], -1) #Pick top 20 significant OTUs
+Dn1top20_otus <- plot_otus_dx(`sig_otu_day-1`[1:20], -1) +#Pick top 20 significant OTUs
+  geom_vline(xintercept = c((1:20) - 0.5 ), color = "grey") + # Add gray lines to clearly separate OTUs
+  theme(legend.position = "none") #remove legend
 save_plot("results/figures/Dn1top20_otus.png", Dn1top20_otus, base_height = 9, base_width = 7)
 #Post-clindamycin: top 18 OTUs that vary across sources
-D0top18_otus <- plot_otus_dx(`sig_otu_day0`[1:18], 0) #Pick top 20 significant OTUs
+D0top18_otus <- plot_otus_dx(`sig_otu_day0`[1:18], 0) + #Pick top 20 significant OTUs
+  geom_vline(xintercept = c((1:18) - 0.5 ), color = "grey") + # Add gray lines to clearly separate OTUs
+  theme(legend.position = "none") #remove legend
 save_plot("results/figures/D0top18_otus.png", D0top18_otus, base_height = 9, base_width = 7)
 #Post-infection: top 20 OTUs that vary across sources
-D1top20_otus <- plot_otus_dx(`sig_otu_day1`[1:20], 1) #Pick top 20 significant OTUs
+D1top20_otus <- plot_otus_dx(`sig_otu_day1`[1:20], 1)+ #Pick top 20 significant OTUs
+  geom_vline(xintercept = c((1:18) - 0.5 ), color = "grey") + # Add gray lines to clearly separate OTUs
+  theme(legend.position = "none") #remove legend
 save_plot("results/figures/D1top20_otus.png", D1top20_otus, base_height = 9, base_width = 7)
 
 #Overlap between the top 18-20 OTUs that varied across sources at each timepoints
@@ -360,12 +352,13 @@ clind_impacted_otus_plot_dn1_0 <- agg_otu_data %>%
   scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100), limits = c(1/10900, 1))+
   coord_flip()+
   theme_classic()+
+  geom_vline(xintercept = c((1:10) - 0.5 ), color = "grey") + # Add gray lines to clearly separate OTUs
   facet_wrap( ~ day, labeller = labeller(day = facet_labels), scales = "fixed")+
   theme(plot.title=element_text(hjust=0.5),
         text = element_text(size = 16),# Change font size for entire plot
         axis.text.y = element_markdown(), #Have only the OTU names show up as italics
         strip.background = element_blank(),
-        legend.position = "bottom") 
+        legend.position = "none") 
 save_plot(filename = paste0("results/figures/clind_impacted_otus_plot.png"), clind_impacted_otus_plot_dn1_0, base_height = 9, base_width = 7)
 
 #Comparison of Figure 4 (varied across colony source) and 5 (altered by clindamycin treatment) taxa----
@@ -411,7 +404,7 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
     theme(plot.title=element_markdown(hjust = 0.5),
-          text = element_text(size = 16)) # Change font size for entire plot
+          text = element_text(size = 14)) # Change font size for entire plot
 }
 
 #OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models----
@@ -463,51 +456,13 @@ label_OTU7 <- plot_otu_stats_dn1to9 %>%
   filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(p.signif)
 otu7 <- otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)+
   theme(legend.position = "bottom")
+legend <- get_legend(otu7)
+#Alternative function to get legend:
+legend <- cowplot::get_legend(otu7)
+overlap_OTUs_legend <- as_ggplot(legend)#+theme(element_line(size = 16)) #+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"))
+save_plot(filename = paste0("results/figures/overlap_OTUs_legend.png"), overlap_OTUs_legend, base_height = 1, base_width =7.5)
+otu7 <- otu7 + theme(legend.position = "none") #remove legend
 save_plot(filename = paste0("results/figures/Porphyromonadaceae (OTU 7)_time.png"), otu7, base_aspect_ratio = 2.5)
-
-#Do shared taxa associated with d7 cleared/colonized status?
-#Function to test for differences in relative abundances at the OTU level according to day 7 colonization status:
-w_d7status_o <- function(timepoint){
-  otu_stats <- agg_otu_data %>% 
-    filter (day == timepoint) %>% 
-    filter(!is.na(clearance_status_d7)) %>% #Remove mice where clearance status day 7 was NA
-    mutate(clearance_status_d7 = as.factor(clearance_status_d7)) %>% 
-    select(clearance_status_d7, otu, agg_rel_abund) %>% 
-    group_by(otu) %>% 
-    nest() %>% 
-    mutate(model=map(data, ~wilcox.test(.x$agg_rel_abund ~ .x$clearance_status_d7, paired = FALSE) %>% tidy())) %>% 
-    mutate(median = map(data,  get_rel_abund_median_d7status)) %>% 
-    unnest(c(model, mean)) %>% 
-    ungroup() 
-  #Adjust p-values for testing multiple OTus
-  otu_stats_adjust <- otu_stats %>% 
-    select(otu, statistic, p.value, method, alternative, colonized, not_detectable) %>% 
-    mutate(p.value.adj=p.adjust(p.value, method="BH")) %>% 
-    arrange(p.value.adj) %>% 
-    write_tsv(path = paste0("data/process/otu_stats_d7status_d", timepoint, ".tsv"))
-}
-
-#Test only for days where input communities were used to create classification models (Day -1, 0, 1):
-model_input_days <- c(-1, 0, 1)
-for (d in model_input_days){
-  w_d7status_o(d)
-  #Make a list of significant OTUs that differ according to day 7 C. diff status for a specific day  
-  stats <- read_tsv(file = paste0("data/process/otu_stats_d7status_d", d, ".tsv"))
-  name <- paste("sig_otu_status_", d, sep = "") 
-  assign(name, pull_significant_taxa(stats, otu))
-}
-
-`sig_otu_status_-1` # 1 OTU "Ruminococcaceae (OTU 467)"
-sig_otu_status_0 # 0 OTUs
-sig_otu_status_1 # 0 OTUs
-
-#Set up statistical annotation arguments for Ruminococcaceae (OTU 467):
-x_OTU467 <- plot_otu_stats_dn1to9 %>% 
-  filter(otu == "Ruminococcaceae (OTU 467)") %>% pull(day) #No timepoints were significant
-y_OTU467 <- .4
-label_OTU467 <- plot_otu_stats_dn1to9 %>% 
-  filter(otu == "Ruminococcaceae (OTU 467)") %>% pull(p.signif)
-otu_over_time("Ruminococcaceae (OTU 467)", x_annotation = x_OTU467, y_position = y_OTU467, label = label_OTU467)
 
 #Examine which taxa have different relative abundances between experiments for Schloss, Young, and Envigo mice at baseline----
 #Function to test for differences in relative abundances at the otu level according to experiment within specific sources of mice:
@@ -577,71 +532,6 @@ interp_otus <- read_tsv("data/process/combined_top20_otus_all_models.tsv")
 
 #List of top 20 taxa from day 0 OTU logistic regression model
 interp_otus_d0 <- interp_otus  %>% filter(model_input_day == 0) %>% pull(OTU)
-
-#Split plotting of taxa up by relative abundance
-
-#Function to plot specific OTUs
-plot_interp_otus_d0 <- function(specify_otu, otu_stats){
-  specify_otu_name <- agg_otu_data %>% 
-    filter(otu == specify_otu) %>% 
-    pull(otu_name)
-  d0_otu_model_plot <- agg_otu_data %>% 
-    filter(day == 0) %>% 
-    filter(otu == specify_otu) %>% 
-    mutate(agg_rel_abund = agg_rel_abund + 1/10874) %>% 
-    group_by(vendor) %>% 
-    mutate(median=(median(agg_rel_abund))) %>% #create a column of median values for each group
-    ungroup() %>% 
-    ggplot(aes(x=vendor, y =agg_rel_abund, colour= vendor))+
-    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-    geom_errorbar(aes(ymax = median, ymin = median), color = "gray50", size = 1, show.legend = FALSE)+ #Add lines to indicate the median for each group to the plot
-    geom_jitter(aes(shape = clearance_status_d7), size=3) +
-    scale_colour_manual(name=NULL,
-                        values=color_scheme,
-                        breaks=color_vendors,
-                        labels=color_vendors)+
-    scale_shape_manual(name="Cleared by Day 7",
-                       values=c(4, 19, 21),
-                       breaks=c("colonized", "not_detectable", "no_data"),
-                       labels=c("no", "yes", "no data"), 
-                       drop=FALSE, na.translate = TRUE, na.value = 1)+
-    geom_hline(yintercept=1/5437, color="gray")+
-    labs(title=specify_otu_name,
-         x=NULL,
-         y="Relative abundance (%)") +
-    scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
-    theme_classic()+
-    theme(plot.title=element_markdown(hjust = 0.5), #ggtext to have only bacteria name in italics, hjust to center plot title
-          text = element_text(size = 16)) +# Change font size for entire plot
-    stat_pvalue_manual(data = otu_stats, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) #Add manual p values to taxa that were also significantly different across vendors
-}
-
-#OTUs with high relative abundances in at least one group
-#Check for significant pairwise comparisons:
-otu1_stats <- otu_day0_stats %>% 
-  filter(otu == "Enterobacteriaceae (OTU 1)") %>% 
-  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = c(.3, .9, 1.8, 2.1, 2.4, .6, 1.2, 1.5, .6))
-d0model_otu1 <- plot_interp_otus_d0("Enterobacteriaceae (OTU 1)", otu1_stats)+
-  theme(legend.position = "bottom")
-save_plot(filename = paste0("results/figures/d0_model_otu_Enterobacteriaceae (OTU 1).png"), d0model_otu1, base_aspect_ratio = 3.5)
-otu2_stats <- otu_day0_stats %>% 
-  filter(otu == "Bacteroides (OTU 2)") %>% 
-  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = (1:n())*.3)
-d0model_otu2 <- plot_interp_otus_d0("Bacteroides (OTU 2)", otu2_stats)+
-  theme(legend.position = "none")
-save_plot(filename = paste0("results/figures/d0_model_otu_Bacteroides (OTU 2).png"), d0model_otu2, base_aspect_ratio = 3.5)
-otu16_stats <- otu_day0_stats %>% 
-  filter(otu == "Proteus (OTU 16)") %>% 
-  filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = (1:n())*.3)
-d0model_otu16 <- plot_interp_otus_d0("Proteus (OTU 16)", otu16_stats)+
-  theme(legend.position = "none")
-save_plot(filename = paste0("results/figures/d0_model_otu_Proteus (OTU 16).png"), d0model_otu16, base_aspect_ratio = 3.5)
 
 #Create a data frame of just the top 10 most important OTUs for the Day 0 logistic regression model
 #Create a color column based on correlation coefficient sign.

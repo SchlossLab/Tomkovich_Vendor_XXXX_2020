@@ -115,7 +115,14 @@ plot_format_shannon <- shannon_stats_pairwise %>%
   select(-method, -p.value.adj) %>% 
   group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
   lapply(tidy_pairwise) %>% 
-  bind_rows()
+  bind_rows() %>% 
+  mutate(x.position = group1) %>% #Make this group the comparison group
+  mutate(letter_label = case_when(group2 == "Schloss" ~ "s", #Letters to denote which group the comparison group is being compared too
+                                  group2 == "Young" ~ "y",
+                                  group2 == "Jackson" ~ "j",
+                                  group2 == "Charles River" ~ "c",
+                                  group2 == "Taconic" ~ "t",
+                                  group2 == "Envigo" ~ "e"))
 
 #Function for Kruskal_wallis test for differences in sobs (richness) across groups with Benjamini-Hochburg correction----
 richness_stats <- diversity_data %>% 
@@ -164,7 +171,14 @@ plot_format_richness <- richness_stats_pairwise %>%
   select(-method,-p.value.adj) %>% 
   group_split() %>% #Keeps a attr(,"ptype") to track prototype of the splits
   lapply(tidy_pairwise) %>% 
-  bind_rows()
+  bind_rows() %>% 
+  mutate(x.position = group1) %>% #Make this group the comparison group
+  mutate(letter_label = case_when(group2 == "Schloss" ~ "s", #Letters to denote which group the comparison group is being compared too
+                                  group2 == "Young" ~ "y",
+                                  group2 == "Jackson" ~ "j",
+                                  group2 == "Charles River" ~ "c",
+                                  group2 == "Taconic" ~ "t",
+                                  group2 == "Envigo" ~ "e"))
 
 #Function to make plots of shannon values for all sources of mice on a specific experimental day----
 #Arguments: 
@@ -201,28 +215,66 @@ shannon_dn1 <- shannon_dx_plot(-1)
 #There was no overall significant difference in Shannon index at this timepoint across sources of mice.  
 save_plot("results/figures/shannon_dn1.png", shannon_dn1) #Use save_plot instead of ggsave because it works better with cowplot
 
-#Add p.value manually to timepoints of interest with ggpubr stat_pvalue_manual() function: ----
+#Add p.value manually to timepoints of interest with letters to signifiy which comparisons were significantly different: ----
 #Data frames of day 0 p.values to add manually
 pairwise_shannon_day0_plot <- plot_format_shannon %>% 
   filter(day == 0) %>%  
   filter(p.adj <= 0.05) %>% #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = c(3.5, 4, 3, 2.5))
-#4 pairwise comparisons were significant at day 0. 
+  select(-day, -group1, -group2, -p.adj)  #only keep columns needed for annotation
+#4 pairwise comparisons were significant at day 0.
+x.position <- pairwise_shannon_day0_plot %>% distinct(x.position) #2 groups with significant comparisons
+#Charles River: letters annotating comparisons that were significant
+cr_letters <- pairwise_shannon_day0_plot %>% 
+  filter(x.position == "Charles River") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Envigo: letters annotating comparisons that were significant  
+envigo_letters <- pairwise_shannon_day0_plot %>% 
+  filter(x.position == "Envigo") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Combine vendor and letter annotations for each group with significant comparisons
+pairwise_shannon_day0_annotations <- cbind(x.position, "letter_label" = c(cr_letters, envigo_letters)) %>% 
+  rename(vendor = x.position) %>% #rename so it will work with plot aesthetics
+  mutate(y.position = 4) #Add column to denote y positions for each group
 #Day 0 Plot with stats for pairwise comparisons:
 shannon_d0 <- shannon_dx_plot(0) +
-  stat_pvalue_manual(data = pairwise_shannon_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
+  geom_text(data = pairwise_shannon_day0_annotations,  #Add letter annotations to denote pairwise source comparisons that were significant
+            aes(x=vendor, y=y.position,label=letter_label), 
+            size = 5,position=position_dodge(.5), color = "black") 
 save_plot("results/figures/shannon_d0.png", shannon_d0)
 
 #Data frames of day 1 p.values to add manually
 pairwise_shannon_day1_plot <- plot_format_shannon %>% 
   filter(day == 1) %>%  
   filter(p.adj <= 0.05) %>% #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = c(4.7, 5.3, 3.75, 5, 3.1, 4.225, 4.5, 3.55))
+  select(-day, -group1, -group2, -p.adj)  #only keep columns needed for annotation
 #8 pairwise comparisons were significant at day 0. 
+x.position <- pairwise_shannon_day1_plot %>% distinct(x.position) #3 groups with significant comparisons
+#Charles River: letters annotating comparisons that were significant
+cr_letters <- pairwise_shannon_day1_plot %>% 
+  filter(x.position == "Charles River") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Taconic: letters annotating comparisons that were significant  
+taconic_letters <- pairwise_shannon_day1_plot %>% 
+  filter(x.position == "Taconic") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ") 
+#Envigo: letters annotating comparisons that were significant  
+envigo_letters <- pairwise_shannon_day1_plot %>% 
+  filter(x.position == "Envigo") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Combine vendor and letter annotations for each group with significant comparisons
+pairwise_shannon_day1_annotations <- cbind(x.position, "letter_label" = c(cr_letters, taconic_letters, envigo_letters)) %>% 
+  rename(vendor = x.position) %>% #rename so it will work with plot aesthetics
+  mutate(y.position = 4.5) #Add column to denote y positions for each group
+#Day 1 Plot with stats for pairwise comparisons:
 shannon_d1 <- shannon_dx_plot(1) +
-  stat_pvalue_manual(data = pairwise_shannon_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
+  geom_text(data = pairwise_shannon_day1_annotations,  #Add letter annotations to denote pairwise source comparisons that were significant
+            aes(x=vendor, y=y.position,label=letter_label), 
+            size = 5,position=position_dodge(.5), color = "black") 
 save_plot("results/figures/shannon_d1.png", shannon_d1)
 
 #Function to make plots of sobs (richness) for all sources of mice on a specific experimental day----
@@ -270,24 +322,55 @@ save_plot("results/figures/richness_dn1.png", sobs_dn1) #Use save_plot instead o
 pairwise_sobs_day0_plot <- plot_format_richness %>% 
   filter(day == 0) %>%  
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = c(150, 200, 250))
-  #3 significant pairwise
+  select(-day, -group1, -group2, -p.adj)  #only keep columns needed for annotation
+#3 significant pairwise
+x.position <- pairwise_sobs_day0_plot %>% distinct(x.position) #2 groups with significant comparisons
+#Charles River: letters annotating comparisons that were significant
+cr_letters <- pairwise_sobs_day0_plot %>% 
+  filter(x.position == "Charles River") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Envigo: letters annotating comparisons that were significant  
+envigo_letters <- pairwise_sobs_day0_plot %>% 
+  filter(x.position == "Envigo") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ") 
+#Combine vendor and letter annotations for each group with significant comparisons
+pairwise_sobs_day0_annotations <- cbind(x.position, "letter_label" = c(cr_letters, envigo_letters)) %>% 
+  rename(vendor = x.position) %>% #rename so it will work with plot aesthetics
+  mutate(y.position = 200) #Add column to denote y positions for each group
 # Plot of richness across sources of mice on day 0 with significant pairwise comparison p values
 sobs_d0 <- sobs_dx_plot(0) +
-  stat_pvalue_manual(data = pairwise_sobs_day0_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
+  geom_text(data = pairwise_sobs_day0_annotations, #Add letter annotations to denote pairwise source comparisons that were significant
+            aes(x=vendor, y=y.position,label=letter_label), 
+            size = 5,position=position_dodge(.5), color = "black")
 save_plot("results/figures/richness_d0.png", sobs_d0) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 1 p.values to add manually
 pairwise_sobs_day1_plot <- plot_format_richness %>% 
   filter(day == 1) %>%  
   filter(p.adj <= 0.05) %>%  #Only show comparisons that were significant. p.value, which was adjusted < 0.05)
-  mutate(p.adj="*") %>% #Just indicate whether statistically significant, exact p.adj values are in supplemental table
-  mutate(y.position = c(250, 200, 150, 300))
+  select(-day, -group1, -group2, -p.adj)  #only keep columns needed for annotation
 #4 significant pairwise
-
+x.position <- pairwise_sobs_day1_plot %>% distinct(x.position) #2 groups with significant comparisons
+#Charles River: letters annotating comparisons that were significant
+cr_letters <- pairwise_sobs_day1_plot %>% 
+  filter(x.position == "Charles River") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ")  
+#Envigo: letters annotating comparisons that were significant  
+envigo_letters <- pairwise_sobs_day1_plot %>% 
+  filter(x.position == "Envigo") %>% 
+  pull(letter_label) %>% 
+  paste(., collapse = ", ") 
+#Combine vendor and letter annotations for each group with significant comparisons
+pairwise_sobs_day1_annotations <- cbind(x.position, "letter_label" = c(cr_letters, envigo_letters)) %>% 
+  rename(vendor = x.position) %>% #rename so it will work with plot aesthetics
+  mutate(y.position = 250) #Add column to denote y positions for each group
 # Plot of richness across sources of mice on day 1 with significant pairwise comparison p values
 sobs_d1 <- sobs_dx_plot(1) +
-  stat_pvalue_manual(data = pairwise_sobs_day1_plot, label = "p.adj", y.position = "y.position", size = 6, bracket.size = .6) 
+  geom_text(data = pairwise_sobs_day1_annotations, #Add letter annotations to denote pairwise source comparisons that were significant
+            aes(x=vendor, y=y.position,label=letter_label), 
+            size = 5,position=position_dodge(.5), color = "black")
 save_plot("results/figures/richness_d1.png", sobs_d1) #Use save_plot instead of ggsave because it works better with cowplot
 
