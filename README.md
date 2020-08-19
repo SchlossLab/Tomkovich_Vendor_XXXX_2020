@@ -3,7 +3,7 @@ Download the [latest release](https://github.com/SchlossLab/new_project/releases
 
 ## The initial gut microbiota and response to antibiotic perturbation influence *Clostridioides difficile* colonization in mice
 
-The gut microbiota has a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use animals obtained from a single source. We treated mice from 6 sources (2 University of Michigan colonies and 4 vendors) with 1 clindamycin dose, followed by *C. difficile* challenge 1 day later and then measured *C. difficile* colonization levels through 9 days post-infection. The microbiota were profiled via 16S rRNA gene sequencing to examine the variation across sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all mice were colonized 1-day post-infection, variation emerged from days 3-7 post-infection with animals from some sources colonized with *C. difficile* for longer and at higher levels. We identified bacteria that varied in relative abundance across sources and throughout the experiment. Some bacteria were consistently impacted by clindamycin treatment in all sources of mice including *Lachnospiraceae*, *Ruminococcaceae*, and *Enterobacteriaceae*. To identify bacteria that were most important to colonization regardless of the source, we created logistic regression models that successfully classified mice based on whether they cleared *C. difficile* by 7 days post-infection using baseline, post-clindamycin, and 1-day post-infection community composition data. With these models, we identified 4 bacteria that were predictive of whether *C. difficile* cleared. They varied across sources (*Bacteroides*), were altered by clindamycin (*Porphyromonadaceae*), or both (*Enterobacteriaceae* and *Enterococcus*). Microbiota variation across sources better emulates human inter-individual variation and can help identify bacterial drivers of phenotypic variation in the context of CDIs.
+The gut microbiota has a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use animals obtained from a single source. We treated mice from 6 sources (2 University of Michigan colonies and 4 commercial vendors) with clindamycin, followed by a *C. difficile* challenge and then measured *C. difficile* colonization levels throughout the infection. The microbiota were profiled via 16S rRNA gene sequencing to examine the variation across sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all mice were colonized 1-day post-infection, variation emerged from days 3-7 post-infection with animals from some sources colonized with *C. difficile* for longer and at higher levels. We identified bacteria that varied in relative abundance across sources and throughout the experiment. Some bacteria were consistently impacted by clindamycin treatment in all sources of mice including *Lachnospiraceae*, *Ruminococcaceae*, and *Enterobacteriaceae*. To identify bacteria that were most important to colonization regardless of the source, we created logistic regression models that successfully classified mice based on whether they cleared *C. difficile* by 7 days post-infection using community composition data at baseline, post-clindamycin, and 1-day post-infection. With these models, we identified 4 bacteria that were predictive of whether *C. difficile* cleared. They varied across sources (*Bacteroides*), were altered by clindamycin (*Porphyromonadaceae*), or both (*Enterobacteriaceae* and *Enterococcus*). Allowing for microbiota variation across sources better emulates human inter-individual variation and can help identify bacterial drivers of phenotypic variation in the context of CDIs.
 
 
 ### Overview
@@ -119,7 +119,7 @@ Then run the following rscript to fix the ids:
 ```
 Rscript code/fix_ids.R
 ```
-Open up data/raw/vendors.files.fixed.csv and data/raw/vendors.files. Paste rhe fix_id column (select all 439 samples, starting at row 2) from data/raw/vendors.files.fixed.csv over the 1st column with dashes in the group name in data/raw/vendors.files and save data/raw/vendors.files. Now that the sample ids have been corrected, the analysis can proceed.
+Open up data/raw/vendors.files.fixed.csv and data/raw/vendors.files. Paste the fix_id column (select all 439 samples, starting at row 2) from data/raw/vendors.files.fixed.csv over the 1st column with dashes in the group name in data/raw/vendors.files and save data/raw/vendors.files. Now that the sample ids have been corrected, the analysis can proceed.
 ```
 mothur code/get_good_seqs.batch
 mothur code/get_error.batch
@@ -139,7 +139,7 @@ Perform alpha diversity analysis and create plots.
 ```
 Rscript code/diversity.R
 ```
-Use code/subset_analysis.R to generate lists of IDs specific to each sample day and pasted them into the following scripts to create a bray-curtis distance matrix and PCoA specific for a single timepoint. Also used to create PCoAs of baseline communities of each mouse colony source.
+I used code/subset_analysis.R to generate lists of IDs specific to each sample day and/or mouse source and pasted them into the following scripts. Run each script to create a bray-curtis distance matrix and PCoA specific for a single timepoint. Run the last script to create PCoAs of baseline communities of each mouse colony source.
 ```
 mothur code/d-1_dist_PCoA
 mothur code/d0_dist_PCoA
@@ -159,7 +159,7 @@ For L2 Logistic regression analysis, use the following script to generate the in
 ```
 Rscript code/l2_classification_input_data.R
 ```
-Use [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis. Modify model_pipeline.R to specify outcomes and a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_Vendor_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
+I modified [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis by updating the outcomes and using a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_Vendor_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
 ```
 mkdir data/process/dayn1 data/process/day0 data/process/day1
 sbatch code/slurm/L2_log_Regression_dn1.sh
@@ -179,7 +179,7 @@ Rename classification output files to indicate which day of the experiment relat
 ```
 bash code/rename_classification_outputs_60
 ```
-Make plots comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (OTUs from Day -1, 0, and 1) and make plots and supplemental table of the top 20 OTUs that were contributing to the 3 models.
+Make plot comparing cross-validation and test AUROCs for classification models generated from 3 different types of input data (OTUs from Day -1, 0, and 1) and make a supplemental table of the top 20 OTUs that were contributing to the 3 models.
 ```
 Rscript code/class._60-40_analysis.R
 Rscript code/class_interpretation.R
@@ -188,7 +188,7 @@ Perform statistical analysis of the 3 classification models.
 ```
 Rscript code/compare_models.R
 ```
-Compare classification model OTUs to the OTUs that varied across sources and/or were altered by clindamycin treatment.
+Compare OTUs that were important to the 3 classification models to the OTUs that varied across sources and/or were altered by clindamycin treatment.
 ```
 Rscript code/venn_diagram_comparisons.R
 ```
@@ -225,5 +225,5 @@ cp results/pcoa_over_time.mov submission/movie_S1.mov
 
 #### Generate the paper.
 ```
-open submission/manuscript.Rmd and knit to Word or PDF.
+open submission/manuscript.Rmd and knit to Word or PDF document.
 ```
