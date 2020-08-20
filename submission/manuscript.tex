@@ -108,12 +108,12 @@ The gut microbiota has a key role in determining susceptibility to
 \emph{Clostridioides difficile} infections (CDIs). However, much of the
 mechanistic work examining CDIs in mouse models use animals obtained
 from a single source. We treated mice from 6 sources (2 University of
-Michigan colonies and 4 vendors) with 1 clindamycin dose, followed by
-\emph{C. difficile} challenge 1 day later and then measured \emph{C.
-difficile} colonization levels through 9 days post-infection. The
-microbiota were profiled via 16S rRNA gene sequencing to examine the
-variation across sources and alterations due to clindamycin treatment
-and \emph{C. difficile} challenge. While all mice were colonized 1-day
+Michigan colonies and 4 commercial vendors) with clindamycin, followed
+by a \emph{C. difficile} challenge and then measured \emph{C. difficile}
+colonization levels throughout the infection. The microbiota were
+profiled via 16S rRNA gene sequencing to examine the variation across
+sources and alterations due to clindamycin treatment and \emph{C.
+difficile} challenge. While all mice were colonized 1-day
 post-infection, variation emerged from days 3-7 post-infection with
 animals from some sources colonized with \emph{C. difficile} for longer
 and at higher levels. We identified bacteria that varied in relative
@@ -123,14 +123,14 @@ mice including \emph{Lachnospiraceae}, \emph{Ruminococcaceae}, and
 \emph{Enterobacteriaceae}. To identify bacteria that were most important
 to colonization regardless of the source, we created logistic regression
 models that successfully classified mice based on whether they cleared
-\emph{C. difficile} by 7 days post-infection using baseline,
-post-clindamycin, and 1-day post-infection community composition data.
-With these models, we identified 4 bacteria that were predictive of
-whether \emph{C. difficile} cleared. They varied across sources
+\emph{C. difficile} by 7 days post-infection using community composition
+data at baseline, post-clindamycin, and 1-day post-infection. With these
+models, we identified 4 bacteria that were predictive of whether
+\emph{C. difficile} cleared. They varied across sources
 (\emph{Bacteroides}), were altered by clindamycin
 (\emph{Porphyromonadaceae}), or both (\emph{Enterobacteriaceae} and
-\emph{Enterococcus}). Microbiota variation across sources better
-emulates human inter-individual variation and can help identify
+\emph{Enterococcus}). Allowing for microbiota variation across sources
+better emulates human inter-individual variation and can help identify
 bacterial drivers of phenotypic variation in the context of CDIs.
 
 \hypertarget{importance}{%
@@ -159,7 +159,7 @@ of \emph{C. difficile} pathogenesis.
 \subsection{Introduction}\label{introduction}}
 
 Antibiotics are a common risk factor for \emph{Clostridioides difficile}
-infections (CDIs) due to there effect on the intestinal microbiota, but
+infections (CDIs) due to their effect on the intestinal microbiota, but
 there is variation in who goes on to develop severe or recurrent CDIs
 after exposure (1, 2). Additionally, asymptomatic colonization, where
 \emph{C. difficile} is detectable, but symptoms are absent, has been
@@ -181,9 +181,9 @@ including the role of the microbiota and efficacy of potential
 therapeutics for treating CDIs (15). However, variation in the
 microbiota between mice from the same breeding colony is much less than
 the inter-individual variation observed between humans (16, 17).
-Studying CDIs in mice with a homogenous microbiota is likely to
+Studying CDIs in mice with a homogeneous microbiota is likely to
 overstate the importance of individual mechanisms. Using mice that have
-a more heterogenous microbiota would allow researchers to identify and
+a more heterogeneous microbiota would allow researchers to identify and
 validate more generalizable mechanisms responsible for CDI.
 
 In the past, our group has attempted to introduce more variation into
@@ -193,8 +193,8 @@ use mice from multiple sources (22, 23). The differences between the
 microbiota of mice from vendors have been well documented and shown to
 influence susceptibility to a variety of diseases (24, 25), including
 enteric infections (22, 23, 26--30). Different research groups have also
-observed variation in CDI outcomes despite using similar murine models
-(13, 18, 21, 31--33). Here we examined how variations in the baseline
+observed different CDI outcomes despite using similar murine models (13,
+18, 21, 31--33). Here we examined how variation in the baseline
 microbiota and responses to clindamycin treatment in C57BL/6 mice from
 six different sources influenced susceptibility to \emph{C. difficile}
 colonization and the time needed to clear the infection.
@@ -206,7 +206,7 @@ colonization and the time needed to clear the infection.
 different sources.} We obtained C57BL/6 mice from 6 different sources:
 two colonies from the University of Michigan that were split from each
 other in 2010 (the Young and Schloss lab colonies) and four commercial
-sources: the Jackson Laboratory, Charles River Laboratories, Taconic
+vendors: the Jackson Laboratory, Charles River Laboratories, Taconic
 Biosciences, and Envigo (which was formerly Harlan). These 4 vendors
 were chosen because they are commonly used for murine CDI studies (26,
 34--40). Two experiments were conducted, approximately 3 months apart.
@@ -216,32 +216,32 @@ mice after they acclimated to the University of Michigan animal housing
 environment. We first examined the alpha diversity across the 6 sources
 of mice. There was a significant difference in the richness (i.e.~number
 of observed operational taxonomic units (OTUs)), but not Shannon
-diversity index (\emph{P}\textsubscript{FDR} = 0.03 and
-\emph{P}\textsubscript{FDR} = 0.052, respectively) across the sources of
-mice (Fig. 1A-B and Tables S1-2). Next, we compared the community
-structure of mice (Fig. 1C). The source of mice and the interactions
-between the source and cage effects explained most of the observed
-variation between fecal communities (PERMANOVA combined
-R\textsuperscript{2} = 0.90, \emph{P} \textless{} 0.001, Fig. 1C and
-Table S3). Mice that are co-housed tend to have similar gut microbiotas
-due to coprophagy (41). Since mice within the same source were housed
-together, it was not surprising that the cage effect also contributed to
-the observed community variation. There were some differences between
-the 2 experiments we conducted, as the experiment and cage effects
-significantly explained the observed community variation for the Schloss
-and Young lab mouse colonies (Fig. S2A-B and Table S4). However, most of
-the vendors also clustered by experiment (Fig. S2C-D, F), suggesting
-there was some community variation between the 2 experiments within each
-source, particularly for Schloss, Young, and Envigo mice (Fig. S2G-H).
-After finding differences at the community level, we next identified the
-bacteria that varied between sources of mice. There were 268 OTUs with
-relative abundances that were significantly different between the
-sources (Fig. 1D and Table S5). Though we saw differences between
-experiments at the community level, there were no OTUs that were
-significantly different between experiments within Schloss, Young, and
-Envigo mice (all \emph{P} \textgreater{} 0.05). By using mice from six
-sources we were able to increase the variation in the starting
-communities to evaluate in a clindamycin-based CDI model.
+diversity index across the sources of mice (\emph{P}\textsubscript{FDR}
+= 0.03 and \emph{P}\textsubscript{FDR} = 0.052, respectively; Fig. 1A-B
+and Tables S1-2). Next, we compared the community structure of mice
+(Fig. 1C). The source of mice and the interactions between the source
+and cage effects explained most of the observed variation between fecal
+communities (PERMANOVA combined R\textsuperscript{2} = 0.90, \emph{P}
+\textless{} 0.001; Fig. 1C and Table S3). Mice that are co-housed tend
+to have similar gut microbiotas due to coprophagy (41). Since mice
+within the same source were housed together, it was not surprising that
+the cage effect also contributed to the observed community variation.
+There were some differences between the 2 experiments we conducted, as
+the experiment and cage effects significantly explained the observed
+community variation for the Schloss and Young lab mouse colonies (Fig.
+S2A-B and Table S4). However, most of the vendors also clustered by
+experiment (Fig. S2C-D, F), suggesting there was some community
+variation between the 2 experiments within each source, particularly for
+Schloss, Young, and Envigo mice (Fig. S2G-H). After finding differences
+at the community level, we next identified the bacteria that varied
+between sources of mice. There were 268 OTUs with relative abundances
+that were significantly different between the sources (Fig. 1D and Table
+S5). Though we saw differences between experiments at the community
+level, there were no OTUs that were significantly different between
+experiments within Schloss, Young, and Envigo mice (all \emph{P}
+\textgreater{} 0.05). By using mice from six sources we were able to
+increase the variation in the starting communities to evaluate in a
+clindamycin-based CDI model.
 
 \textbf{Clindamycin treatment renders all mice susceptible to \emph{C.
 difficile} 630 colonization, but clearance time varies across sources.}
@@ -258,28 +258,28 @@ in all mice at a similar level (median CFU range: 2.2e+07-1.3e+08;
 mice susceptible regardless of source (Fig. 2B). However, between 3 and
 7 days post-infection, we observed variation in \emph{C. difficile}
 levels across sources of mice (all \emph{P}\textsubscript{FDR} \(\le\)
-0.019; Fig. 2B and Table S6). This suggested the mouse source was
+0.019; Fig. 2B and Table S6). This suggested the source of mice was
 associated with \emph{C. difficile} clearance. While the colonization
 dynamics were similar between the two experiments, the Schloss mice took
-longer to clear in the 1st experiment compared to the 2nd and the Envigo
-mice took longer to clear in the 2nd experiment compared to the 1st
-(Fig. S2A-B). The change in the mice's weight significantly varied
-across sources of mice with the most weight loss occurring two days
-post-infection (Fig. 2C and Table S7). There was also one Jackson and
-one Envigo mouse that died between 1- and 3-days post-infection during
-the second experiment. Mice obtained from Jackson, Taconic, and Envigo
-tended to lose more weight, have higher \emph{C. difficile} CFU levels
-and take longer to clear the infection compared to the other sources of
-mice (although there was variation between experiments with Schloss and
-Envigo mice). This was particularly evident 7 days post-infection (Fig.
-2B-C, Fig. S2C-D), when 57\% of the mice were still colonized with
-\emph{C. difficile} (Fig. S2E). By 9 days post-infection the majority of
-the mice from all sources had cleared \emph{C. difficile} (Fig. 2B) with
-the exception of 1 Taconic mouse from the first experiment and 2 Envigo
-mice from the second experiment. Thus, clindamycin rendered all mice
-susceptible to \emph{C. difficile} 630 colonization, regardless of
-source, but there was significant variation in disease phenotype across
-the sources of mice.
+longer to clear in the first experiment compared to the second and the
+Envigo mice took longer to clear in the second experiment compared to
+the first (Fig. S2A-B). The change in the mice's weight significantly
+varied across sources of mice with the most weight loss occurring two
+days post-infection (Fig. 2C and Table S7). There was also one Jackson
+and one Envigo mouse that died between 1- and 3-days post-infection
+during the second experiment. Mice obtained from Jackson, Taconic, and
+Envigo tended to lose more weight, have higher \emph{C. difficile} CFU
+levels and take longer to clear the infection compared to the other
+sources of mice (although there was variation between experiments with
+Schloss and Envigo mice). This was particularly evident 7 days
+post-infection (Fig. 2B-C, Fig. S2C-D), when 57\% of the mice were still
+colonized with \emph{C. difficile} (Fig. S2E). By 9 days post-infection
+the majority of the mice from all sources had cleared \emph{C.
+difficile} with the exception of 1 Taconic mouse from the first
+experiment and 2 Envigo mice from the second experiment (Fig. 2B). Thus,
+clindamycin rendered all mice susceptible to \emph{C. difficile} 630
+colonization, regardless of source, but there was significant variation
+in disease phenotype across the sources of mice.
 
 \textbf{Clindamycin treatment alters bacteria in all sources, but a
 subset of bacterial differences across sources persists.} Given the
@@ -288,34 +288,35 @@ colonies, we hypothesized that variation in \emph{C. difficile}
 clearance would be explained by community variation across the 6 sources
 of mice. As expected, clindamycin treatment decreased the richness and
 Shannon diversity across all sources of mice (Fig. 3A-B). Interestingly,
-significant differences in diversity metrics between sources
-(\emph{P}\textsubscript{FDR} \textless{} 0.05) emerged after clindamycin
-treatment, with Charles River mice having higher richness and Shannon
-diversity than most of the other sources (Fig 3A-B and Tables S1-2). The
-clindamycin treatment decreased the variation in community structures
-between sources of mice. The source of mice and the interactions between
-source and cage effects explained almost all of the observed variation
-between communities (combined R\textsuperscript{2} = 0.99, \emph{P}
-\textless{} 0.001; Fig. 3C and Table S3). However, there were only 18
-OTUs (Fig. 3D and Table S8) with relative abundances that significantly
-varied between sources. Next, we identified the bacteria that shifted
-after clindamycin treatment, regardless of source by analyzing paired
-fecal samples from mice that were collected at baseline and after
-clindamycin treatment. We identified 153 OTUs that were altered after
-clindamycin treatment in most mice (Fig. 3E and Table S9). When we
-compared the list of significant clindamycin impacted bacteria with the
-bacteria that varied between sources post-clindamycin, we found 4 OTUs
-(\emph{Enterobacteriaceae (OTU 1)}, \emph{Lachnospiraceae} (OTU 130),
-\emph{Lactobacillus} (OTU 6), \emph{Enterococcus} (OTU 23)) overlapped
-(Fig. 3D-E and Tables S8-9). Importantly, some of the OTUs that varied
-between sources also shifted with clindamycin treatment. For example,
-\emph{Proteus} increased after clindamycin treatment (Fig. 3D), but only
-in Taconic mice. \emph{Enterococcus} was primarily found only in mice
-purchased from commercial vendors and also increased in relative
-abundance after clindamycin treatment (Fig. 3D). These findings
-demonstrate that clindamycin had a consistent impact on the fecal
-bacterial communities of mice from all sources and only a subset of the
-OTUs continued to vary between sources.
+significant differences in diversity metrics between sources emerged
+after clindamycin treatment, with Charles River mice having higher
+richness and Shannon diversity than most of the other sources
+(\emph{P}\textsubscript{FDR} \textless{} 0.05; Fig 3A-B and Tables
+S1-2). The clindamycin treatment decreased the variation in community
+structures between sources of mice. The source of mice and the
+interactions between source and cage effects explained almost all of the
+observed variation between communities (combined R\textsuperscript{2} =
+0.99, \emph{P} \textless{} 0.001; Fig. 3C and Table S3). However, there
+were only 18 OTUs with relative abundances that significantly varied
+between sources (Fig. 3D and Table S8). Next, we identified the bacteria
+that shifted after clindamycin treatment, regardless of source by
+analyzing paired fecal samples from mice that were collected at baseline
+and after clindamycin treatment. We identified 153 OTUs that were
+altered after clindamycin treatment in most mice (Fig. 3E and Table S9).
+When we compared the list of significant clindamycin impacted bacteria
+with the bacteria that varied between sources post-clindamycin, we found
+4 OTUs that were shared between the lists (\emph{Enterobacteriaceae (OTU
+1)}, \emph{Lachnospiraceae} (OTU 130), \emph{Lactobacillus} (OTU 6),
+\emph{Enterococcus} (OTU 23); Fig. 3D-E and Tables S8-9). Importantly,
+some of the OTUs that varied between sources also shifted with
+clindamycin treatment. For example, \emph{Proteus} increased after
+clindamycin treatment (Fig. 3D), but only in Taconic mice.
+\emph{Enterococcus} was primarily found only in mice purchased from
+commercial vendors and also increased in relative abundance after
+clindamycin treatment (Fig. 3D). These findings demonstrate that
+clindamycin had a consistent impact on the fecal bacterial communities
+of mice from all sources and only a subset of the OTUs continued to vary
+between sources.
 
 \textbf{Microbiota variation between sources is maintained after
 \emph{C. difficile} challenge.} One day post-infection, significant
@@ -331,15 +332,15 @@ source of mice and the interactions between source and cage effects
 continued to explain most of the observed community variation (combined
 R\textsuperscript{2} = 0.88; \emph{P} \textless{} 0.001; Fig. 4C and
 Table S3). One day after \emph{C. difficile} challenge, there were 44
-OTUs (Fig. 4D and Table S10) with significantly different relative
-abundances across sources.
+OTUs with significantly different relative abundances across sources
+(Fig. 4D and Table S10).
 
 Throughout the experiment, the source of mice continued to be the
 dominant factor that explained the observed variation across fecal
 communities (PERMANOVA R\textsuperscript{2} = 0.35, \emph{P} \textless{}
 0.001) followed by interactions between cage effects and the day of the
-experiment (Movie S1 and Table S11). Mice fecal samples from the same
-source of mice continued to cluster closely to each other throughout the
+experiment (Movie S1 and Table S11). Fecal samples from the same source
+of mice continued to cluster closely to each other throughout the
 experiment. By 7 days post-infection, when approximately 43\% mice had
 cleared \emph{C. difficile}, most of the mice had not recovered to their
 baseline community structure (Fig. 4E). The distance to the baseline
@@ -358,42 +359,42 @@ post-infection.} After identifying taxa that varied between sources,
 changed after clindamycin treatment, or both, we determined which taxa
 were influencing the variation in \emph{C. difficile} colonization at
 day 7 (Fig. 2B, Fig. S2C). We trained three L2-regularized logistic
-regression models with input bacterial community data from the baseline
-(day = -1), post-clindamycin (day = 0), and post-infection (day = 1)
-timepoints of the experiment to predict \emph{C. difficile} colonization
-status on day 7 (Fig. S3A-B). All models were better at predicting
-\emph{C. difficile} colonization status on day 7 than random chance (all
-\emph{P} \textless{} 0.001, Table S12). The model based on the
-post-clindamycin (AUROC = 0.78) community OTU data performed
+regression models with either input bacterial community data from the
+baseline (day = -1), post-clindamycin (day = 0), or post-infection (day
+= 1) timepoints of the experiment to predict \emph{C. difficile}
+colonization status on day 7 (Fig. S3A-B). All models were better at
+predicting \emph{C. difficile} colonization status on day 7 than random
+chance (all \emph{P} \textless{} 0.001, Table S12). The model based on
+the post-clindamycin (AUROC = 0.78) community OTU data performed
 significantly better than the baseline (AUROC = 0.72) or the
 post-infection (AUROC = 0.67) models (\emph{P}\textsubscript{FDR}
-\textless{} 0.001 for pairwise comparisons, Fig. S3C and Table S13).
+\textless{} 0.001 for pairwise comparisons; Fig. S3C and Table S13).
 Thus, we were able to use bacterial relative abundance data from the
 time of \emph{C. difficile} challenge to differentiate mice that had
 cleared \emph{C. difficile} before day 7 from the mice still colonized
-with \emph{C. difficile} at that timepoint. This result suggests the
-bacterial community's response to clindamycin treatment had the greatest
-influence on subsequent \emph{C. difficile} colonization dynamics.
+with \emph{C. difficile} at that timepoint. This result suggests that
+the bacterial community's response to clindamycin treatment had the
+greatest influence on subsequent \emph{C. difficile} colonization
+dynamics.
 
 To examine the bacteria that were driving each model's performance, we
 selected the 20 OTUs that had the highest absolute feature weights in
 each of the 3 models (Table S14). First, we looked at OTUs from the
 model with the best performance, which was based on the post-clindamycin
 treatment (day 0) bacterial community data. Out of the 10 highest ranked
-OTUs, 7 OTUs (\emph{Bacteroides}, \emph{Escherichia/Shigella}, 2
+OTUs, 7 OTUs were associated with \emph{C. difficile} colonization 7
+days post-infection (\emph{Bacteroides}, \emph{Escherichia/Shigella}, 2
 \emph{Lachnospiraceae}, \emph{Lactobacillus}, \emph{Porphyromonadaceae},
-and \emph{Ruminococcaceae}) were associated with \emph{C. difficile}
-colonization 7 days post-infection, while 3 OTUs
+and \emph{Ruminococcaceae}), while 3 OTUs were associated with clearance
 (\emph{Enterobacteriaceae}, \emph{Lachnospiraceae},
-\emph{Porphyromonadaceae}) were associated with clearance (Fig. 5A).
-Next, we examined whether any of the top 20 ranked OTUs from the
-post-clindamycin (day 0) model were also important in the other 2
-classification models based on baseline (day -1) and 1 day
-post-infection community data. We identified 6 OTUs
-(\emph{Enterobacteriaceae, Ruminococcaceae, Lactobacillus, Bacteroides,
-Porphyromonadaceae, Erysipelotrichaceae}) that were important to the
-post-clindamycin model and either the baseline or 1 day post-infection
-models (Table S14). Thus, a subset of bacterial OTUs were important for
+\emph{Porphyromonadaceae}; Fig. 5A). Next, we examined whether any of
+the top 20 ranked OTUs from the post-clindamycin (day 0) model were also
+important in the other 2 classification models based on baseline (day
+-1) and 1 day post-infection community data. We identified 6 OTUs that
+were important to the post-clindamycin model and either the baseline or
+1 day post-infection models (\emph{Enterobacteriaceae, Ruminococcaceae,
+Lactobacillus, Bacteroides, Porphyromonadaceae, Erysipelotrichaceae};
+Table S14). Thus, a subset of bacterial OTUs were important for
 determining \emph{C. difficile} colonization dynamics across multiple
 timepoints.
 
@@ -405,12 +406,12 @@ treatment (Fig. 3E and Table S9; Fig. S4). Comparing the features
 important to the 3 models identified 14 OTUs associated with source, 21
 OTUs associated with clindamycin treatment, and 6 OTUs associated with
 both (Fig. 5B). Together, these results suggest that the initial
-bacterial communities and their responses to clindamycin influence the
+bacterial communities and their responses to clindamycin influenced the
 clearance of \emph{C. difficile}.
 
-Several OTUs (\emph{Bacteroides, Enterococcus, Enterobacteriaceae,
-Porphyromonadaceae}) that overlapped with our previous analyses appeared
-across at least 2 models, so we examined how the relative abundances of
+Several OTUs that overlapped with our previous analyses appeared across
+at least 2 models (\emph{Bacteroides, Enterococcus, Enterobacteriaceae,
+Porphyromonadaceae}), so we examined how the relative abundances of
 these OTUs varied over the course of the experiment (Fig. 6). Across the
 9 days post-infection, there was at least 1 timepoint when the relative
 abundances of these OTUs significantly varied between sources (Table
@@ -422,67 +423,69 @@ difficile} colonization dynamics.
 \hypertarget{discussion}{%
 \subsection{Discussion}\label{discussion}}
 
-Applying our CDI model with mice from 6 different sources, allowed us to
+Applying our CDI model to 6 different sources of mice, allowed us to
 identify bacterial taxa that were unique to different sources as well as
-taxa that were universally impacted by clindamycin. We trained L2
-logistic regression models with baseline (day -1), post-clindamycin
-treatment (day 0), and 1-day post-infection fecal community data that
-could predict whether mice cleared \emph{C. difficile} by 7 days
+taxa that were universally impacted by clindamycin. We trained logistic
+regression models with baseline (day -1), post-clindamycin treatment
+(day 0), and 1-day post-infection fecal community data that could
+predict whether mice cleared \emph{C. difficile} by 7 days
 post-infection better than random chance. We identified
 \emph{Bacteroides, Enterococcus, Enterobacteriaceae, Porphyromonadaceae}
-(Fig. 6) as candidate bacteria within these communities that were
-influencing variation in \emph{C. difficile} colonization dynamics since
-these bacteria were all important in the logistic regression models and
-varied by source, were impacted by clindamycin treatment, or both.
-Overall, our results demonstrated clindamycin was sufficient to render
-mice from multiple sources susceptible to CDI and only a subset of the
+(Fig. 6) as candidate bacteria within these communities that influenced
+variation in \emph{C. difficile} colonization dynamics since these
+bacteria were all important in the logistic regression models and varied
+by source, were impacted by clindamycin treatment, or both. Overall, our
+results demonstrated clindamycin was sufficient to render mice from
+multiple sources susceptible to CDI and only a subset of the
 inter-individual microbiota variation across mice from different sources
-was associated with the time needed to clear \emph{C. difficile}.
+was needed to predict which mice could clear \emph{C. difficile}.
 
-Other studies have taken similar approaches by using mice from multiple
-sources to identify bacteria that either promote colonization resistance
-or increase susceptibility to enteric infections (22, 23, 26--30). For
-example, against \emph{Salmonella} infections, \emph{Enterobacteriaceae}
-and segmented filamentous bacteria have emerged as protective (22, 27).
-We found \emph{Enterobacteriaceae} increased in all sources of mice
-after clindamycin treatment, facilitating \emph{C. difficile}
-colonization. However, there was also variation in
-\emph{Enterobacteriaceae} relative abundance levels between sources that
-was associated with the variation in \emph{C. difficile} colonization
-dynamics across sources. Thus, bacteria may have differential roles in
-determining susceptibility depending on the type of bacterial infection.
+Other studies have used mice from multiple sources to identify bacteria
+that either promote colonization resistance or increase susceptibility
+to enteric infections (22, 23, 26--30). For example, against
+\emph{Salmonella} infections, \emph{Enterobacteriaceae} and segmented
+filamentous bacteria have emerged as protective (22, 27). We found
+\emph{Enterobacteriaceae} increased in all sources of mice after
+clindamycin treatment, facilitating \emph{C. difficile} colonization.
+However, there was also variation in \emph{Enterobacteriaceae} relative
+abundance levels between sources that was associated with the variation
+in \emph{C. difficile} colonization dynamics across sources. Thus,
+bacteria may have differential roles in determining susceptibility
+depending on the type of bacterial infection.
 
 Differences in CDI mouse model studies have been attributed to
 intestinal microbiota variation across sources. For example, researchers
 using the same clindamycin treatment and C57BL/6 mice had different
 \emph{C. difficile} outcomes, one having sustained colonization (32),
-while the other had transient (18), despite both using \emph{C.
-difficile} VPI 10643. Baseline differences in the microbiota composition
-have been hypothesized to partially explain the differences in
-colonization outcomes and overall susceptibility to \emph{C. difficile}
-after treatment with the same antibiotic (13, 31). A previous study with
-\emph{C. difficile} identified an endogenous protective \emph{C.
-difficile} strain LEM1 that bloomed after antibiotic treatment in mice
-from Jackson or Charles River Laboratories, but not Taconic that
-protected mice against the more toxigenic \emph{C. difficile} VPI10463
-(26). Given that we obtained mice from the same vendors, we checked all
-mice for endogenous \emph{C. difficile} by plating stool samples that
-were collected after clindamycin treatment. However, we did not identify
-any endogenous \emph{C. difficile} strains prior to challenge,
-suggesting there were no endogenous protective strains in the mice we
-received and other bacteria mediated the variation in \emph{C.
-difficile} colonization across sources. The \emph{C. difficile} strain
-used could also be contributing to the variation in \emph{C. difficile}
-outcomes seen across different research groups. For example, a group
-found differential colonization outcomes after clindamycin treatment,
-with \emph{C. difficile} 630 and M68 infections eventually becoming
-undetectable while strain BI-7 remained detectable up to 70 days
-post-treatment (44).
-
-The bacterial perturbations induced by clindamycin treatment have been
-well characterized and our findings agree with previous CDI mouse model
-work demonstrating \emph{Enterococcus} and \emph{Enterobacteriaceae}
-were associated with \emph{C. difficile} susceptibility and
+while the other had transient colonization (18), despite both using
+\emph{C. difficile} VPI 10643. Baseline differences in the microbiota
+composition have been hypothesized to partially explain the differences
+in colonization outcomes and overall susceptibility to \emph{C.
+difficile} after treatment with the same antibiotic (13, 31). When we
+treated mice from 6 different sources with clindamycin and challenged
+them with \emph{C. difficile} 630, we found microbiota variation across
+sources impacted colonization outcomes, but not susceptibility. A
+previous study with \emph{C. difficile} identified an endogenous
+protective \emph{C. difficile} strain LEM1 that bloomed after antibiotic
+treatment in mice from Jackson or Charles River Laboratories, but not
+Taconic that protected mice against the more toxigenic \emph{C.
+difficile} VPI10463 (26). Given that we obtained mice from the same
+vendors, we checked all mice for endogenous \emph{C. difficile} by
+plating stool samples that were collected after clindamycin treatment.
+However, we did not identify any endogenous \emph{C. difficile} strains
+prior to challenge, suggesting there were no endogenous protective
+strains in the mice we received and other bacteria mediated the
+variation in \emph{C. difficile} colonization across sources. The
+\emph{C. difficile} strain used could also be contributing to the
+variation in \emph{C. difficile} outcomes seen across different research
+groups. For example, a group found differential colonization outcomes
+after clindamycin treatment, with \emph{C. difficile} 630 and M68
+infections eventually becoming undetectable while strain BI-7 remained
+detectable up to 70 days post-treatment (44). The bacterial
+perturbations induced by clindamycin treatment have been well
+characterized and our findings agree with previous CDI mouse model work
+demonstrating \emph{Enterococcus} and \emph{Enterobacteriaceae} were
+associated with \emph{C. difficile} susceptibility and
 \emph{Porpyhromonadaceae}, \emph{Lachnospiraceae},
 \emph{Ruminococcaceae}, and \emph{Turicibacter} were associated with
 resistance (19, 21, 32, 33, 43--46). While we have demonstrated that
@@ -492,46 +495,46 @@ or clearance in the case of other antibiotic treatments.
 
 We found the time needed to naturally clear \emph{C. difficile} varied
 across sources of mice implying that at least in the context of the same
-perturbation, microbiota differences seemed to influence infection
-outcome more than susceptibility. More importantly, we were able to
-reduce the variation observed across sources to identify a subset of
-OTUs that were also important for predicting \emph{C. difficile}
-colonization status 7 days post-infection. Since all but 3 mice
-eventually cleared \emph{C. difficile} 630 by 9 days post-infection and
-the model built with the post-clindamycin (day 0) OTU relative abundance
-data had the best performance, our results suggest clindamycin treatment
-had a larger role in determining \emph{C. difficile} susceptibility and
-clearance than the source of the mice.
+perturbation, microbiota differences influence infection outcome. More
+importantly, we were able to explain the variation observed across
+sources with a subset of OTUs that were also important for predicting
+\emph{C. difficile} colonization status 7 days post-infection. Since all
+but 3 mice eventually cleared \emph{C. difficile} 630 by 9 days
+post-infection and the model built with the post-clindamycin (day 0) OTU
+relative abundance data had the best performance, our results suggest
+clindamycin treatment had a larger role in determining \emph{C.
+difficile} susceptibility and clearance than the source of the mice.
 
-Our approach successfully increased the inter-animal variation tested
-with our clindamycin model of CDI. One alternative approach that has
-been used in some CDI studies (47--52) is to associate mice with human
-microbiotas. However, a major caveat to this method is the substantial
-loss of human microbiota community members upon transfer to mice (53,
-54). Additionally with the exception of 2 recent studies (47, 48), most
-of the CDI mouse model studies to date associated mice with just 1 types
-of human microbiota either from a single donor or a single pool from
-multiple donors (49--52), which does not aid in the goal of modeling the
-interpersonal variation seen in humans to understand how the microbiota
-influences susceptibility to CDIs and adverse outcomes. Importantly, our
-study using mice from 6 different sources increased the variation
-between groups of mice compared to using 1 source alone, to better
-reflect the inter-individual microbiota variation observed in humans.
+Using mice from multiple sources successfully increased the inter-animal
+variation. One alternative approach that has been used in some CDI
+studies is to associate mice with human microbiotas (47--52). However, a
+major caveat to this method is the substantial loss of human microbiota
+community members upon transfer to mice (53, 54). Additionally with the
+exception of 2 recent studies (47, 48), most of these studies associated
+mice with just 1 types of human microbiota either from a single donor or
+a single pool from multiple donors (49--52). This approach does not aid
+in the goal of modeling the interpersonal variation seen in humans to
+understand how the microbiota influences susceptibility to CDIs and
+adverse outcomes. Importantly, our study using mice from 6 different
+sources increased the variation between groups of mice compared to using
+1 source alone, to better reflect the inter-individual microbiota
+variation observed in humans.
 
-Another motivation for associating mice with human microbiotas,is to
-study the bacteria associated with the disease in humans. Encouragingly,
-decreased \emph{Bifidobacterium}, \emph{Porphyromonas},
-\emph{Ruminococcaceae} and \emph{Lachnospiraceae} and increased
-\emph{Enterobacteriaceae}, \emph{Enterococcus}, \emph{Lactobacillus},
-and \emph{Proteus} have all been associated with human CDIs (7) and were
-well represented in our study, suggesting most of the mouse sources are
-suitable for gaining insights into the bacteria influencing \emph{C.
+Another motivation for associating mice with human microbiotas is to
+study the bacteria associated with the disease in humans. Decreased
+\emph{Bifidobacterium}, \emph{Porphyromonas}, \emph{Ruminococcaceae} and
+\emph{Lachnospiraceae} and increased \emph{Enterobacteriaceae},
+\emph{Enterococcus}, \emph{Lactobacillus}, and \emph{Proteus} have all
+been associated with human CDIs (7). Encouragingly, these populations
+were well represented in our study, suggesting most of the mouse sources
+are suitable for gaining insights into the bacteria influencing \emph{C.
 difficile} colonization and infections in humans. An important exception
 was \emph{Enterococcus}, which was primarily absent from University of
 Michigan colonies and \emph{Proteus}, which was only found in Taconic
 mice. The fact that some CDI-associated bacteria were only found in a
 subset of mice has important implications for future CDI mouse model
-studies.
+studies, but also models the natural patchiness of microbial populations
+in humans.
 
 Other microbiota and host factors that were outside the scope of our
 current study may also contribute to the differences in \emph{C.
@@ -564,7 +567,7 @@ pathogenesis and treatments, using multiple sources of mice may yield
 more insights than a single source. Furthermore, for studies wanting to
 examine the interplay between particular bacteria such as
 \emph{Enterococcus} and \emph{C. difficile}, these results could serve
-as a resource for selecting mice to address their question. Using mice
+as a resource for selecting mice to address the question. Using mice
 from multiple sources helps model the interpersonal microbiota variation
 among humans to aid our understanding of how the gut microbiota provides
 colonization resistance to CDIs.
@@ -577,19 +580,19 @@ colonization resistance to CDIs.
 This work was supported by the National Institutes of Health
 (U01AI124255). ST was supported by the Michigan Institute for Clincial
 and Health Research Postdoctoral Translation Scholars Program
-(UL1TR002240). We thank members of the Schloss lab for feedback on
-planning the experiments and data presentation. In particular, we thank
-Begüm Topçuoğlu for help with implementing L2 logistic regression
-models, Ana Taylor for help with media preparation and sample
-collection, and Nicholas Lesniak for his critical feedback on the
-manuscript. We also thank members of Vincent Young's lab, particularly
-Kimberly Vendrov, for guidance with the \emph{C. difficile} infection
-mouse model and donating the mice. We also thank the Unit for Laboratory
-Animal Medicine at the University of Michigan for maintaining our mouse
-colony and providing the institutional support for our mouse
-experiments. Finally, we thank Kwi Kim, Austin Campbell, and Kimberly
-Vendrov for their help in maintaining the Schloss lab's anaerobic
-chamber.
+(UL1TR002240 from the National Center for Advancing Translational
+Sciences). We thank members of the Schloss lab for feedback on planning
+the experiments and data presentation. In particular, we thank Begüm
+Topçuoğlu for help with implementing logistic regression models, Ana
+Taylor for help with media preparation and sample collection, and
+Nicholas Lesniak for his critical feedback on the manuscript. We also
+thank members of Vincent Young's lab, particularly Kimberly Vendrov, for
+guidance with the \emph{C. difficile} infection mouse model and donating
+the mice. We also thank the Unit for Laboratory Animal Medicine at the
+University of Michigan for maintaining our mouse colony and providing
+the institutional support for our mouse experiments. Finally, we thank
+Kwi Kim, Austin Campbell, and Kimberly Vendrov for their help in
+maintaining the Schloss lab's anaerobic chamber.
 
 \newpage
 
@@ -602,28 +605,28 @@ PRO00006983. Female C57BL/7 mice were obtained from 6 different sources:
 The Jackson Laboratory, Charles River Laboratories, Taconic Biosciences,
 Envigo, and two colonies at the University of Michigan (the Schloss lab
 colony and the Young lab colony). The Young lab colony was originally
-established with mice purchased from Jackson, and the Schloss lab colony
-was established in 2010 with mice donated from the Young lab. The 4
-groups of mice purchased from vendors were allowed to acclimate to the
-University of Michigan mouse facility for 13 days prior to starting the
-experiment. At least 4 female mice (age 5-10 weeks) were obtained per
-source and mice from the same source were primarily housed at a density
-of 2 mice per cage. The experiment was repeated once, approximately 3
-months after the start of the first experiment.
+established with mice purchased from Jackson in 2002, and the Schloss
+lab colony was established in 2010 with mice donated from the Young lab.
+The 4 groups of mice purchased from vendors were allowed to acclimate to
+the University of Michigan mouse facility for 13 days prior to starting
+the experiment. At least 4 female mice (age 5-10 weeks) were obtained
+per source and mice from the same source were primarily housed at a
+density of 2 mice per cage. The experiment was repeated once,
+approximately 3 months after the start of the first experiment.
 
-\textbf{(ii) Antibiotic treatment.} After the 13-day acclimation period
-and 1 day prior to challenge (Fig. 1A), all mice received 10 mg/kg
-clindamycin (filter sterilized through a 0.22 micron syringe filter
-prior to administration) via intraperitoneal injection.
+\textbf{(ii) Antibiotic treatment.} After the 13-day acclimation period,
+all mice received 10 mg/kg clindamycin (filter sterilized through a 0.22
+micron syringe filter prior to administration) via intraperitoneal
+injection (Fig. 1A).
 
 \textbf{(iii) \emph{C. difficile} infection model.} Mice were challenged
 with 10\textsuperscript{3} spores of \emph{C. difficile} strain 630 via
 oral gavage post-infection 1 day after clindamycin treatment as
 described previously (21). Mice weights and stool samples were taken
-daily through 9 days post-challenge. Collected stool was split for
-\emph{C. difficile} CFU quantification and 16S rRNA sequencing analysis.
-\emph{C. difficile} quantification stool samples were transferred to the
-anaerobic chamber, serially diluted in PBS, plated on
+daily through 9 days post-challenge (Fig. 1A). Collected stool was split
+for \emph{C. difficile} quantification and 16S rRNA sequencing analysis.
+For \emph{C. difficile} quantification, stool samples were transferred
+to the anaerobic chamber, serially diluted in PBS, plated on
 taurocholate-cycloserine-cefoxitin-fructose agar (TCCFA) plates, and
 counted after 24 hours of incubation at 37°C under anaerobic conditions.
 A sample from the day 0 timepoint (post-clindamycin and prior to
@@ -672,8 +675,8 @@ colonized 7 days post-infection and had sequencing data from the
 baseline (day -1), post-clindamycin (day 0), and post-infection (day 1)
 timepoints of the experiment. Input bacterial community relative
 abundance data at the OTU level from the baseline, post-clindamycin, and
-post-infection timepoints was used to generate 6 classification models
-that predicted \emph{C. difficile} colonization status 7 days
+1-day post-infection timepoints was used to generate 3 classification
+models that predicted \emph{C. difficile} colonization status 7 days
 post-infection. The L2-regularized logistic regression models were
 trained and tested using the caret package (76) in R as previously
 described (77) with the exception that we used 60\% training and 40\%
@@ -684,7 +687,7 @@ ratio was selected to accommodate the small number of samples in the
 dataset. Code was modified from
 \url{https://github.com/SchlossLab/ML_pipeline_microbiome} to update the
 classification outcomes and change the data split ratios. The modified
-repository to regenerate this analysis is available at
+repository to regenerate our modeling analysis is available at
 \url{https://github.com/tomkoset/ML_pipeline_microbiome}.
 
 \textbf{(vii) Statistical analysis.} All statistical tests were
@@ -702,11 +705,11 @@ correction. The Wilcoxon rank sum test was used to test for OTUs that
 differed between experiments within the Schloss, Young, and Envigo
 sources with Benjamini-Hochberg correction for testing all identified
 OTUs. OTUs impacted by clindamycin treatment were identified using the
-paired Wilcoxon signed rank test with matched pairs of mice samples for
+paired Wilcoxon signed rank test with matched pairs of mice samples from
 day -1 and day 0. To determine whether classification models had better
 performance (test AUROCs) than random chance (0.5), we used the
 one-sample Wilcoxon signed rank test. To examine whether there was an
-overall difference in predictive performance across the 6 classification
+overall difference in predictive performance across the 3 classification
 models we used the Kruskal-Wallis test followed by pairwise Wilcoxan
 comparisons with Benjamini-Hochberg correction for multiple hypothesis
 testing. The tidyverse package (v 1.3.0) was used to wrangle and graph
@@ -1211,8 +1214,8 @@ median values for each source of mice. C. Principal Coordinates Analysis
 (PCoA) of \(\theta_{YC}\) distances of baseline stool samples. Source
 and the interaction between source and cage effects explained most of
 the variation (PERMANOVA combined R\textsuperscript{2} = 0.90, \emph{P}
-\textless{} 0.001, see Table S3). For A-C: each symbol represents the
-value for a stool sample from an individual mouse, circles represent
+\textless{} 0.001; Table S3). For A-C: each symbol represents the value
+for a stool sample from an individual mouse, circles represent
 experiment 1 mice and triangles represent experiment 2 mice. D. The
 median (point) and interquantile range (colored lines) of the relative
 abundances for the 20 most significant OTUs out of the 268 OTUs that
@@ -1265,20 +1268,19 @@ they are listed above (Table S2). C. PCoA of \(\theta_{YC}\) distances
 from stools collected post-clindamycin. Source and the interaction
 between source and cage effects explained most of the variation observed
 post-clindamycin (PERMANOVA combined R\textsuperscript{2} = 0.99,
-\emph{P} \textless{} 0.001, see Table S3). For A-C, each symbol
-represents a stool sample from an individual mouse, with circles
-representing experiment 1 mice and triangles representing experiment 2
-mice. D. The median (point) and interquantile range (colored lines) of
-the relative abundances for the 18 OTUs (Table S8) that varied between
-sources after clindamycin treatment (day 0). E. The median (point) and
-interquantile range (colored lines) of the top 10 most significant OTUs
-out of 153 with relative abundances that changed because of the
-clindamycin treatment (adjusted \emph{P} value \textless{} 0.05). Data
-were analyzed by paired Wilcoxon signed rank test of mice that had
-paired sequence data for baseline (day -1) and post-clindamycin (day 0)
-timepoints (N = 31), with Benjamini-Hochberg correction for testing all
-identified OTUs (Table S9). The gray vertical line indicates the limit
-of detection.
+\emph{P} \textless{} 0.001; Table S3). For A-C, each symbol represents a
+stool sample from an individual mouse, with circles representing
+experiment 1 mice and triangles representing experiment 2 mice. D. The
+median (point) and interquantile range (colored lines) of the relative
+abundances for the 18 OTUs (Table S8) that varied between sources after
+clindamycin treatment (day 0). E. The median (point) and interquantile
+range (colored lines) of the top 10 most significant OTUs out of 153
+with relative abundances that changed because of the clindamycin
+treatment (adjusted \emph{P} value \textless{} 0.05). Data were analyzed
+by paired Wilcoxon signed rank test of mice that had paired sequence
+data for baseline (day -1) and post-clindamycin (day 0) timepoints (N =
+31), with Benjamini-Hochberg correction for testing all identified OTUs
+(Table S9). The gray vertical line indicates the limit of detection.
 
 \newpage
 
@@ -1295,7 +1297,7 @@ they are listed above (Table S2). PCoA of \(\theta_{YC}\) distances of
 1-day post-infection stool samples. Source and the interaction between
 source and cage effects explained most of the variation between fecal
 communities (PERMANOVA combined R\textsuperscript{2} = 0.88, \emph{P}
-\textless{} 0.001, Table S3). For A-C: each symbol represents the value
+\textless{} 0.001; Table S3). For A-C: each symbol represents the value
 for a stool sample from an individual mouse, circles represent
 experiment 1 mice and triangles represent experiment 2 mice. D. The
 median (point) and interquantile range (colored lines) of the relative
@@ -1311,12 +1313,12 @@ Gray lines represent the median for each source.
 
 \newpage
 
-\includegraphics{figure_5.pdf} \textbf{Figure 5. Bacteria that influence
-whether mice cleared \emph{C. difficile} by day 7.} A. Post-clindamycin
-(day 0) relative abundance data for the 10 OTUs with the highest
-rankings based on feature weights in the post-clindamycin (day 0)
-classification model. Red font represents OTUs that correlated with
-\emph{C. difficile} colonization and blue font represents OTUs that
+\includegraphics{figure_5.pdf} \textbf{Figure 5. Bacteria that
+influenced whether mice cleared \emph{C. difficile} by day 7.} A.
+Post-clindamycin (day 0) relative abundance data for the 10 OTUs with
+the highest rankings based on feature weights in the post-clindamycin
+(day 0) classification model. Red font represents OTUs that correlated
+with \emph{C. difficile} colonization and blue font represents OTUs that
 correlated with clearance. Symbols represent the relative abundance data
 for an individual mouse. Gray bars indicate the median relative
 abundances for each source. B. Venn diagram that combines OTUs that were
@@ -1349,12 +1351,14 @@ with Benjamini-Hochberg correction for testing across multiple days
 
 \newpage
 
-\includegraphics{figure_S1.pdf} \textbf{Figure S1. Bacterial communities
-vary between experiments for some sources.} A-F. PCoA of \(\theta_{YC}\)
-distances for the baseline fecal bacterial communities within each
-source of mice. Each symbol represents a stool sample from an individual
-mouse with color corresponding to experiment and shape representing cage
-mates. Experiment number and cage effects explained most of the observed
+\includegraphics{figure_S1.pdf}
+
+\textbf{Figure S1. Bacterial communities vary between experiments for
+some sources.} A-F. PCoA of \(\theta_{YC}\) distances for the baseline
+fecal bacterial communities within each source of mice. Each symbol
+represents a stool sample from an individual mouse with color
+corresponding to experiment and shape representing cage mates.
+Experiment number and cage effects explained most of the observed
 variation for samples from the Schloss (PERMANOVA combined
 R\textsuperscript{2} = 0.99; \emph{P} \(\le\) 0.033) and Young (combined
 R\textsuperscript{2} = 0.95; \emph{P} \(\le\) 0.03) mice (Table S4).
@@ -1411,15 +1415,17 @@ that were ranked as most important to each model.
 
 \newpage
 
-\includegraphics{figure_S4.pdf} \textbf{Figure S4. OTUs from
-classification models based on baseline, post-clindamycin treatment, or
-1-day post-infection community data vary by source, clindamycin
-treatment, or both.} A-C. Venn diagrams of OTUs from the top 20 OTUs
-from the baseline (A), post-clindamycin treatment (B), and 1-day
-post-infection (C) classification models (Table S14) that overlapped
-with OTUs that varied across sources at the corresponding timepoint
-(Tables S5, 8, 10), were impacted by clindamycin treatment (Table S9),
-or both. Bold OTUs were important to more than 1 classification model.
+\includegraphics{figure_S4.pdf}
+
+\textbf{Figure S4. OTUs from classification models based on baseline,
+post-clindamycin treatment, or 1-day post-infection community data vary
+by source, clindamycin treatment, or both.} A-C. Venn diagrams of OTUs
+from the top 20 OTUs from the baseline (A), post-clindamycin treatment
+(B), and 1-day post-infection (C) classification models (Table S14) that
+overlapped with OTUs that varied across sources at the corresponding
+timepoint (Tables S5, 8, 10), were impacted by clindamycin treatment
+(Table S9), or both. Bold OTUs were important to more than 1
+classification model.
 
 \newpage
 
