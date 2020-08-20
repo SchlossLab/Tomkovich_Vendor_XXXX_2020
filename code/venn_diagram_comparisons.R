@@ -105,7 +105,7 @@ venn_otus <- function(source_comp, clind_comp, title){
   #Make data frame to annotate number of unique and overlapping OTUs onto venn diagram plot
   df_venn_otus <- as.data.frame(otus) %>%
     mutate(x = c(-15, 0, 15),
-           y = c(5, 5, 5))
+           y = c(4, 4, 4))
   #List of OTUs that are unique to each group or overlap to add to the plot
   source_unique_taxa <- sort(setdiff(source_comp, clind_comp))  
   # intersection
@@ -147,7 +147,7 @@ venn_otus <- function(source_comp, clind_comp, title){
     scale_colour_manual(values = c('cornflowerblue', 'firebrick', 'gold'), guide = FALSE) +
     labs(fill = NULL) +
     annotate("text", x = df_venn_otus$x, y = df_venn_otus$y, label = df_venn_otus[,1], size = 5)+
-    annotate("text", x = c(-10, 10), y = c(10, 10), label = c("Source", "Clindamycin"), size = 5)+
+    annotate("text", x = c(-10, 10), y = c(10.5, 10.5), label = c("Source", "Clindamycin"), size = 5)+
     annotate(geom='richtext', label = source_overlap, x = -16.5, y = 0.5, size = 2.7, fill = NA, label.color = NA, color = "black")+
     annotate(geom='richtext', label = source_unique, x = -19, y = -13, size = 2.7, fill = NA, label.color = NA, color = "grey27")+
     annotate(geom='richtext', label = clind_overlap, x = 16, y = 0.5, size = 2.7, fill = NA, label.color = NA, color = "black")+

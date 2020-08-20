@@ -404,6 +404,7 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     annotate("text", y = y_position, x = x_annotation, label = label, size =8)+
     theme_classic()+
     theme(plot.title=element_markdown(hjust = 0.5),
+          panel.grid.minor.x = element_line(size = 0.4, color = "grey"),  # Add gray lines to clearly separate symbols by days)
           text = element_text(size = 14)) # Change font size for entire plot
 }
 
