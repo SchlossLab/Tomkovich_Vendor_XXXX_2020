@@ -41,7 +41,7 @@ weight_kruskal_stats_adjust <- read_tsv("data/process/weight_stats_all_days.tsv"
 kw_w_sig_d0 <- otu_stats_dn1to1_combined %>% filter(day == 0)
 
 #Table S9: OTUs that changed after clindamycin treatment----
-o_dn1to0_pairs_stats_adjust <- read_tsv(path = "data/process/otu_stats_dn1to0.tsv") 
+o_dn1to0_pairs_stats_adjust <- read_tsv("data/process/otu_stats_dn1to0.tsv") 
 
 #Table S10: OTUs that vary between sources on day 1----
 kw_w_sig_d1 <- otu_stats_dn1to1_combined %>% filter(day == 1)
