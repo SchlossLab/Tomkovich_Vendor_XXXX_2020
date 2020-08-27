@@ -170,7 +170,7 @@ sbatch code/slurm/L2_log_Regression_d1.sh
 bash code/bash/d1_cat_csv_files.sh
 
 ```
-Copy the 6 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_Vendor_XXXX_2020/data/process/classification/
+Copy the 3 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_Vendor_XXXX_2020/data/process/classification/
 ML_pipeline_microbiome/data/process/dayn1
 ML_pipeline_microbiome/data/process/day0
 ML_pipeline_microbiome/data/process/day1
