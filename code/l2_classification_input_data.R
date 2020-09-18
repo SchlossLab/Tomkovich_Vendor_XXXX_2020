@@ -22,6 +22,7 @@ select_timepoint <- function(timepoint){
     select(-id, -day) %>%
     drop_na() %>%
     filter(clearance_status_d7 != "no_data") %>% #No cfu data on day 7 for these mice, exclude them
+    mutate(clearance_status_d7 = recode(clearance_status_d7, "not_detectable" = "cleared")) %>% #Change not_detectable variable name to cleared
     select(clearance_status_d7, everything()) %>%
     rename(dx=clearance_status_d7) %>% #rename column, the clearance_status_d7 values are what we want to predict
     select(-Otu0020) %>% #remove C. difficile (Otu0020) from the input data since C. difficile colonization status at day 7 is what we're predicting

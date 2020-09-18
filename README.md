@@ -162,18 +162,18 @@ Rscript code/l2_classification_input_data.R
 I modified [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis by updating the outcomes and using a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_Vendor_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
 ```
 mkdir data/process/dayn1 data/process/day0 data/process/day1
-sbatch code/slurm/L2_log_Regression_dn1.sh
+sbatch code/slurm/L2_Logistic_Regression_dn1.sh
 bash code/bash/dn1_cat_csv_files.sh
-sbatch code/slurm/L2_log_Regression_d0.sh
+sbatch code/slurm/L2_Logistic_Regression_d0.sh
 bash code/bash/d0_cat_csv_files.sh
-sbatch code/slurm/L2_log_Regression_d1.sh
+sbatch code/slurm/L2_Logistic_Regression_d1.sh
 bash code/bash/d1_cat_csv_files.sh
 
 ```
 Copy the 3 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_Vendor_XXXX_2020/data/process/classification/
-ML_pipeline_microbiome/data/process/dayn1
-ML_pipeline_microbiome/data/process/day0
-ML_pipeline_microbiome/data/process/day1
+ML_pipeline_microbiome/data/process/dayn1_60
+ML_pipeline_microbiome/data/process/day0_60
+ML_pipeline_microbiome/data/process/day1_60
 
 Rename classification output files to indicate which day of the experiment relative abundances were used to train the models to predict *C. difficile* colonization status on day 7.
 ```
