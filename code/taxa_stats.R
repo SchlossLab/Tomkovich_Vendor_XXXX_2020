@@ -37,6 +37,10 @@ agg_taxonomic_data <- function(taxonomic_level) {
 # Relative abundance data at the otu level:
 agg_otu_data <- agg_taxonomic_data(otu)
 
+# Number of detected OTUs in the dataset:
+detected_otus <- agg_otu_data %>% 
+  distinct(otu) %>% count #Selects the number of unique OTUs detected in dataset
+
 #Rename otus to match naming convention used in class_interpretation.R (interpretation of logistic regression models):
 agg_otu <- agg_otu_data %>% 
   mutate(key=otu) %>% 
