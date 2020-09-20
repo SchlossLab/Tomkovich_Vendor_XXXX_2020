@@ -81,6 +81,15 @@ summarize_plot <- function(df){
           panel.grid.minor.x = element_line(size = 0.4, color = "grey"))  # Add gray lines to clearly separate symbols by days)
 }
 
+#Plots of CFU data by experiment----
+facet_labels <- c("1st experiment", "2nd experiment")
+names(facet_labels) <- c("1", "2")
+exp1_2_cfu <- summarize_plot(cfu_data_final)+
+  facet_wrap( ~ experiment, labeller = labeller(experiment = facet_labels), scales = "fixed")+
+  theme(plot.title = element_text(hjust = 0.5),#Center plot title
+        strip.background = element_blank()) #get rid of box around facet_wrap labels
+save_plot(filename = paste0("results/figures/exp1_2_cfu_time.png"), plot = exp1_2_cfu, base_aspect_ratio = 2)
+  
 #CFU plot for the 1st experiment----
 exp1_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 1))+
   ggtitle("1st experiment")+ #Title plot
