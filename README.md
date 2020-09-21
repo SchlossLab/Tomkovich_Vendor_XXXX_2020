@@ -1,7 +1,7 @@
 Download the [latest release](https://github.com/SchlossLab/new_project/releases/latest) to the directory and decompress
 
 
-## The initial gut microbiota and response to antibiotic perturbation influence *Clostridioides difficile* colonization in mice
+## The initial gut microbiota and response to antibiotic perturbation influence *Clostridioides difficile* clearance in mice
 
 The gut microbiota has a key role in determining susceptibility to *Clostridioides difficile* infections (CDIs). However, much of the mechanistic work examining CDIs in mouse models use animals obtained from a single source. We treated mice from 6 sources (2 University of Michigan colonies and 4 commercial vendors) with clindamycin, followed by a *C. difficile* challenge and then measured *C. difficile* colonization levels throughout the infection. The microbiota were profiled via 16S rRNA gene sequencing to examine the variation across sources and alterations due to clindamycin treatment and *C. difficile* challenge. While all mice were colonized 1-day post-infection, variation emerged from days 3-7 post-infection with animals from some sources colonized with *C. difficile* for longer and at higher levels. We identified bacteria that varied in relative abundance across sources and throughout the experiment. Some bacteria were consistently impacted by clindamycin treatment in all sources of mice including *Lachnospiraceae*, *Ruminococcaceae*, and *Enterobacteriaceae*. To identify bacteria that were most important to colonization regardless of the source, we created logistic regression models that successfully classified mice based on whether they cleared *C. difficile* by 7 days post-infection using community composition data at baseline, post-clindamycin, and 1-day post-infection. With these models, we identified 4 bacteria that were predictive of whether *C. difficile* cleared. They varied across sources (*Bacteroides*), were altered by clindamycin (*Porphyromonadaceae*), or both (*Enterobacteriaceae* and *Enterococcus*). Allowing for microbiota variation across sources better emulates human inter-individual variation and can help identify bacterial drivers of phenotypic variation in the context of CDIs.
 
@@ -72,11 +72,11 @@ The gut microbiota has a key role in determining susceptibility to *Clostridioid
 #### Running analysis
 Download 16S rRNA sequencing dataset from the NCBI Sequence Read Archive (BioProject Accession no. PRJNA608529).
 ```
-git clone https://github.com/SchlossLab/Tomkovich_Vendor_XXXX_2020
+git clone https://github.com/SchlossLab/Tomkovich_Vendor_mSphere_2020
 ```
-Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_Vendor_XXXX_2020/data/raw
+Transfer 16S rRNA sequencing fastq.gz files into Tomkovich_Vendor_mSphere_2020/data/raw
 ```
-cd Tomkovich_Vendor_XXXX_2020
+cd Tomkovich_Vendor_mSphere_2020
 ```
 Obtain the SILVA reference alignment from version 132 described at https://mothur.org/blog/2018/SILVA-v132-reference-files/. We will use the SEED v. 132, which contain 12,083 bacterial sequences. This also contains the reference taxonomy. We will limit the databases to only include bacterial sequences.
 ```
@@ -159,7 +159,7 @@ For L2 Logistic regression analysis, use the following script to generate the in
 ```
 Rscript code/l2_classification_input_data.R
 ```
-I modified [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis by updating the outcomes and using a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_Vendor_XXXX_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
+I modified [ML_pipeline_microbiome repository](https://github.com/SchlossLab/ML_pipeline_microbiome) to perform L2 Logistic regression analysis by updating the outcomes and using a 60:40 data split for cross-validation and testing steps. Acccess [modified version of repository here](https://github.com/tomkoset/ML_pipeline_microbiome). Move Tomkovich_Vendor_mSphere_2020/data/process/classification_input_*data.csv files into ML_pipeline_microbiome/test/data. Run the pipeline as arrayed jobs using batch scripts formatted for Slurm (or whatever scheduler your HPC uses), merge files in between with bash scripts, otherwise they will be overwritten in temp folder:
 ```
 mkdir data/process/dayn1 data/process/day0 data/process/day1
 sbatch code/slurm/L2_Logistic_Regression_dn1.sh
@@ -170,7 +170,7 @@ sbatch code/slurm/L2_Logistic_Regression_d1.sh
 bash code/bash/d1_cat_csv_files.sh
 
 ```
-Copy the 3 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_Vendor_XXXX_2020/data/process/classification/
+Copy the 3 folders containing outputs from Logistic Regression classification analysis (there should be 5 files in each folder) and paste into Tomkovich_Vendor_mSphere_2020/data/process/classification/
 ML_pipeline_microbiome/data/process/dayn1_60
 ML_pipeline_microbiome/data/process/day0_60
 ML_pipeline_microbiome/data/process/day1_60
