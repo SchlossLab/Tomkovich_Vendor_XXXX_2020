@@ -2,6 +2,8 @@
 output:
   pdf_document: default
   html_document: default
+header-includes:
+    - \usepackage{setspace}\doublespacing  
 ---
 ### Reviewer #1 (Comments for the Author):
 
