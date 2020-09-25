@@ -10,5 +10,5 @@ right_panel <- plot_grid(d, e, labels = c("D", "E"), label_size = 12, ncol=2, re
 right_panel <- plot_grid(right_panel, NULL, labels = NULL, label_size = 12, nrow=2, rel_heights = c(1, 0.5)) #Add NULL plot to fix margin spacing in final figure
 
 plot_grid(left_panel, right_panel, labels = c("", "D", "E"), label_size = 12, ncol=2, axis = "t", align = "v", rel_heights = c(1, 3), rel_widths = c(1, 2))+
-  ggsave("results/figures/figure_3.pdf", width=8, height=6)+
-  ggsave("submission/figure_3.pdf", width=8, height=6)
+  ggsave("results/figures/figure_3.pdf", width=6.875, height=5.16)+
+  ggsave("submission/figure_3.tiff", width=6.875, height=5.16, dpi = 300, device = "tiff", compression = "lzw", units = "in")

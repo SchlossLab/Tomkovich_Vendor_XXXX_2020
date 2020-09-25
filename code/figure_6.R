@@ -9,5 +9,5 @@ legend <- ggdraw()+ draw_image("results/figures/overlap_OTUs_legend.png")
 
 
 plot_grid(figure, legend, labels = NULL, label_size = 12, ncol=1, rel_heights = c(1, 0.2))+
-  ggsave("results/figures/figure_6.pdf", width=8, height=5)+
-  ggsave("submission/figure_6.pdf", width=8, height=5)
+  ggsave("results/figures/figure_6.pdf", width=6.875, height=4.3)+
+  ggsave("submission/figure_6.tiff", width=6.875, height=4.3, dpi = 300, device = "tiff", compression = "lzw", units = "in")
