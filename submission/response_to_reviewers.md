@@ -122,16 +122,16 @@ header-includes:
 **18. Line 360-362: Could the authors perhaps give some explanation on the used distance metrics? I am not familiar with this specific metric. More importantly, it is unclear to this reviewer whether the assumption of homogeneity of dispersion between the comparison groups is tested (can be done using the betadisper function). It is known that even if centroids of comparison groups are very close together in e.g. a PCoA plot, adonis can still yield a very significant value due to different dispersions between the groups. You would then not be looking at actual different compositions between groups, but at (large) differences in composition within a group. If this is the case for the current analyses, it would be useful to report this, or an alternative (recent) test could be used which is robust to this issue (https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0659-9).**
 
 > $\theta_{YC}$ distances are based on the Yue & Clayton measure of dissimilarity. We have modified the Materials and Methods Section to clarify:
-"PCoAs were generated based on the Yue and Clayton measure of dissimilarity ($\theta_{YC}$) distances."
+"PCoAs were generated based on the Yue and Clayton measure of dissimilarity ($\theta_{YC}$) distances (75)."
 
-> Regarding the PERMANOVA tests used to analyze overall differences between the community structures of the 6 sources of mice, we agree that there are caveats to this approach. We also determined the specific OTUs with different relative abundances between sources of mice to determine which OTUs were contributing to the overall differences between the community structures.
+> Regarding the PERMANOVA tests used to analyze overall differences between the community structures of the 6 sources of mice, we agree that there are numerous approaches to differentiate microbial community structures. In our previous work we found that heteroscedacticity did not affect the Type I error of the PERMANOVA test (see AMOVA data in first column of Table 1 from DOI: 10.1038/ismej.2008.5). Regardless, the data for which PERMANOVA was used in the current study are pretty obviously different when looking at the ordinations (e.g. see Fig 1C). Furthermore, when we investigated the suggested test, there was not much documentation in the package to show us how to use the tool and it was not clear that it was possible to employ more sophisticated experimental designs than a single classification ANOVA. In contrast, we were able to use vegan to build a statistical model to account for the vendor and experiment. Based on these points, we are confident in the results of the statistical tests using PERMANOVA as implemented in the vegan R package.
 
 **19. L371: please provide some additional detail about the cross-validation (e.g. k-fold cross validation, repetition of cross-validations). Why did the authors opt for a ridge regression and not a lasso or elastic net regression?**
 
 > We have modified the sentence to include additional detail on the cross-validation:
-"The L2-regularized logistic regression models were trained and tested using the caret package (77) in R as previously described (78) with the exception that we used 60% training and 40% testing data splits for testing of the held out test data to measure model performance and repeated k-fold cross-validation of the training data to select the best cost hyperparameter."
+"The L2-regularized logistic regression models were trained and tested using the caret package (78) in R as previously described (79) with the exception that we used 60% training and 40% testing data splits for testing of the held out test data to measure model performance and repeated 2.5-fold cross-validation of the training data to select the best cost hyperparameter."
 
-> We chose ridge (L2-regularized) logistic regression because our group has previously implemented this model with microbiome data (Topcuoglu et al mBio 2020) and found the L2-regularized logistic regression model performed almost as well as a random forest model when classifying colorectal cancer cases using fecal microbiota data.
+> We chose ridge (L2-regularized) logistic regression because our group has previously implemented this model with microbiome data (Topcuoglu et al mBio 2020) and found the L2-regularized logistic regression model performed almost as well as a random forest model when classifying colorectal cancer cases using fecal microbiota data and did not require as many samples as random forest to avoid over fitting the data.
 
 **20. L377-378: have the authors considerd using a linear mixed model to investigate the dynamics of C. difficile clearance over time? (as I understand it now per-timepoint comparisons were performed).**
 
@@ -152,8 +152,8 @@ header-includes:
 
 **24. Fig 5A: the horizontal light grey bars at the same position in each panel are not defined. What does this indicate?**
 
->This line indicates the limit of detection, we have added the following to the Fig. 5A legend to clarify:
-"The gray horizontal lines indicates the limit of detection."
+>These lines indicatee the limit of detection, we have added the following to the Fig. 5A legend to clarify:
+"The gray horizontal lines indicate the limit of detection."
 
 ### Reviewer #2 (Comments for the Author):
 
