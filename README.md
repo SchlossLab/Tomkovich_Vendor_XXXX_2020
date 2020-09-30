@@ -205,9 +205,9 @@ Rscript code/figure_S2.R
 Rscript code/figure_S3.R
 Rscript code/figure_S4.R
 ```
-Make excel workbook of supplemental tables.
+Generate Data Set S1 as an excel workbook.
 ```
-Rscript code/tables_supplemental.R
+Rscript code/supplemental_data_set_S1.R
 ```
 
 Make supplemental movie for the paper. Note conversion of gif generated from code/pcoa_stats.R requires [FFmpeg](http://ffmpeg.org/). Install FFmpeg using homebrew.
