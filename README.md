@@ -205,6 +205,10 @@ Rscript code/figure_S2.R
 Rscript code/figure_S3.R
 Rscript code/figure_S4.R
 ```
+Compress figures for submission with lzw compression.
+```
+ls submission/*.tiff | xargs sips -s format tiff -s formatOptions lzw
+```
 Generate Data Set S1 as an excel workbook.
 ```
 Rscript code/supplemental_data_set_S1.R
