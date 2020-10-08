@@ -207,7 +207,8 @@ shannon_dx_plot <- function(timepoint){
     ylim(0, 5.5)+
     theme_classic()+
     theme(legend.position = "none",
-          text = element_text(size = 19)) # Change font size for entire plot
+          text = element_text(size = 19),# Change font size for entire plot
+          axis.title.y = element_text(size = 17)) 
 }
 
 #Plots of shannon for all sources of mice on day -1, the baseline microbiota community for each mouse----
@@ -305,7 +306,7 @@ sobs_dx_plot <- function(timepoint){
   theme_classic()+
   theme(legend.position = "none",
         text = element_text(size = 19),# Change font size for entire plot
-        axis.title.y = element_text(size = 17.5)) 
+        axis.title.y = element_text(size = 17)) 
 }
   
 #Plots of sobs (richness) for all sources of mice on day -1, the baseline microbiota community for each mouse----

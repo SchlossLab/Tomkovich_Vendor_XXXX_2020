@@ -134,10 +134,12 @@ dn1_vs_d7 <- dn1vd7_dist %>%
                      values=shape_scheme,
                      breaks=shape_experiment,
                      labels=shape_experiment) +  
-  labs(title = NULL, x = NULL, y = "Theta YC Distance relative to baseline")+
+  labs(title = NULL, x = NULL, y = "Theta YC Distance relative \n to baseline")+
   theme(plot.title = element_text(hjust = 0.5)) +#Center plot title
   theme_classic()+
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        text = element_text(size = 19),# Change font size for entire plot
+        axis.title.y = element_text(size = 17))
 save_plot("results/figures/dn1_vs_d7_thetayc.png", dn1_vs_d7)
 
 
