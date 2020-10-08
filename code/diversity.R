@@ -207,7 +207,7 @@ shannon_dx_plot <- function(timepoint){
     ylim(0, 5.5)+
     theme_classic()+
     theme(legend.position = "none",
-          text = element_text(size = 16)) # Change font size for entire plot
+          text = element_text(size = 19)) # Change font size for entire plot
 }
 
 #Plots of shannon for all sources of mice on day -1, the baseline microbiota community for each mouse----
@@ -241,7 +241,7 @@ pairwise_shannon_day0_annotations <- cbind(x.position, "letter_label" = c(cr_let
 shannon_d0 <- shannon_dx_plot(0) +
   geom_text(data = pairwise_shannon_day0_annotations,  #Add letter annotations to denote pairwise source comparisons that were significant
             aes(x=vendor, y=y.position,label=letter_label), 
-            size = 5,position=position_dodge(.5), color = "black") 
+            size = 7,position=position_dodge(.5), color = "black") 
 save_plot("results/figures/shannon_d0.png", shannon_d0)
 
 #Data frames of day 1 p.values to add manually
@@ -274,7 +274,7 @@ pairwise_shannon_day1_annotations <- cbind(x.position, "letter_label" = c(cr_let
 shannon_d1 <- shannon_dx_plot(1) +
   geom_text(data = pairwise_shannon_day1_annotations,  #Add letter annotations to denote pairwise source comparisons that were significant
             aes(x=vendor, y=y.position,label=letter_label), 
-            size = 5,position=position_dodge(.5), color = "black") 
+            size = 7,position=position_dodge(.5), color = "black") 
 save_plot("results/figures/shannon_d1.png", shannon_d1)
 
 #Function to make plots of sobs (richness) for all sources of mice on a specific experimental day----
@@ -304,7 +304,8 @@ sobs_dx_plot <- function(timepoint){
   ylim(0, 320)+
   theme_classic()+
   theme(legend.position = "none",
-        text = element_text(size = 16)) # Change font size for entire plot
+        text = element_text(size = 19),# Change font size for entire plot
+        axis.title.y = element_text(size = 17.5)) 
 }
   
 #Plots of sobs (richness) for all sources of mice on day -1, the baseline microbiota community for each mouse----
@@ -343,7 +344,7 @@ pairwise_sobs_day0_annotations <- cbind(x.position, "letter_label" = c(cr_letter
 sobs_d0 <- sobs_dx_plot(0) +
   geom_text(data = pairwise_sobs_day0_annotations, #Add letter annotations to denote pairwise source comparisons that were significant
             aes(x=vendor, y=y.position,label=letter_label), 
-            size = 5,position=position_dodge(.5), color = "black")
+            size = 7,position=position_dodge(.5), color = "black")
 save_plot("results/figures/richness_d0.png", sobs_d0) #Use save_plot instead of ggsave because it works better with cowplot
 
 #Data frame of day 1 p.values to add manually
@@ -371,6 +372,6 @@ pairwise_sobs_day1_annotations <- cbind(x.position, "letter_label" = c(cr_letter
 sobs_d1 <- sobs_dx_plot(1) +
   geom_text(data = pairwise_sobs_day1_annotations, #Add letter annotations to denote pairwise source comparisons that were significant
             aes(x=vendor, y=y.position,label=letter_label), 
-            size = 5,position=position_dodge(.5), color = "black")
+            size = 7,position=position_dodge(.5), color = "black")
 save_plot("results/figures/richness_d1.png", sobs_d1) #Use save_plot instead of ggsave because it works better with cowplot
 
