@@ -162,7 +162,7 @@ plot_pcoa <- function(df, timepoint){
          color= "Source") +
     theme_classic()+
     theme(plot.title = element_text(hjust = 0.5),
-          text = element_text(size = 16))
+          text = element_text(size = 20))
 }
 
 # Read in thetayc distance matrix that represents day -1 sequenced samples----
