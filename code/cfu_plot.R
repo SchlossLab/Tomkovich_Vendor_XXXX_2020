@@ -103,7 +103,7 @@ exp2_cfu <- summarize_plot(cfu_data_final %>% filter(experiment == 2))+
         legend.position = "none") 
 save_plot(filename = paste0("results/figures/exp2_cfu_time.png"), plot = exp2_cfu, base_aspect_ratio = 2)
 
-#CFU over time plot with astericks on days where cfu varied significantly across sources of mice using annotate()----
+#CFU over time plot with asterisks on days where cfu varied significantly across sources of mice using annotate()----
 #List significant days after BH adjustment of p-values:
 #Annotation labels determined by what days were significant
 x_annotation <- sig_cfu_days 
@@ -143,6 +143,9 @@ cfu_stats <- ggplot(NULL) +
   theme_classic() +
   theme(legend.position = "bottom", #(0,0) bottom left (1,1) top right. #Previous: c(.92, .8)
         legend.key= element_rect(colour = "transparent", fill = "transparent"),
+        text = element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14),
         panel.grid.minor.x = element_line(size = 0.4, color = "grey"))  # Add gray lines to clearly separate symbols by days)
 save_plot(filename = paste0("results/figures/cfu_over_time.png"), plot = cfu_stats, base_aspect_ratio = 2)
 
