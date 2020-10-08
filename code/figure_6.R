@@ -8,6 +8,6 @@ figure <- plot_grid(a, b, c, d, labels = "AUTO", label_size = 12, ncol=2)
 legend <- ggdraw()+ draw_image("results/figures/overlap_OTUs_legend.png")
 
 
-plot_grid(figure, legend, labels = NULL, label_size = 12, ncol=1, rel_heights = c(1, 0.2))+
-  ggsave("results/figures/figure_6.pdf", width=6.875, height=4.3)+
-  ggsave("submission/figure_6.tiff", width=6.875, height=4.3, dpi = 300, device = "tiff", compression = "lzw", units = "in")
+plot_grid(figure, legend, labels = NULL, label_size = 12, ncol=1, rel_heights = c(1.1, 0.3))+
+  ggsave("results/figures/figure_6.pdf", width=6.87, height=3.8)+
+  ggsave("submission/figure_6.tiff", width=6.87, height=3.8, dpi = 600, device = "tiff", compression = "lzw", units = "in")
