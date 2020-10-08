@@ -142,7 +142,7 @@ plot_otus_dx <- function(otus, timepoint){
     theme(plot.title=element_text(hjust=0.5),
           legend.position = "bottom",
           axis.text.y = element_markdown(), #Have only the OTU names show up as italics
-          text = element_text(size = 16)) # Change font size for entire plot
+          text = element_text(size = 19)) # Change font size for entire plot
 }
 
 #Plots of the top 18-20 OTUs that varied across sources at each timepoint (only 18 OTUs varied significantly across sources post-clindamycin treatment)
@@ -359,7 +359,7 @@ clind_impacted_otus_plot_dn1_0 <- agg_otu_data %>%
   geom_vline(xintercept = c((1:10) - 0.5 ), color = "grey") + # Add gray lines to clearly separate OTUs
   facet_wrap( ~ day, labeller = labeller(day = facet_labels), scales = "fixed")+
   theme(plot.title=element_text(hjust=0.5),
-        text = element_text(size = 16),# Change font size for entire plot
+        text = element_text(size = 19),# Change font size for entire plot
         axis.text.y = element_markdown(), #Have only the OTU names show up as italics
         strip.background = element_blank(),
         legend.position = "none") 
@@ -409,7 +409,7 @@ otu_over_time <- function(otu_plot, x_annotation, y_position, label){
     theme_classic()+
     theme(plot.title=element_markdown(hjust = 0.5),
           panel.grid.minor.x = element_line(size = 0.4, color = "grey"),  # Add gray lines to clearly separate symbols by days)
-          text = element_text(size = 14)) # Change font size for entire plot
+          text = element_text(size = 18)) # Change font size for entire plot
 }
 
 #OTUs that differ across mouse sources at multiple timepoints and are important features in at least 2/3 logistic regresssion models----
@@ -460,13 +460,14 @@ y_OTU7 <- .4
 label_OTU7 <- plot_otu_stats_dn1to9 %>% 
   filter(otu == "Porphyromonadaceae (OTU 7)") %>% pull(p.signif)
 otu7 <- otu_over_time("Porphyromonadaceae (OTU 7)", x_annotation = x_OTU7, y_position = y_OTU7, label = label_OTU7)+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 16))
 legend <- get_legend(otu7)
 #Alternative function to get legend:
 legend <- cowplot::get_legend(otu7)
 overlap_OTUs_legend <- as_ggplot(legend)#+theme(element_line(size = 16)) #+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"))
-save_plot(filename = paste0("results/figures/overlap_OTUs_legend.png"), overlap_OTUs_legend, base_height = 1, base_width =7.5)
-otu7 <- otu7 + theme(legend.position = "none") #remove legend
+save_plot(filename = paste0("results/figures/overlap_OTUs_legend.png"), overlap_OTUs_legend, base_height = .9, base_width = 9.5)
+ otu7 <- otu7 + theme(legend.position = "none") #remove legend
 save_plot(filename = paste0("results/figures/Porphyromonadaceae (OTU 7)_time.png"), otu7, base_aspect_ratio = 2.5)
 
 #Examine which taxa have different relative abundances between experiments for Schloss, Young, and Envigo mice at baseline----
@@ -580,7 +581,8 @@ top10_d0_otu_model_taxa <- agg_otu_data %>%
        y="Relative abundance (%)") +
   scale_y_log10(breaks=c(1e-4, 1e-3, 1e-2, 1e-1, 1), labels=c(1e-2, 1e-1, 1, 10, 100))+
   theme_classic()+
-  theme(strip.text = element_markdown(hjust = 0.5, size = 6),
+  theme(text = element_text(size = 14),
+        strip.text = element_markdown(hjust = 0.5, size = 6.8),
         axis.text.x = element_blank(),
         legend.position = "bottom")
 save_plot(filename = paste0("results/figures/d0_top10_otus.png"), top10_d0_otu_model_taxa, base_height = 5, base_width = 8)
